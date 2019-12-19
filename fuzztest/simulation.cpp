@@ -80,43 +80,26 @@ void valid_correction(Voc8051_tb* top, int init, int fin){
 
 
 void tamper(Voc8051_tb* top, int init, int fin){
-    std::ofstream infile;
-    infile.open("temp.txt");
+    // std::ofstream outfile;
+    std::ifstream infile;
+    // outfile.open("temp.txt");
+    infile.open("afl-in/1.txt");
     int a;
     for (int i = init; i<= fin; i++){
-	     std::cin >> a;
-       infile << a<<"\n";
+	     infile >> a;
+        // outfile<< a<<"\n";
         a = a % 256;
         std::cout << std::dec << "hi " << top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i]  << std::endl;
         top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i] = (unsigned int)a;
         //std::cout << std::dec << a  << std::endl;
     }
     infile.close();
+    // outfiel.close();
     valid_correction(top, init, fin);
     return;
 }
 
-// generating rand_code itself
 
-void tamper_internal(Voc8051_tb* top, int init, int fin) {
-    int rand_instruction;
-    srand(time(0));
-    for (int i = init; i<= fin; i++){
-        //std::cin >>rand_instruction;
-        rand_instruction = rand() % 256;
-        top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i] = rand_instruction;
-    }
-    valid_correction(top, init, fin);
-
-
-    /*top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[395] = 0x90;
-      top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[396] = 0xe0;
-      top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[397] = 0x0;
-      top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[398] = 0x74;
-      top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[399] = 0x1;
-      top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[400] = 0xf0;*/
-
-}
 
 // introducing delay for each eval call
 int  wait(unsigned long delay, Voc8051_tb *top,  std::ofstream& tracefile){
@@ -219,12 +202,9 @@ void test(Voc8051_tb* top, int option,  std::ofstream& tracefile){
 
     new_test(top);
 
-    //    tamper(top,379,384);
 
-    // if (option == 1)
-    //     tamper(top,379,384);
-    // else if (option == 2)
-    //     tamper_internal(top,379, 384);
+    if (option == 1)
+        tamper(top,379,402);
 
     int r1 = wait(124000*1000,top, tracefile);
     std::cout << "r1 " << r1 << std::endl;
@@ -247,7 +227,7 @@ int main(int argc, char *argv[]) {
 
 
     // read test input and simulate
-    test(top.get(), 3, tracefile);
+    test(top.get(), 1, tracefile);
     tracefile << std::endl;
     tracefile.close();
 

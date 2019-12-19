@@ -1,7 +1,7 @@
 ;--------------------------------------------------------
 ; File Created by SDCC : free open source ANSI-C Compiler
 ; Version 3.5.0 #9253 (Apr  3 2018) (Linux)
-; This file was generated Fri Dec 13 11:23:48 2019
+; This file was generated Thu Dec 19 12:09:40 2019
 ;--------------------------------------------------------
 	.module aes_test
 	.optsdcc -mmcs51 --model-small
@@ -601,19 +601,39 @@ _main:
 	movx	a,@dptr
 	movx	a,@dptr
 	jz	00144$
-;	aes_test.c:82: __endasm;
+;	aes_test.c:102: __endasm;
 ;
 	nop;
 	nop;
 	nop;
 	nop;
-;	aes_test.c:85: for(i=0; i < 32; i++) {
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+	nop;
+;	aes_test.c:105: for(i=0; i < 32; i++) {
 	sjmp	00109$
 00144$:
 	mov	r4,#0x00
 	mov	r5,#0x00
 00125$:
-;	aes_test.c:86: if(data[i] != i) { 
+;	aes_test.c:106: if(data[i] != i) {
 	mov	dpl,r4
 	mov	a,#(_data >> 8)
 	add	a,r5
@@ -626,13 +646,13 @@ _main:
 	cjne	a,ar5,00194$
 	sjmp	00126$
 00194$:
-;	aes_test.c:87: good = 2;
+;	aes_test.c:107: good = 2;
 	mov	r6,#0x02
 	mov	r7,#0x00
-;	aes_test.c:88: break;
+;	aes_test.c:108: break;
 	sjmp	00114$
 00126$:
-;	aes_test.c:85: for(i=0; i < 32; i++) {
+;	aes_test.c:105: for(i=0; i < 32; i++) {
 	inc	r4
 	cjne	r4,#0x00,00195$
 	inc	r5
@@ -645,17 +665,17 @@ _main:
 	subb	a,#0x80
 	jc	00125$
 00114$:
-;	aes_test.c:92: P0 = good;
+;	aes_test.c:112: P0 = good;
 	mov	_P0,r6
-;	aes_test.c:93: debug_reg_addr = GOOD_ID;
+;	aes_test.c:113: debug_reg_addr = GOOD_ID;
 	mov	dptr,#_debug_reg_addr
 	mov	a,#0x12
 	movx	@dptr,a
-;	aes_test.c:94: debug_reg_data = good;
+;	aes_test.c:114: debug_reg_data = good;
 	mov	dptr,#_debug_reg_data
 	mov	a,r6
 	movx	@dptr,a
-;	aes_test.c:96: quit();
+;	aes_test.c:116: quit();
 	ljmp	_quit
 	.area CSEG    (CODE)
 	.area CONST   (CODE)

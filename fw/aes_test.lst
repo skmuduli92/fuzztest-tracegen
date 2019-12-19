@@ -1,7 +1,7 @@
                                       1 ;--------------------------------------------------------
                                       2 ; File Created by SDCC : free open source ANSI-C Compiler
                                       3 ; Version 3.5.0 #9253 (Apr  3 2018) (Linux)
-                                      4 ; This file was generated Fri Dec 13 11:23:48 2019
+                                      4 ; This file was generated Thu Dec 19 12:09:40 2019
                                       5 ;--------------------------------------------------------
                                       6 	.module aes_test
                                       7 	.optsdcc -mmcs51 --model-small
@@ -600,64 +600,84 @@
       000112 90 FF 01         [24]  600 	mov	dptr,#_aes_reg_state
       000115 E0               [24]  601 	movx	a,@dptr
       000116 E0               [24]  602 	movx	a,@dptr
-      000117 60 06            [24]  603 	jz	00144$
-                                    604 ;	aes_test.c:82: __endasm;
+      000117 60 1A            [24]  603 	jz	00144$
+                                    604 ;	aes_test.c:102: __endasm;
                                     605 ;
       000119 00               [12]  606 	nop;
       00011A 00               [12]  607 	nop;
       00011B 00               [12]  608 	nop;
       00011C 00               [12]  609 	nop;
-                                    610 ;	aes_test.c:85: for(i=0; i < 32; i++) {
-      00011D 80 F3            [24]  611 	sjmp	00109$
-      00011F                        612 00144$:
-      00011F 7C 00            [12]  613 	mov	r4,#0x00
-      000121 7D 00            [12]  614 	mov	r5,#0x00
-      000123                        615 00125$:
-                                    616 ;	aes_test.c:86: if(data[i] != i) { 
-      000123 8C 82            [24]  617 	mov	dpl,r4
-      000125 74 E0            [12]  618 	mov	a,#(_data >> 8)
-      000127 2D               [12]  619 	add	a,r5
-      000128 F5 83            [12]  620 	mov	dph,a
-      00012A E0               [24]  621 	movx	a,@dptr
-      00012B FB               [12]  622 	mov	r3,a
-      00012C 7A 00            [12]  623 	mov	r2,#0x00
-      00012E B5 04 06         [24]  624 	cjne	a,ar4,00194$
-      000131 EA               [12]  625 	mov	a,r2
-      000132 B5 05 02         [24]  626 	cjne	a,ar5,00194$
-      000135 80 06            [24]  627 	sjmp	00126$
-      000137                        628 00194$:
-                                    629 ;	aes_test.c:87: good = 2;
-      000137 7E 02            [12]  630 	mov	r6,#0x02
-      000139 7F 00            [12]  631 	mov	r7,#0x00
-                                    632 ;	aes_test.c:88: break;
-      00013B 80 10            [24]  633 	sjmp	00114$
-      00013D                        634 00126$:
-                                    635 ;	aes_test.c:85: for(i=0; i < 32; i++) {
-      00013D 0C               [12]  636 	inc	r4
-      00013E BC 00 01         [24]  637 	cjne	r4,#0x00,00195$
-      000141 0D               [12]  638 	inc	r5
-      000142                        639 00195$:
-      000142 C3               [12]  640 	clr	c
-      000143 EC               [12]  641 	mov	a,r4
-      000144 94 20            [12]  642 	subb	a,#0x20
-      000146 ED               [12]  643 	mov	a,r5
-      000147 64 80            [12]  644 	xrl	a,#0x80
-      000149 94 80            [12]  645 	subb	a,#0x80
-      00014B 40 D6            [24]  646 	jc	00125$
-      00014D                        647 00114$:
-                                    648 ;	aes_test.c:92: P0 = good;
-      00014D 8E 80            [24]  649 	mov	_P0,r6
-                                    650 ;	aes_test.c:93: debug_reg_addr = GOOD_ID;
-      00014F 90 EF FE         [24]  651 	mov	dptr,#_debug_reg_addr
-      000152 74 12            [12]  652 	mov	a,#0x12
-      000154 F0               [24]  653 	movx	@dptr,a
-                                    654 ;	aes_test.c:94: debug_reg_data = good;
-      000155 90 EF FF         [24]  655 	mov	dptr,#_debug_reg_data
-      000158 EE               [12]  656 	mov	a,r6
-      000159 F0               [24]  657 	movx	@dptr,a
-                                    658 ;	aes_test.c:96: quit();
-      00015A 02r00r00         [24]  659 	ljmp	_quit
-                                    660 	.area CSEG    (CODE)
-                                    661 	.area CONST   (CODE)
-                                    662 	.area XINIT   (CODE)
-                                    663 	.area CABS    (ABS,CODE)
+      00011D 00               [12]  610 	nop;
+      00011E 00               [12]  611 	nop;
+      00011F 00               [12]  612 	nop;
+      000120 00               [12]  613 	nop;
+      000121 00               [12]  614 	nop;
+      000122 00               [12]  615 	nop;
+      000123 00               [12]  616 	nop;
+      000124 00               [12]  617 	nop;
+      000125 00               [12]  618 	nop;
+      000126 00               [12]  619 	nop;
+      000127 00               [12]  620 	nop;
+      000128 00               [12]  621 	nop;
+      000129 00               [12]  622 	nop;
+      00012A 00               [12]  623 	nop;
+      00012B 00               [12]  624 	nop;
+      00012C 00               [12]  625 	nop;
+      00012D 00               [12]  626 	nop;
+      00012E 00               [12]  627 	nop;
+      00012F 00               [12]  628 	nop;
+      000130 00               [12]  629 	nop;
+                                    630 ;	aes_test.c:105: for(i=0; i < 32; i++) {
+      000131 80 DF            [24]  631 	sjmp	00109$
+      000133                        632 00144$:
+      000133 7C 00            [12]  633 	mov	r4,#0x00
+      000135 7D 00            [12]  634 	mov	r5,#0x00
+      000137                        635 00125$:
+                                    636 ;	aes_test.c:106: if(data[i] != i) {
+      000137 8C 82            [24]  637 	mov	dpl,r4
+      000139 74 E0            [12]  638 	mov	a,#(_data >> 8)
+      00013B 2D               [12]  639 	add	a,r5
+      00013C F5 83            [12]  640 	mov	dph,a
+      00013E E0               [24]  641 	movx	a,@dptr
+      00013F FB               [12]  642 	mov	r3,a
+      000140 7A 00            [12]  643 	mov	r2,#0x00
+      000142 B5 04 06         [24]  644 	cjne	a,ar4,00194$
+      000145 EA               [12]  645 	mov	a,r2
+      000146 B5 05 02         [24]  646 	cjne	a,ar5,00194$
+      000149 80 06            [24]  647 	sjmp	00126$
+      00014B                        648 00194$:
+                                    649 ;	aes_test.c:107: good = 2;
+      00014B 7E 02            [12]  650 	mov	r6,#0x02
+      00014D 7F 00            [12]  651 	mov	r7,#0x00
+                                    652 ;	aes_test.c:108: break;
+      00014F 80 10            [24]  653 	sjmp	00114$
+      000151                        654 00126$:
+                                    655 ;	aes_test.c:105: for(i=0; i < 32; i++) {
+      000151 0C               [12]  656 	inc	r4
+      000152 BC 00 01         [24]  657 	cjne	r4,#0x00,00195$
+      000155 0D               [12]  658 	inc	r5
+      000156                        659 00195$:
+      000156 C3               [12]  660 	clr	c
+      000157 EC               [12]  661 	mov	a,r4
+      000158 94 20            [12]  662 	subb	a,#0x20
+      00015A ED               [12]  663 	mov	a,r5
+      00015B 64 80            [12]  664 	xrl	a,#0x80
+      00015D 94 80            [12]  665 	subb	a,#0x80
+      00015F 40 D6            [24]  666 	jc	00125$
+      000161                        667 00114$:
+                                    668 ;	aes_test.c:112: P0 = good;
+      000161 8E 80            [24]  669 	mov	_P0,r6
+                                    670 ;	aes_test.c:113: debug_reg_addr = GOOD_ID;
+      000163 90 EF FE         [24]  671 	mov	dptr,#_debug_reg_addr
+      000166 74 12            [12]  672 	mov	a,#0x12
+      000168 F0               [24]  673 	movx	@dptr,a
+                                    674 ;	aes_test.c:114: debug_reg_data = good;
+      000169 90 EF FF         [24]  675 	mov	dptr,#_debug_reg_data
+      00016C EE               [12]  676 	mov	a,r6
+      00016D F0               [24]  677 	movx	@dptr,a
+                                    678 ;	aes_test.c:116: quit();
+      00016E 02r00r00         [24]  679 	ljmp	_quit
+                                    680 	.area CSEG    (CODE)
+                                    681 	.area CONST   (CODE)
+                                    682 	.area XINIT   (CODE)
+                                    683 	.area CABS    (ABS,CODE)

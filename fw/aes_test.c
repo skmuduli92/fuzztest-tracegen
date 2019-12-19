@@ -40,10 +40,10 @@ __xdata __at(0xEFFF) unsigned char debug_reg_data;
 /*---------------------------------------------------------------------------*/
 
 void main() {
-    
+
     int i;
     int good=1;
-    
+
     // enable read/write to all locations in the page tables.
     for(i=0; i < 32; i++) {
         pt_wren[i] = 0xff;
@@ -79,16 +79,36 @@ void main() {
             nop;
             nop;
             nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
+            nop;
         __endasm;
     }
 
     for(i=0; i < 32; i++) {
-        if(data[i] != i) { 
+        if(data[i] != i) {
             good = 2;
             break;
         }
     }
-    
+
     P0 = good;
     debug_reg_addr = GOOD_ID;
     debug_reg_data = good;
