@@ -1,0 +1,11 @@
+# DESCRIPTION: Verilator output: Timestamp data for --skip-identical.  Delete at will.
+C "--compiler gcc --prefix Vtop --Mdir /home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_hello_c/build/CMakeFiles/example.dir/Vtop.dir --make cmake --cc -y ../make_hello_c ../make_hello_c/top.v"
+S       323  2754906  1575180327    86197139  1575180327    86197139 "../make_hello_c/../make_hello_c/top.v"
+S   7015536  2758434  1575180540   505921511  1575180540   505921511 "/home/sujit/Tools/DeltaSigmaSoC/verilator/bin/verilator_bin"
+T      2048  2758487  1575180627   709857039  1575180627   709857039 "/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_hello_c/build/CMakeFiles/example.dir/Vtop.dir/Vtop.cmake"
+T      4628  2758486  1575180627   709857039  1575180627   709857039 "/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_hello_c/build/CMakeFiles/example.dir/Vtop.dir/Vtop.cpp"
+T      2281  2758485  1575180627   709857039  1575180627   709857039 "/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_hello_c/build/CMakeFiles/example.dir/Vtop.dir/Vtop.h"
+T       529  2758483  1575180627   709857039  1575180627   709857039 "/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_hello_c/build/CMakeFiles/example.dir/Vtop.dir/Vtop__Syms.cpp"
+T       746  2758484  1575180627   709857039  1575180627   709857039 "/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_hello_c/build/CMakeFiles/example.dir/Vtop.dir/Vtop__Syms.h"
+T       847  2758488  1575180627   709857039  1575180627   709857039 "/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_hello_c/build/CMakeFiles/example.dir/Vtop.dir/Vtop__ver.d"
+T         0        0  1575180627   709857039  1575180627   709857039 "/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_hello_c/build/CMakeFiles/example.dir/Vtop.dir/Vtop__verFiles.dat"
