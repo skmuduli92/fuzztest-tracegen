@@ -87,8 +87,8 @@
 `include "oc8051_timescale.v"
 // synopsys translate_on
 `include "oc8051_defines.v"
-
 /*verilator coverage_off */
+
 module oc8051_tb;
 
 
@@ -277,9 +277,8 @@ wire ignore;
 //
 // external data ram
 //
-/*verilator coverage_on */
-oc8051_xiommu oc8051_xiommu1 (.clk(clk), .rst(rst),
 
+oc8051_xiommu oc8051_xiommu1 (.clk(clk), .rst(rst),
   .proc1_wr(write_xram),
   .proc0_wr(1'b0),
   .proc1_addr(ext_addr),
@@ -296,10 +295,10 @@ oc8051_xiommu oc8051_xiommu1 (.clk(clk), .rst(rst),
   .priv_lvl1(1'b0),
   .dpc_ot0(dpc_ot),
   .dpc_ot1(16'b0)
-);
-/*verilator coverage_off */
 
-//defparam oc8051_xiommu1.oc8051_xram_i.DELAY = 2;
+);
+
+
 
 
 `ifdef OC8051_SERIAL
@@ -346,51 +345,6 @@ assign int1 = p3_out[4];
 assign t2 = p3_out[5];
 assign t2ex = p3_out[2];
 
-/*
-initial begin
-  $dumpon;
-  $dumpfile("run.vcd");
-  $dumpvars(0,oc8051_tb);
-  rst= 1'b1;
-  p0_in = 8'h00;
-  p1_in = 8'h00;
-  p2_in = 8'hff;
-#2000
-  rst = 1'b0;
-
-#6400000
-  $display("time ",$time, "\n failure: end of time\n \n");
-  $display("");
-  $finish;
-end
-
-
-initial
-begin
-  clk = 0;
-  forever #DELAY clk <= ~clk;
-end
-*/
-
-/*
-always @(ext_addr or write or stb_o or data_out)
-begin
-  if ((ext_addr==16'h0010) & write & stb_o) begin
-    if (data_out==8'h7f) begin
-      $display("");
-      $display("time ",$time, " Passed");
-      $display("");
-      $finish;
-
-    end else begin
-      $display("");
-      $display("time ",$time," Error: %h", data_out);
-      $display("");
-      $finish;
-    end
-  end
-end
-*/
 
 
 endmodule

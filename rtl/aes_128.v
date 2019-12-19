@@ -73,7 +73,7 @@ module expand_key_128(clk, in, out_1, out_2, rcon);
     wire       [31:0]  k0b, k1b, k2b, k3b, k4a;
 
     assign {k0, k1, k2, k3} = in;
-    
+
     assign v0 = {k0[31:24] ^ rcon, k0[23:0]};
     assign v1 = v0 ^ k1;
     assign v2 = v1 ^ k2;

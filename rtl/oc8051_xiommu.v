@@ -45,6 +45,7 @@ module oc8051_xiommu (
 );
 
 input clk, rst;
+/*verilator coverage_on */
 input proc1_wr, proc1_stb;
 input proc0_wr, proc0_stb;
 input priv_lvl1;
@@ -59,6 +60,7 @@ output [7:0] proc1_data_out;
 output [7:0] proc0_data_out;
 output proc1_ack;
 output proc0_ack;
+/*verilator coverage_off */
 output [1:0] aes_state;
 output [2:0] sha_state;
 output [1:0] exp_state;
