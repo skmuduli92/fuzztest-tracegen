@@ -87,18 +87,16 @@ void tamper(Voc8051_tb* top, int init, int fin){
     // std::ofstream outfile;
     std::ifstream infile;
     // outfile.open("temp.txt");
-    infile.open("afl-in/11.txt");
+    // infile.open("afl-in/11.txt");
     int a;
     for (int i = init; i<= fin; i++){
-	infile >> a;
-	cout << a << endl;
+        cin >> a;
+        cout << dec << "data[" << i << "]=" << hex << a << endl;
         // outfile<< a<<"\n";
         a = a % 256;
-        std::cout << std::dec << "hi " << top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i]  << std::endl;
         top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i] = (unsigned int)a;
         //std::cout << std::dec << a  << std::endl;
     }
-    infile.close();
     // outfile.close();
     valid_correction(top, init, fin);
     return;
