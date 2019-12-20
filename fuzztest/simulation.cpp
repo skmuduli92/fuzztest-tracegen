@@ -66,13 +66,13 @@ void valid_correction(Voc8051_tb* top, int init, int fin){
         }else if (std::find(std::begin(two_byte_instruction), std::end(two_byte_instruction), x) != std::end(two_byte_instruction)){
             next_instruction = i+2;
         }else if (std::find(std::begin(three_byte_instruction), std::end(three_byte_instruction), x) != std::end(three_byte_instruction)){
-            next_instruction = i+2;
+            next_instruction = i+3;
         }else{
             next_instruction = i+1;
             top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i] = 0;
         }
 
-        if (next_instruction > (fin+1)){
+        if (next_instruction > fin){
             for(int j = i;j<=fin;j++){
                 top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[j] = 0;
             }
@@ -207,7 +207,9 @@ void test(Voc8051_tb* top, int option,  std::ofstream& tracefile){
 
 
     //if (option == 1)
-        tamper(top,379,402);
+    // giving two byte buffer in case initial nop is operand or data for the previous instruction
+    // 379 => 381
+        tamper(top,381,402);
 
     int r1 = wait(124000*1000,top, tracefile);
     std::cout << "r1 " << r1 << std::endl;
