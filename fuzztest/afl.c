@@ -16,6 +16,7 @@
 
 #include <sys/shm.h>
 #include <sys/wait.h>
+#include <sstream>
 
 // from `config.h` in AFL
 #define MAP_SIZE_POW2 16
@@ -61,7 +62,7 @@ static void __afl_start_forkserver() {
 
   pid_t child_pid;
   while (1) {
-    *(fid) +=1;
+    // *(fid) +=1;
     uint32_t was_killed;
     int status;
 
@@ -87,8 +88,9 @@ static void __afl_start_forkserver() {
     if (write(FORKSRV_FD + 1, &status, 4) != 4) { _exit(1); }
   }
 }
-
-void afl_init(int* var) {
+static std::stringstream *ss;
+void afl_init(int* var, std::stringstream* s) {
+  ss = s;
   static uint8_t init_done;
   fid = var;
   if (!init_done) {

@@ -10,12 +10,14 @@
 #include <cstdlib>
 #include "afl.h"
 #include <memory>
+#include <sstream>
 
 using namespace std;
 
 #define DEBUG_REG_ADDR 0xEFFE
 #define DEBUG_REG_DATA 0xEFFF
 static int fid = 0;
+std::stringstream ss;
 // std::ofstream tracefile;
 void write_trace(Voc8051_tb* top, std::ofstream& tracefile) {
   static long int oldval = -1;
@@ -27,6 +29,8 @@ void write_trace(Voc8051_tb* top, std::ofstream& tracefile) {
 
     oldval = (long int) top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA];
     tracefile << oldval << std::endl;
+    ss << oldval;
+    ss << std::endl;
   }
 }
 
@@ -83,10 +87,11 @@ void tamper(Voc8051_tb* top, int init, int fin){
     // std::ofstream outfile;
     std::ifstream infile;
     // outfile.open("temp.txt");
-    infile.open("afl-in/1.txt");
+    infile.open("afl-in/11.txt");
     int a;
     for (int i = init; i<= fin; i++){
-	     infile >> a;
+	infile >> a;
+	cout << a << endl;
         // outfile<< a<<"\n";
         a = a % 256;
         std::cout << std::dec << "hi " << top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i]  << std::endl;
@@ -94,7 +99,7 @@ void tamper(Voc8051_tb* top, int init, int fin){
         //std::cout << std::dec << a  << std::endl;
     }
     infile.close();
-    // outfiel.close();
+    // outfile.close();
     valid_correction(top, init, fin);
     return;
 }
@@ -203,7 +208,7 @@ void test(Voc8051_tb* top, int option,  std::ofstream& tracefile){
     new_test(top);
 
 
-    if (option == 1)
+    //if (option == 1)
         tamper(top,379,402);
 
     int r1 = wait(124000*1000,top, tracefile);
@@ -216,7 +221,8 @@ int main(int argc, char *argv[]) {
     // afl init
     std::unique_ptr<Voc8051_tb> top = std::make_unique<Voc8051_tb>();
     // afl init
-    afl_init(&fid);
+    std::stringstream oldss;
+    afl_init(&fid, &oldss);
     // std::ofstream namefile(std::string("traces/trace_") + std::to_string(fid) + std::string(".txt"));
     // fid = fid+1;
     // namefile << "__Vchglast__TOP__oc8051_tb__DOT__oc8051_xiommu1__02Faes_top_i__02Faes_128_i__DOT__r9__t3__DOT__t0__out\n";
@@ -230,7 +236,12 @@ int main(int argc, char *argv[]) {
     test(top.get(), 1, tracefile);
     tracefile << std::endl;
     tracefile.close();
-
+    if (ss.str()==oldss.str()){
+	    fid--;
+    }else{
+	    oldss.str(std::string());
+	    oldss << ss.rdbuf();
+    }
     // push coverage
     afl_copy(top->__VlSymsp->__Vcoverage, top->__VlSymsp->coverageBins);
     return 0;
