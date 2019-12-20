@@ -91,9 +91,10 @@ void tamper(Voc8051_tb* top, int init, int fin){
     int a;
     for (int i = init; i<= fin; i++){
         cin >> a;
+        a = a % 256;
         cout << dec << "data[" << i << "]=" << hex << a << endl;
         // outfile<< a<<"\n";
-        a = a % 256;
+
         top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i] = (unsigned int)a;
         //std::cout << std::dec << a  << std::endl;
     }
