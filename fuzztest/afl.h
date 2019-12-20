@@ -10,9 +10,10 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <sstream>
 
 /// call at the beginning of main to start fork server
-void afl_init(int*);
+void afl_init(int*, std::stringstream*);
 
 extern uint8_t* __afl_area_ptr;
 static inline void afl_increment(uint16_t id)
