@@ -1,3 +1,4 @@
 *.o
 fuzztest/traces/trace_*.txt
-afl-out/*
+fuzztest/afl-out/*
+*.swp
