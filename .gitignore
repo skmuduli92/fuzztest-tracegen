@@ -1,0 +1,3 @@
+*.o
+fuzztest/traces/trace_*.txt
+afl-out/*
