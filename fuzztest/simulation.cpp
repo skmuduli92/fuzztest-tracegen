@@ -1,5 +1,7 @@
 #include <verilated.h>
+#include <iterator>
 #include <iostream>
+#include <iomanip>
 #include "Voc8051_tb.h"
 #include "Voc8051_tb__Syms.h"
 #include <array>
@@ -12,7 +14,7 @@
 #include <memory>
 #include <sstream>
 
-using namespace std;
+#include "coverage.h"
 
 #define DEBUG_REG_ADDR 0xEFFE
 #define DEBUG_REG_DATA 0xEFFF
@@ -21,6 +23,7 @@ std::stringstream ss;
 // std::ofstream tracefile;
 void write_trace(Voc8051_tb* top, std::ofstream& tracefile) {
   static long int oldval = -1;
+  using namespace std;
 
   if (oldval != (long int)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA]) {
 
@@ -46,10 +49,8 @@ int one_byte_instruction[] = {0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x
 int two_byte_instruction[] = {0x24, 0x25, 0x34, 0x35, 0x52, 0x54, 0x55, 0x82, 0xb0, 0xc2, 0xb2, 0x15, 0x05, 0x76, 0x77, 0xa6, 0xa7, 0x74, 0xe5, 0xa2, 0x78, 0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f, 0xa8, 0xa9, 0xaa, 0xab, 0xac, 0xad, 0xae, 0xaf, 0x92, 0x86, 0x87, 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f, 0xf5, 0x42, 0x44, 0x45, 0x72, 0xa0, 0xd0, 0xc0, 0x94, 0x95, 0xc5, 0x62, 0x64, 0x65};
 int three_byte_instruction[] = {0x53, 0x90, 0x75, 0x85, 0x43, 0x63};
 
-
-
-
-
+ValueTracker opcode_tracker(16381 /* closest prime to 16384 */, 8);
+ValueTracker pc_tracker(32771 /* closest prime to 32768 */, 16);
 
 void valid_correction(Voc8051_tb* top, int init, int fin){
     int next_instruction, x;
@@ -84,21 +85,16 @@ void valid_correction(Voc8051_tb* top, int init, int fin){
 
 
 void tamper(Voc8051_tb* top, int init, int fin){
-    // std::ofstream outfile;
     std::ifstream infile;
-    // outfile.open("temp.txt");
-    // infile.open("afl-in/11.txt");
     int a;
     for (int i = init; i<= fin; i++){
-        cin >> a;
+        std::cin >> a;
         a = a % 256;
-        cout << dec << "data[" << i << "]=" << hex << a << endl;
-        // outfile<< a<<"\n";
+        std::cout << std::dec << "data[" << i << "]=" 
+                  << std::hex << a << std::endl;
 
         top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i] = (unsigned int)a;
-        //std::cout << std::dec << a  << std::endl;
     }
-    // outfile.close();
     valid_correction(top, init, fin);
     return;
 }
@@ -118,11 +114,14 @@ int  wait(unsigned long delay, Voc8051_tb *top,  std::ofstream& tracefile){
             clk =0;
         }else {
             clk = 1;
+            /* track signals on risiing clock. */
+            opcode_tracker.track(top->oc8051_tb__DOT__oc8051_top_1__DOT__op1_d);
+            pc_tracker.track(top->oc8051_tb__DOT__oc8051_top_1__DOT__pc);
         }
         top->oc8051_tb__DOT__clk = clk;
         top->eval();
 
-	write_trace(top, tracefile);
+        write_trace(top, tracefile);
 
         if (top->oc8051_tb__DOT__p0_out != p_zero){
             if(top->oc8051_tb__DOT__p0_out == 0xde){
@@ -135,11 +134,11 @@ int  wait(unsigned long delay, Voc8051_tb *top,  std::ofstream& tracefile){
         // b= top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__memwr_reg_state;
         // d = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__reg_bytes_written;
         if (/* c != top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__memwr_reg_wr_addr ||*/
-	    p0 != top->oc8051_tb__DOT__p0_out ||
+            p0 != top->oc8051_tb__DOT__p0_out ||
             p1 != top->oc8051_tb__DOT__p1_out ||
             p2 != top->oc8051_tb__DOT__p2_out ||
             p3 != top->oc8051_tb__DOT__p3_out )
-	    {
+        {
                 std::cout << "wait @ " << main_time << " " << std::hex << ": "<< p0 << "-"<< p1 << "-" << p2 << "-" << p3 << "-" <</* temp << "-" << c << "-" << d <<*/ std::endl;
                 //std::cout << "length " << std::hex << "- " << (int)top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[0U] << std::endl;
                 p0 = top->oc8051_tb__DOT__p0_out;
@@ -210,7 +209,7 @@ void test(Voc8051_tb* top, int option,  std::ofstream& tracefile){
     //if (option == 1)
     // giving two byte buffer in case initial nop is operand or data for the previous instruction
     // 379 => 381
-        tamper(top,381,402);
+    tamper(top,381,402);
 
     int r1 = wait(124000*1000,top, tracefile);
     std::cout << "r1 " << r1 << std::endl;
@@ -244,6 +243,15 @@ int main(int argc, char *argv[]) {
 	    oldss << ss.rdbuf();
     }
     // push coverage
-    afl_copy(top->__VlSymsp->__Vcoverage, top->__VlSymsp->coverageBins);
+    std::vector<uint32_t> coverageBins(
+        top->__VlSymsp->coverageBins + opcode_tracker.size() + pc_tracker.size());
+    std::copy(top->__VlSymsp->__Vcoverage, 
+              top->__VlSymsp->__Vcoverage + top->__VlSymsp->coverageBins,
+              coverageBins.begin());
+    std::copy(opcode_tracker.begin(), opcode_tracker.end(),
+              coverageBins.begin() + top->__VlSymsp->coverageBins);
+    std::copy(pc_tracker.begin(), pc_tracker.end(),
+              coverageBins.begin() + top->__VlSymsp->coverageBins + opcode_tracker.size());
+    afl_copy(coverageBins.data(), coverageBins.size());
     return 0;
 }

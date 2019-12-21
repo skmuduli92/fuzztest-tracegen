@@ -1,7 +1,7 @@
 INCLUDES=-I../verilator/include/ -I../fuzzer
 
-sim: simulation.cpp Voc8051_tb__ALL.a afl.o verilated.o
-	g++ -o sim $(INCLUDES) verilated.o afl.o ../verilator/include/verilated_cov.cpp simulation.cpp Voc8051_tb__ALL.a -DVM_COVERAGE=1
+sim: simulation.cpp coverage.cpp coverage.h Voc8051_tb__ALL.a afl.o verilated.o
+	g++ -o sim $(INCLUDES) verilated.o afl.o ../verilator/include/verilated_cov.cpp simulation.cpp coverage.cpp Voc8051_tb__ALL.a -DVM_COVERAGE=1
 
 
 afl.o : afl.c
