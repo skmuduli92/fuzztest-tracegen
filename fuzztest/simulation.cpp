@@ -244,14 +244,11 @@ int main(int argc, char *argv[]) {
     }
     // push coverage
     std::vector<uint32_t> coverageBins(
-        top->__VlSymsp->coverageBins + opcode_tracker.size() + pc_tracker.size());
-    std::copy(top->__VlSymsp->__Vcoverage, 
-              top->__VlSymsp->__Vcoverage + top->__VlSymsp->coverageBins,
-              coverageBins.begin());
+        opcode_tracker.size() + pc_tracker.size());
     std::copy(opcode_tracker.begin(), opcode_tracker.end(),
-              coverageBins.begin() + top->__VlSymsp->coverageBins);
+              coverageBins.begin());
     std::copy(pc_tracker.begin(), pc_tracker.end(),
-              coverageBins.begin() + top->__VlSymsp->coverageBins + opcode_tracker.size());
+              coverageBins.begin() + opcode_tracker.size());
     afl_copy(coverageBins.data(), coverageBins.size());
     return 0;
 }

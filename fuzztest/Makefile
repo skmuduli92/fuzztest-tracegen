@@ -1,21 +1,22 @@
 INCLUDES=-I../verilator/include/ -I../fuzzer
+CFLAGS=-O3
 
 sim: simulation.cpp coverage.cpp coverage.h Voc8051_tb__ALL.a afl.o verilated.o
-	g++ -o sim $(INCLUDES) verilated.o afl.o ../verilator/include/verilated_cov.cpp simulation.cpp coverage.cpp Voc8051_tb__ALL.a -DVM_COVERAGE=1
+	g++ -o sim $(CFLAGS) $(INCLUDES) verilated.o afl.o ../verilator/include/verilated_cov.cpp simulation.cpp coverage.cpp Voc8051_tb__ALL.a -DVM_COVERAGE=1
 
 
 afl.o : afl.c
-	g++ -c afl.c $(INCLUDES)
+	g++ -c $(CFLAGS) afl.c $(INCLUDES)
 
 verilated.o : ../verilator/include/verilated.cpp
-	g++ -c ../verilator/include/verilated.cpp $(INCLUDES)
+	g++ -c $(CFLAGS) ../verilator/include/verilated.cpp $(INCLUDES)
 
 Voc8051_tb__ALL.a: Voc8051_tb.mk
 	make -f Voc8051_tb.mk
 
 RTL_DIR:=../rtl
 Voc8051_tb.mk: ../rtl/*.v
-	../verilator/bin/verilator --cc -Mdir . -O3 --x-assign fast --x-initial fast --noassert --coverage-toggle -Monitor mon_signals.txt \
+	../verilator/bin/verilator --cc -Mdir . -O3 --x-assign fast --x-initial fast --noassert -Monitor mon_signals.txt \
 	-I${RTL_DIR}			\
 	-Wno-UNOPTFLAT -Wno-CASEINCOMPLETE -Wno-CASEX -Wno-WIDTH -Wno-PINMISSING   -Wno-STMTDLY -Wno-IMPLICIT -Wno-LITENDIAN -Wno-INITIALDLY -Wno-MODDUP \
 	${RTL_DIR}/oc8051_tb.v                     \
