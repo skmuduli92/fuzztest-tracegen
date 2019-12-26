@@ -345,7 +345,22 @@ assign int1 = p3_out[4];
 assign t2 = p3_out[5];
 assign t2ex = p3_out[2];
 
+// For simulation only.
+`ifdef OC8051_SIMULATION
+initial
+begin
+    $dumpvars;
+    clk = 0;
+    rst = 1;
+    #1000;
+    rst = 0;
+end
 
+always
+begin
+    #5 clk = !clk;
+end
+`endif
 
 endmodule
 

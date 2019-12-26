@@ -61,7 +61,7 @@ output [7:0] proc0_data_out;
 output proc1_ack;
 output proc0_ack;
 /*verilator coverage_off */
-output [1:0] aes_state;
+output [2:0] aes_state;
 output [2:0] sha_state;
 output [1:0] exp_state;
 output aes_step, sha_step, sha_core_assumps_valid, exp_step, exp_valid;
@@ -75,7 +75,7 @@ wire proc1_stb_xram, proc0_stb_xram, stb_aes, stb_sha, stb_exp, stb_memwr;
 wire aes_addr_range, sha_addr_range, exp_addr_range, memwr_addr_range;
 wire wr_en, rd_en, priv_lvl, pt_addr_range, ia_addr_range, stb_pt, ack_pt, stb_ia, ack_ia;
 
-wire [1:0] aes_state;
+wire [2:0] aes_state;
 wire [2:0] sha_state;
 wire [1:0] exp_state;
 wire [1:0] memwr_state;

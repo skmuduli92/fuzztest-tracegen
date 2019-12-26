@@ -15,20 +15,99 @@
  * limitations under the License.
  */
 
-module aes_128(clk, state, key, out);
+module aes_128(clk, rst, start, state, key, out, done);
     input          clk;
+    input          rst;
+    input          start;
     input  [127:0] state, key;
     output [127:0] out;
+    output         done;
     reg    [127:0] s0, k0;
     wire   [127:0] s1, s2, s3, s4, s5, s6, s7, s8, s9,
                    k1, k2, k3, k4, k5, k6, k7, k8, k9,
                    k0b, k1b, k2b, k3b, k4b, k5b, k6b, k7b, k8b, k9b;
+    wire   [127:0] key_in, key_out1, key_out2;
+    reg    [127:0] k1s, k2s, k3s, k4s, k5s, k6s, k7s, k8s, k9s,
+                   k0bs, k1bs, k2bs, k3bs, k4bs, k5bs, k6bs, k7bs, k8bs, k9bs;
 
-    always @ (posedge clk)
-      begin
-        s0 <= state ^ key;
-        k0 <= key;
-      end
+    reg [6:0] fsm_state;
+    wire [6:0] fsm_state_next;
+    wire done;
+
+    assign fsm_state_next =
+           (fsm_state == 6'd0) 
+              ? start ? 6'd1 : 6'd0 
+              : (fsm_state == 6'd40) ? 6'd0 : (fsm_state + 6'd1);
+            
+    assign done = fsm_state == 6'd40;
+
+    always @(posedge clk)
+    begin
+        if (rst)
+        begin
+            fsm_state <= 6'd0;
+            k1s <= 128'd0; k2s <= 128'd0; k3s <= 128'd0;
+            k4s <= 128'd0; k5s <= 128'd0; k6s <= 128'd0;
+            k7s <= 128'd0; k8s <= 128'd0; k9s <= 128'd0;
+            k0bs <= 128'd0; k3bs <= 128'd0; k6bs <= 128'd0;
+            k1bs <= 128'd0; k4bs <= 128'd0; k7bs <= 128'd0;
+            k2bs <= 128'd0; k5bs <= 128'd0; k8bs <= 128'd0;
+            k9bs <= 128'd0;
+        end
+        else begin
+            fsm_state <= fsm_state_next;
+            s0 <= state ^ key;
+            k0 <= key;
+        end
+    end
+
+    assign key_in = (fsm_state <= 6'd2 ) ? k0  :
+                    (fsm_state <= 6'd4 ) ? k1s :
+                    (fsm_state <= 6'd6 ) ? k2s :
+                    (fsm_state <= 6'd8 ) ? k3s :
+                    (fsm_state <= 6'd10) ? k4s :
+                    (fsm_state <= 6'd12) ? k5s :
+                    (fsm_state <= 6'd14) ? k6s :
+                    (fsm_state <= 6'd16) ? k7s :
+                    (fsm_state <= 6'd18) ? k8s : k9s;
+
+    wire [7:0] rcon = 
+        (fsm_state <= 6'd2 ) ? 8'h1  :
+        (fsm_state <= 6'd4 ) ? 8'h2  :
+        (fsm_state <= 6'd6 ) ? 8'h4  :
+        (fsm_state <= 6'd8 ) ? 8'h8  :
+        (fsm_state <= 6'd10 ) ? 8'h10 :
+        (fsm_state <= 6'd12) ? 8'h20 :
+        (fsm_state <= 6'd14) ? 8'h40 :
+        (fsm_state <= 6'd16) ? 8'h80 :
+        (fsm_state <= 6'd18) ? 8'h1b : 8'h36;
+
+    always @(posedge clk)
+    begin
+        k1s <= (fsm_state == 6'd2 ) ? key_out1  : k1s;
+        k2s <= (fsm_state == 6'd4 ) ? key_out1  : k2s;
+        k3s <= (fsm_state == 6'd6 ) ? key_out1  : k3s;
+        k4s <= (fsm_state == 6'd8 ) ? key_out1  : k4s;
+        k5s <= (fsm_state == 6'd10) ? key_out1  : k5s;
+        k6s <= (fsm_state == 6'd12) ? key_out1  : k6s;
+        k7s <= (fsm_state == 6'd14) ? key_out1  : k7s;
+        k8s <= (fsm_state == 6'd16) ? key_out1  : k8s;
+        k9s <= (fsm_state == 6'd18) ? key_out1  : k9s;
+
+        k0bs <= (fsm_state == 6'd2 ) ? key_out2 : k0bs;
+        k1bs <= (fsm_state == 6'd4 ) ? key_out2 : k1bs;
+        k2bs <= (fsm_state == 6'd6 ) ? key_out2 : k2bs;
+        k3bs <= (fsm_state == 6'd8 ) ? key_out2 : k3bs;
+        k4bs <= (fsm_state == 6'd10) ? key_out2 : k4bs;
+        k5bs <= (fsm_state == 6'd12) ? key_out2 : k5bs;
+        k6bs <= (fsm_state == 6'd14) ? key_out2 : k6bs;
+        k7bs <= (fsm_state == 6'd16) ? key_out2 : k7bs;
+        k8bs <= (fsm_state == 6'd18) ? key_out2 : k8bs;
+        k9bs <= (fsm_state == 6'd20) ? key_out2 : k9bs;
+    end
+
+    expand_key_128
+        ek (clk, key_in, key_out1, key_out2, rcon);
 
     /* verilator lint_off PINNOCONNECT */
     expand_key_128

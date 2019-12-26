@@ -1,5 +1,5 @@
 INCLUDES=-I../verilator/include/ -I../fuzzer
-CFLAGS=-O3
+CFLAGS=-O1
 
 sim: simulation.cpp coverage.cpp coverage.h Voc8051_tb__ALL.a afl.o verilated.o
 	g++ -o sim $(CFLAGS) $(INCLUDES) verilated.o afl.o ../verilator/include/verilated_cov.cpp simulation.cpp coverage.cpp Voc8051_tb__ALL.a -DVM_COVERAGE=1
@@ -12,11 +12,11 @@ verilated.o : ../verilator/include/verilated.cpp
 	g++ -c $(CFLAGS) ../verilator/include/verilated.cpp $(INCLUDES)
 
 Voc8051_tb__ALL.a: Voc8051_tb.mk
-	make -f Voc8051_tb.mk
+	make -f Voc8051_tb.mk OPT="-O1"
 
 RTL_DIR:=../rtl
 Voc8051_tb.mk: ../rtl/*.v
-	../verilator/bin/verilator --cc -Mdir . -O3 --x-assign fast --x-initial fast --noassert -Monitor mon_signals.txt \
+	../verilator/bin/verilator --cc -Mdir . -O1 --x-assign fast --x-initial fast --noassert -Monitor mon_signals.txt \
 	-I${RTL_DIR}			\
 	-Wno-UNOPTFLAT -Wno-CASEINCOMPLETE -Wno-CASEX -Wno-WIDTH -Wno-PINMISSING   -Wno-STMTDLY -Wno-IMPLICIT -Wno-LITENDIAN -Wno-INITIALDLY -Wno-MODDUP \
 	${RTL_DIR}/oc8051_tb.v                     \
@@ -105,6 +105,7 @@ oc8051: ${RTL_DIR}/*.v
 	${RTL_DIR}/oc8051_wb_iinterface.v          \
 	${RTL_DIR}/oc8051_sfr.v                    \
 	${RTL_DIR}/oc8051_symbolic_cxrom.v         \
+	${RTL_DIR}/oc8051_cxrom.v                  \
 	${RTL_DIR}/oc8051_rom.v                    \
 	${RTL_DIR}/oc8051_cache_ram.v              \
 	${RTL_DIR}/oc8051_ram_256x8_two_bist.v     \

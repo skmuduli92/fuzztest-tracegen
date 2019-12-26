@@ -62,7 +62,7 @@ input xram_ack;
 output xram_stb;
 output xram_wr;
 // verif output.
-output [1:0] aes_state;
+output [2:0] aes_state;
 output [15:0] aes_addr, aes_len;
 output [127:0] aes_ctr, aes_key0, aes_key1;
 output aes_step;
@@ -87,10 +87,11 @@ localparam AES_ADDR_END    = 16'hff40;
 // see also AES_ADDR_START.
 
 // The current state of the AES module.
-localparam AES_STATE_IDLE       = 2'd0;
-localparam AES_STATE_READ_DATA  = 2'd1;
-localparam AES_STATE_OPERATE    = 2'd2;
-localparam AES_STATE_WRITE_DATA = 2'd3;
+localparam AES_STATE_IDLE       = 3'd0;
+localparam AES_STATE_READ_DATA  = 3'd1;
+localparam AES_STATE_OPERATE    = 3'd2;
+localparam AES_STATE_OP_WAIT    = 3'd3;
+localparam AES_STATE_WRITE_DATA = 3'd4;
 
 wire in_addr_range = addr >= AES_ADDR_START && addr < AES_ADDR_END;
 wire ack = stb && in_addr_range;
@@ -105,8 +106,8 @@ wire sel_reg_key0   = {addr[15:4], 4'b0} == AES_REG_KEY0;
 wire sel_reg_key1   = {addr[15:4], 4'b0} == AES_REG_KEY1;
 
 // state register.
-reg [1:0]  aes_reg_state;
-wire [1:0] aes_state = aes_reg_state;
+reg [2:0]  aes_reg_state;
+wire [2:0] aes_state = aes_reg_state;
 
 wire [7:0] data_out =
     sel_reg_state  ? {6'b0, aes_reg_state}  :
@@ -117,10 +118,11 @@ wire [7:0] data_out =
     sel_reg_key0   ? aes_key0_dataout       :
     sel_reg_key1   ? aes_key1_dataout       : 8'd0;
 
-// state predicates.n
-wire aes_state_idle = aes_reg_state == AES_STATE_IDLE;
-wire aes_state_read_data = aes_reg_state == AES_STATE_READ_DATA;
-wire aes_state_operate = aes_reg_state == AES_STATE_OPERATE;
+// state predicates.
+wire aes_state_idle       = aes_reg_state == AES_STATE_IDLE;
+wire aes_state_read_data  = aes_reg_state == AES_STATE_READ_DATA;
+wire aes_state_operate    = aes_reg_state == AES_STATE_OPERATE;
+wire aes_state_op_wait    = aes_reg_state == AES_STATE_OP_WAIT;
 wire aes_state_write_data = aes_reg_state == AES_STATE_WRITE_DATA;
 
 // consider writes only when we are in the idle state. other writes ignored.
@@ -240,19 +242,21 @@ wire xram_stb = (aes_state_read_data || aes_state_write_data);
 wire xram_wr  = (aes_state_write_data);
 
 // next state logic.
-wire [1:0] aes_reg_state_next_idle = start_op ? AES_STATE_READ_DATA : AES_STATE_IDLE;
-wire [1:0] aes_reg_state_next_read_data = last_byte_acked ? AES_STATE_OPERATE : AES_STATE_READ_DATA;
-wire [1:0] aes_reg_state_next_operate = AES_STATE_WRITE_DATA;
-wire [1:0] aes_reg_state_next_write_data =
+wire [2:0] aes_reg_state_next_idle = start_op ? AES_STATE_READ_DATA : AES_STATE_IDLE;
+wire [2:0] aes_reg_state_next_read_data = last_byte_acked ? AES_STATE_OPERATE : AES_STATE_READ_DATA;
+wire [2:0] aes_reg_state_next_operate = AES_STATE_OP_WAIT;
+wire [2:0] aes_reg_state_next_op_wait = aes_128_done ? AES_STATE_WRITE_DATA : AES_STATE_OP_WAIT;
+wire [2:0] aes_reg_state_next_write_data =
         // more blocks? then go to the next block.
         last_byte_acked && more_blocks ? AES_STATE_READ_DATA :
         last_byte_acked                ? AES_STATE_IDLE      :
         AES_STATE_WRITE_DATA;
 
-wire [1:0] aes_reg_state_next =
+wire [2:0] aes_reg_state_next =
         (aes_state_idle)       ? aes_reg_state_next_idle       :
         (aes_state_read_data)  ? aes_reg_state_next_read_data  :
         (aes_state_operate)    ? aes_reg_state_next_operate    :
+        (aes_state_op_wait)    ? aes_reg_state_next_op_wait    :
         (aes_state_write_data) ? aes_reg_state_next_write_data :
         AES_STATE_IDLE;
 
@@ -283,11 +287,17 @@ wire [127:0] aes_ctr_v = aes_reg_ctr + {112'b0, block_counter};
 wire [127:0] aes_out;
 wire [127:0] encrypted_data = aes_out ^ mem_data_buf;
 wire [127:0] aes_curr_key = aes_reg_keysel ? aes_reg_key1 : aes_reg_key0;
+wire aes_128_start, aes_128_done;
+
+assign aes_128_start = aes_state_operate;
 aes_128 aes_128_i (
     .clk        (clk),
+    .rst        (rst),
+    .start      (aes_128_start),
     .state      (aes_ctr_v),
     .key        (aes_curr_key),
-    .out        (aes_out)
+    .out        (aes_out),
+    .done       (aes_128_done)
 );
 //assign aes_out = aes_ctr_v ^ aes_curr_key;
 
