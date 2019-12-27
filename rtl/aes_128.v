@@ -20,7 +20,8 @@ module aes_128(clk, rst, start, state, key, out, done);
     input          rst;
     input          start;
     input  [127:0] state, key;
-    output [127:0] out;
+    output [127:0] out; 
+    wire   [127:0] outb;
     output         done;
     reg    [127:0] s0, k0;
     wire   [127:0] s1, s2, s3, s4, s5, s6, s7, s8, s9,
@@ -29,6 +30,7 @@ module aes_128(clk, rst, start, state, key, out, done);
     wire   [127:0] key_in, key_out1, key_out2;
     reg    [127:0] k1s, k2s, k3s, k4s, k5s, k6s, k7s, k8s, k9s,
                    k0bs, k1bs, k2bs, k3bs, k4bs, k5bs, k6bs, k7bs, k8bs, k9bs;
+    wire   [127:0] s1b, s2b, s3b, s4b, s5b, s6b, s7b, s8b, s9b;
 
     reg [6:0] fsm_state;
     wire [6:0] fsm_state_next;
@@ -53,11 +55,16 @@ module aes_128(clk, rst, start, state, key, out, done);
             k1bs <= 128'd0; k4bs <= 128'd0; k7bs <= 128'd0;
             k2bs <= 128'd0; k5bs <= 128'd0; k8bs <= 128'd0;
             k9bs <= 128'd0;
+            s0 <= 128'b0;
+            k0 <= 128'b0;
         end
         else begin
             fsm_state <= fsm_state_next;
-            s0 <= state ^ key;
-            k0 <= key;
+            if (fsm_state == 6'd0 && start) 
+            begin
+                s0 <= state ^ key;
+                k0 <= key;
+            end
         end
     end
 
@@ -76,7 +83,7 @@ module aes_128(clk, rst, start, state, key, out, done);
         (fsm_state <= 6'd4 ) ? 8'h2  :
         (fsm_state <= 6'd6 ) ? 8'h4  :
         (fsm_state <= 6'd8 ) ? 8'h8  :
-        (fsm_state <= 6'd10 ) ? 8'h10 :
+        (fsm_state <= 6'd10) ? 8'h10 :
         (fsm_state <= 6'd12) ? 8'h20 :
         (fsm_state <= 6'd14) ? 8'h40 :
         (fsm_state <= 6'd16) ? 8'h80 :
@@ -110,6 +117,7 @@ module aes_128(clk, rst, start, state, key, out, done);
         ek (clk, key_in, key_out1, key_out2, rcon);
 
     /* verilator lint_off PINNOCONNECT */
+    /*
     expand_key_128
         a1 (clk, k0, k1, k0b, 8'h1),
         a2 (clk, k1, k2, k1b, 8'h2),
@@ -121,8 +129,10 @@ module aes_128(clk, rst, start, state, key, out, done);
         a8 (clk, k7, k8, k7b, 8'h80),
         a9 (clk, k8, k9, k8b, 8'h1b),
        a10 (clk, k9,   , k9b, 8'h36);
+    */
     /* verilator lint_on PINNOCONNECT */
 
+    /*
     one_round
         r1 (clk, s0, k0b, s1),
         r2 (clk, s1, k1b, s2),
@@ -136,6 +146,21 @@ module aes_128(clk, rst, start, state, key, out, done);
 
     final_round
         rf (clk, s9, k9b, out);
+    */
+
+    one_round
+        r1b (clk, s0,  k0bs, s1b),
+        r2b (clk, s1b, k1bs, s2b),
+        r3b (clk, s2b, k2bs, s3b),
+        r4b (clk, s3b, k3bs, s4b),
+        r5b (clk, s4b, k4bs, s5b),
+        r6b (clk, s5b, k5bs, s6b),
+        r7b (clk, s6b, k6bs, s7b),
+        r8b (clk, s7b, k7bs, s8b),
+        r9b (clk, s8b, k8bs, s9b);
+
+    final_round
+        rfb (clk, s9b, k9bs, out);
 endmodule
 
 module expand_key_128(clk, in, out_1, out_2, rcon);
@@ -147,7 +172,7 @@ module expand_key_128(clk, in, out_1, out_2, rcon);
 
     wire       [31:0]  k0, k1, k2, k3,
                        v0, v1, v2, v3;
-    reg [127:0] out_1;
+    wire       [127:0] out_1, out_2;
     reg        [31:0]  k0a, k1a, k2a, k3a;
     wire       [31:0]  k0b, k1b, k2b, k3b, k4a;
 
@@ -169,9 +194,7 @@ module expand_key_128(clk, in, out_1, out_2, rcon);
     assign k2b = k2a ^ k4a;
     assign k3b = k3a ^ k4a;
 
-    always @ (posedge clk)
-        out_1 <= {k0b, k1b, k2b, k3b};
-
+    assign out_1 = {k0b, k1b, k2b, k3b};
     assign out_2 = {k0b, k1b, k2b, k3b};
 endmodule
 

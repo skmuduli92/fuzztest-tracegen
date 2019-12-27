@@ -304,7 +304,7 @@ aes_128 aes_128_i (
 // Encrypted data buffer.
 reg  [127:0] encrypted_data_buf;
 wire [127:0] encrypted_data_buf_next =
-        (aes_state_operate) ? encrypted_data : encrypted_data_buf;
+        (aes_state_op_wait) ? encrypted_data : encrypted_data_buf;
 // Output data to XRAM.
 wire [7:0] xram_data_out;
 assign xram_data_out = (byte_counter == 0)  ? encrypted_data_buf [7   :0  ]  :
