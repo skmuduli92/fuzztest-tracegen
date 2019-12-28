@@ -30,24 +30,27 @@ module aes_128(clk, rst, start, state, key, out, done);
     wire   [127:0] key_in, key_out1, key_out2;
     reg    [127:0] k1s, k2s, k3s, k4s, k5s, k6s, k7s, k8s, k9s,
                    k0bs, k1bs, k2bs, k3bs, k4bs, k5bs, k6bs, k7bs, k8bs, k9bs;
-    wire   [127:0] s1b, s2b, s3b, s4b, s5b, s6b, s7b, s8b, s9b;
+    reg    [127:0] s1b, s2b, s3b, s4b, s5b, s6b, s7b, s8b, s9b;
 
     reg [6:0] fsm_state;
     wire [6:0] fsm_state_next;
     wire done;
 
+    localparam STATE_IDLE = 6'd0;
+    localparam STATE_OP1  = 6'd1;
+    localparam STATE_DONE = 6'd23;
     assign fsm_state_next =
-           (fsm_state == 6'd0) 
-              ? start ? 6'd1 : 6'd0 
-              : (fsm_state == 6'd40) ? 6'd0 : (fsm_state + 6'd1);
+           (fsm_state == STATE_IDLE) 
+              ? start ? STATE_OP1  : STATE_IDLE 
+              : done  ? STATE_IDLE : (fsm_state + STATE_OP1);
             
-    assign done = fsm_state == 6'd40;
+    assign done = fsm_state == STATE_DONE;
 
     always @(posedge clk)
     begin
         if (rst)
         begin
-            fsm_state <= 6'd0;
+            fsm_state <= STATE_IDLE;
             k1s <= 128'd0; k2s <= 128'd0; k3s <= 128'd0;
             k4s <= 128'd0; k5s <= 128'd0; k6s <= 128'd0;
             k7s <= 128'd0; k8s <= 128'd0; k9s <= 128'd0;
@@ -60,7 +63,7 @@ module aes_128(clk, rst, start, state, key, out, done);
         end
         else begin
             fsm_state <= fsm_state_next;
-            if (fsm_state == 6'd0 && start) 
+            if (fsm_state == STATE_IDLE && start) 
             begin
                 s0 <= state ^ key;
                 k0 <= key;
@@ -148,16 +151,70 @@ module aes_128(clk, rst, start, state, key, out, done);
         rf (clk, s9, k9b, out);
     */
 
+    wire [127:0] state_in, round_key_in, state_out;
+    assign round_key_in = 
+        (fsm_state <= 6'd3 ) ? k0bs  :
+        (fsm_state <= 6'd5 ) ? k1bs :
+        (fsm_state <= 6'd7 ) ? k2bs :
+        (fsm_state <= 6'd9 ) ? k3bs :
+        (fsm_state <= 6'd11) ? k4bs :
+        (fsm_state <= 6'd13) ? k5bs :
+        (fsm_state <= 6'd15) ? k6bs :
+        (fsm_state <= 6'd17) ? k7bs :
+        (fsm_state <= 6'd19) ? k8bs : k9bs;
+    assign state_in = 
+        (fsm_state <= 6'd3 ) ? s0  :
+        (fsm_state <= 6'd5 ) ? s1b :
+        (fsm_state <= 6'd7 ) ? s2b :
+        (fsm_state <= 6'd9 ) ? s3b :
+        (fsm_state <= 6'd11) ? s4b :
+        (fsm_state <= 6'd13) ? s5b :
+        (fsm_state <= 6'd15) ? s6b :
+        (fsm_state <= 6'd17) ? s7b :
+        (fsm_state <= 6'd19) ? s8b : s9b;
+
+    one_round_comb rnd(clk, state_in, round_key_in, state_out);
+
+    always @(posedge clk)
+    begin
+        if (rst)
+        begin
+            s1b <= 128'd0;
+            s2b <= 128'd0;
+            s3b <= 128'd0;
+            s4b <= 128'd0;
+            s5b <= 128'd0;
+            s6b <= 128'd0;
+            s7b <= 128'd0;
+            s8b <= 128'd0;
+            s9b <= 128'd0;
+        end
+        else
+        begin
+            s1b <= fsm_state == 6'd3 ? state_out : s1b;
+            s2b <= fsm_state == 6'd5 ? state_out : s2b;
+            s3b <= fsm_state == 6'd7 ? state_out : s3b;
+            s4b <= fsm_state == 6'd9 ? state_out : s4b;
+            s5b <= fsm_state == 6'd11 ? state_out : s5b;
+            s6b <= fsm_state == 6'd13 ? state_out : s6b;
+            s7b <= fsm_state == 6'd15 ? state_out : s7b;
+            s8b <= fsm_state == 6'd17 ? state_out : s8b;
+            s9b <= fsm_state == 6'd19 ? state_out : s9b;
+        end
+    end
+
+    /*
     one_round
-        r1b (clk, s0,  k0bs, s1b),
-        r2b (clk, s1b, k1bs, s2b),
-        r3b (clk, s2b, k2bs, s3b),
-        r4b (clk, s3b, k3bs, s4b),
-        r5b (clk, s4b, k4bs, s5b),
-        r6b (clk, s5b, k5bs, s6b),
-        r7b (clk, s6b, k6bs, s7b),
-        r8b (clk, s7b, k7bs, s8b),
-        r9b (clk, s8b, k8bs, s9b);
+        r1b (clk, s0, k0bs, s1),
+        r2b (clk, s1, k1bs, s2),
+        r3b (clk, s2, k2bs, s3),
+        r4b (clk, s3, k3bs, s4),
+        r5b (clk, s4, k4bs, s5),
+        r6b (clk, s5, k5bs, s6),
+        r7b (clk, s6, k6bs, s7),
+        r8b (clk, s7, k7bs, s8),
+        r9b (clk, s8, k8bs, s9);
+    */
 
     final_round
         rfb (clk, s9b, k9bs, out);
