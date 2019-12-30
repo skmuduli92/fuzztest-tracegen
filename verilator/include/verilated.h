@@ -413,6 +413,7 @@ public:
     /// Did the simulation $finish?
     static void gotFinish(bool flag) VL_MT_SAFE;
     static bool gotFinish() VL_MT_SAFE { return s_s.s_gotFinish; }  ///< Return if got a $finish
+    static void reset_verilator() VL_MT_SAFE { s_s.s_gotFinish = false; }
     /// Allow traces to at some point be enabled (disables some optimizations)
     static void traceEverOn(bool flag) VL_MT_SAFE {
 	if (flag) { calcUnusedSigs(flag); }
