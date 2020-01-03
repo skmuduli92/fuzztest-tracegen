@@ -272,6 +272,21 @@ oc8051_top oc8051_top_1(.wb_rst_i(rst), .wb_clk_i(clk),
         #500 $finish;
     end
 
+wire [15:0] proc0_addr;
+wire [7:0] proc0_data_out;
+wire [7:0] proc0_data_in;
+wire proc0_stb, proc0_wr, proc0_ack;
+
+fsm_writer fsm_writer_i(
+    .clk(clk),
+    .rst(rst),
+    .addr(proc0_addr),
+    .data_out(proc0_data_out),
+    .data_in(proc0_data_in),
+    .stb(proc0_stb),
+    .wr(proc0_wr),
+    .ack(proc0_ack)
+);
 wire [7:0] data_ignore;
 wire ignore;
 //
@@ -279,18 +294,19 @@ wire ignore;
 //
 
 oc8051_xiommu oc8051_xiommu1 (.clk(clk), .rst(rst),
-  .proc1_wr(write_xram),
-  .proc0_wr(1'b0),
-  .proc1_addr(ext_addr),
-  .proc0_addr(16'h0000),
-  .proc1_data_in(data_out),
-  .proc0_data_in(8'h00),
-  .proc1_data_out(data_out_xram),
-  .proc0_data_out(data_ignore),
+  .proc0_ack(proc0_ack),
+  .proc0_stb(proc0_stb),
+  .proc0_wr(proc0_wr),
+  .proc0_addr(proc0_addr),
+  .proc0_data_in(proc0_data_out),
+  .proc0_data_out(proc0_data_in),
+
   .proc1_ack(ack_xram),
-  .proc0_ack(ignore),
   .proc1_stb(stb_o),
-  .proc0_stb(1'b0),
+  .proc1_wr(write_xram),
+  .proc1_addr(ext_addr),
+  .proc1_data_in(data_out),
+  .proc1_data_out(data_out_xram),
   .priv_lvl0(priv_lvl),
   .priv_lvl1(1'b0),
   .dpc_ot0(dpc_ot),
@@ -401,4 +417,51 @@ module termination_fsm(clk, rst, pout, finished);
         end
     end
 endmodule
+
+module fsm_writer(clk, rst, stb, wr, addr, data_out, data_in, ack);
+    input  clk, rst;
+    output stb, wr;
+    output [15:0] addr;
+    output [7:0] data_out;
+    input  [7:0] data_in;
+    input  ack;
+
+    reg [15:0] buf_addr [15:0];
+    reg [7:0]  buf_data [15:0];
+    reg [15:0] buf_delay[15:0];
+
+    reg [10:0] ptr;
+    reg [15:0] delay;
+    reg        finished;
+
+    always @(posedge clk)
+    begin
+        if (rst) begin
+            ptr <= 4'b0;
+            delay <= buf_delay[4'b0];
+            finished <= 1'b0;
+        end
+        else
+        begin
+            if (finished) begin
+                if (delay == 16'b0) begin
+                    ptr <= ptr + 4'b1;
+                    delay <= buf_delay[ptr + 4'b1];
+                    finished <= 1'b0;
+                end
+                else begin
+                    delay <= delay - 4'b1;
+                end
+            end
+            else begin
+                finished <= ack;
+            end
+        end
+    end
+    assign stb = !finished;
+    assign addr = buf_addr[ptr];
+    assign data_out = buf_data[ptr];
+    assign wr = !finished;
+endmodule
+    
 /* verilator coverage_on */
