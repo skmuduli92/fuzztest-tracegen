@@ -15,32 +15,75 @@
 #include <sstream>
 
 #include "coverage.h"
+#include "property_parser.h"
 
 #define DEBUG_REG_ADDR 0xEFFE
 #define DEBUG_REG_DATA 0xEFFF
+#define N 18 // number of elements in trace instance 16 aes_control, pc, good
 static int fid = 0;
-
+vluint64_t main_time = 0;
+using namespace std;
+char p[] = "(IMPLIES (GEQ (1.cycle) (10133)) (O (EQL (1.good) (1))))";
+//char p[] = "(EQL (good) (1))";
 std::stringstream ss;
 // std::ofstream tracefile;
+static int run_number;
+std::stringstream tampf;
+std::vector<long int*> trace1,trace2;
+char* tr_lit[] = {"cycle","good"};
+int num_lit = 2;
+Formula *root1;
+Formula *root2; // interchanging the traces
+bool check_property(){
+  long int *tr1, *tr2;
+  if (trace1.size()!= trace2.size()){
+    //throw fid;
+  }
+  for(std::vector<long int*>::size_type i =0;i!=trace1.size();i++){
+    tr1 = trace1[i];
+    cout << "trace "<< i <<endl;
+    for( int j =0;j<num_lit;j++){
+	    cout <<dec << trace1[i][j] << " ";
+    }
+    cout << endl;
+    //tr2 = trace2[i];
+    if (root1->eval(tr1,tr2)){
+      continue;
+    }else{
+      return false;
+    }
+  }
+}
+void copy_array(auto dest,auto src, int length){
+	for(int i =0 ;i<length;i++){
+		dest[i]=src[i];
+	}
+}
+bool array_not_equall(auto arr1, auto arr2,int start, int finish){
+	for(int i =start;i<finish;i++){
+		if(arr1[i]!=arr2[i])
+			return true;
+	}
+	return false;
+}
 void write_trace(Voc8051_tb* top, std::ofstream& tracefile) {
-  static long int oldval = -1;
-  using namespace std;
-
-  if (oldval != (long int)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA]) {
-
-    std::cout << "addrs : " << (uint32_t) top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_ADDR] << std::endl;
-    std::cout << "values : " << (uint32_t) top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA] << std::endl;
-
-    oldval = (long int) top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA];
-    tracefile << oldval << std::endl;
-    ss << oldval;
-    ss << std::endl;
+  static long int oldval[2]={-1,-1};
+  long int *newval;
+  newval = (long int*)malloc(2);
+  newval[0]=main_time;
+  newval[1]=top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA];
+  if (array_not_equall(newval,oldval,1,num_lit)){
+	  trace1.push_back(newval);
+	  copy_array(oldval,newval,num_lit);
+	  cout << oldval[1] <<" newval " << newval[1] << endl;
+  }
+  if(newval[0]==14495){
+	  trace1.push_back(newval);
   }
 }
 
 
 
-vluint64_t main_time = 0;
 int clk = 0;
 // int temp;
 double sc_time_stamp() { return main_time; }
@@ -83,20 +126,131 @@ void valid_correction(Voc8051_tb* top, int init, int fin){
         i = next_instruction;
     }
 }
+#define TNEXT (_next)
+#define REG_NEXT(IDX) top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_ctr_i__DOT__reg##IDX##_next
+void aes_ctr_write(Voc8051_tb* top){
+  unsigned char in = 0;
+  tampf << "aes ctr next start\n";
+  std::cin >> in;
+  tampf << (unsigned int)in << "\n";
+  std::cout << std::dec << "write ctr[0]=" << std::hex << in << std::endl;
+  REG_NEXT(0) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  cout << in << endl;
+  REG_NEXT(1) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(2) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(3) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(4) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(5) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(6) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(7) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(8) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(9) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(10) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(11) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(12) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(13) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(14) = in;
+  std::cin >> in;
+  tampf <<  (unsigned int)in << "\n";
+  REG_NEXT(15) = in;
+  tampf << "aes ctr next end\n";
 
+}
+
+
+void aes_ctr_read(Voc8051_tb* top, int init, int fin){
+    for (int i = init; i<= fin; i++){
+        std::cout <<  "ctr[" << i << "]="
+                  << std::hex << "= " << int(top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_ctr[i])  << std::endl;
+
+    }
+    cout << hex << int(REG_NEXT(0)) << endl;
+    cout << hex << int(REG_NEXT(1)) << endl;
+    cout << hex << int(REG_NEXT(2)) << endl;
+    cout << hex << int(REG_NEXT(3)) << endl;
+    cout << hex << int(REG_NEXT(4)) << endl;
+    cout << hex << int(REG_NEXT(5)) << endl;
+    cout << hex << int(REG_NEXT(6)) << endl;
+    cout << hex << int(REG_NEXT(7)) << endl;
+    cout << hex << int(REG_NEXT(8)) << endl;
+    cout << hex << int(REG_NEXT(9)) << endl;
+    cout << hex << int(REG_NEXT(10)) << endl;
+    cout << hex << int(REG_NEXT(11)) << endl;
+    cout << hex << int(REG_NEXT(12)) << endl;
+    cout << hex << int(REG_NEXT(13)) << endl;
+    cout << hex << int(REG_NEXT(14)) << endl;
+    cout << hex << int(REG_NEXT(15)) << endl;
+
+    return;
+}
+void xram_write(Voc8051_tb* top, int init, int fin){
+    // std::ifstream infile;
+    unsigned char a;
+    int counter =0;
+    for (int i = init; i<= fin; i++){
+        std::cin >> a;
+        // a = a % 256;
+        counter++;
+        std::cout << std::dec << "xram[" << i << "]="
+                  << std::hex << (unsigned int )a << std::endl;
+
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[i] = (unsigned int)a;
+    }
+
+    return;
+}
+void xram_read(Voc8051_tb* top, int init, int fin){
+    for (int i = init; i<= fin; i++){
+        std::cout << std::dec << "ctr[" << i << "]="
+                  << std::hex << "= " << int(top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[i]) << std::endl;
+
+    }
+
+    return;
+}
 
 void tamper(Voc8051_tb* top, int init, int fin){
     std::ifstream infile;
     int a;
+    tampf << "tamper start\n";
     for (int i = init; i<= fin; i++){
         std::cin >> a;
         a = a % 256;
         std::cout << std::dec << "data[" << i << "]="
                   << std::hex << a << std::endl;
-
+	tampf << a << "\n";
         top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i] = (unsigned int)a;
     }
     valid_correction(top, init, fin);
+    tampf << "tamper end\n";
     return;
 }
 
@@ -121,7 +275,9 @@ int  wait(unsigned long delay, Voc8051_tb *top,  std::ofstream& tracefile){
         }
         top->oc8051_tb__DOT__clk = clk;
         top->eval();
-
+	if (351<top->oc8051_tb__DOT__oc8051_top_1__DOT__pc && 371 > top->oc8051_tb__DOT__oc8051_top_1__DOT__pc){
+		cout << "pc " << top->oc8051_tb__DOT__oc8051_top_1__DOT__pc<<endl;
+	}
         write_trace(top, tracefile);
 
         if (top->oc8051_tb__DOT__p0_out != p_zero){
@@ -196,14 +352,12 @@ void test(Voc8051_tb* top, int option,  std::ofstream& tracefile){
     std::cout << " " << std::hex << "block" << (int)block[0] << std::endl;
 
     new_test(top);
-
-
+    
     if (option == 1)
-      tamper(top,381,402);
+      tamper(top,351,371);
     // giving two byte buffer in case initial nop is operand or data for the previous instruction
     // 379 => 381
-
-
+    // aes_ctr_read(top,0,127);
     int r1 = wait(143950,top, tracefile);
     std::cout << "r1 " << r1 << std::endl;
 }
@@ -212,33 +366,39 @@ int main(int argc, char *argv[]) {
 
 
     // afl init
+    root1 = parse(p);
+    root2 = parse(p);// interchanging the traces
+    root1->display();
+    cout << endl;
     std::unique_ptr<Voc8051_tb> top = std::make_unique<Voc8051_tb>();
-    // std::unique_ptr<Voc8051_tb> top1 = std::make_unique<Voc8051_tb>();
 
     // afl init
     std::stringstream oldss;
     afl_init(&fid, &oldss);
-    // std::ofstream namefile(std::string("traces/trace_") + std::to_string(fid) + std::string(".txt"));
-    // fid = fid+1;
-    // namefile << "__Vchglast__TOP__oc8051_tb__DOT__oc8051_xiommu1__02Faes_top_i__02Faes_128_i__DOT__r9__t3__DOT__t0__out\n";
-    //namefile.close();
 
-    std::string traceFileName = std::string("traces/trace_") + std::to_string(fid) + std::string(".txt");
+    std::string traceFileName = std::string("traces/trace_") +  std::string(".txt");
     std::ofstream tracefile(traceFileName);
-
+    std::string tamperfilename = "tamper/tamper_" + std::to_string(fid);
 
     // read test input and simulate
-    test(top.get(), 0, tracefile);
-    Verilated::reset_verilator();
+    run_number = 1;
+    xram_write(top.get(),57344,57360);
+    aes_ctr_write(top.get());
+    //aes_ctr_read(top,0,7);
+
+
     test(top.get(), 1, tracefile);
+    cout << trace1.size() << endl;;
+    cout << "trace " << trace1[0][0] << " " << trace1[0][1]<<endl;;
+    aes_ctr_read(top.get(),0,7);
+    Verilated::reset_verilator();
+    cout << " checking property" << endl;
+    run_number = 2;
+    main_time=0;
+
+    //test(top.get(), 0, tracefile);
     tracefile << std::endl;
     tracefile.close();
-    if (ss.str()==oldss.str()){
-	    fid--;
-    }else{
-	    oldss.str(std::string());
-	    oldss << ss.rdbuf();
-    }
     // push coverage
     std::vector<uint32_t> coverageBins(
         opcode_tracker.size() + pc_tracker.size());
@@ -247,5 +407,13 @@ int main(int argc, char *argv[]) {
     std::copy(pc_tracker.begin(), pc_tracker.end(),
               coverageBins.begin() + opcode_tracker.size());
     afl_copy(coverageBins.data(), coverageBins.size());
+    if (!check_property()){
+            cout << "error " << check_property() << endl;
+            std::ofstream tamperfile(tamperfilename);
+            tamperfile << tampf.rdbuf();
+            tamperfile.close();
+            throw fid;
+    }
+
     return 0;
 }
