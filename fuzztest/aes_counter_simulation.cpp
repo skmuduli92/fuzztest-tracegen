@@ -13,6 +13,7 @@
 #include "afl.h"
 #include <memory>
 #include <sstream>
+#include<map>
 
 #include "coverage.h"
 #include "property_parser.h"
@@ -30,20 +31,67 @@ std::stringstream ss;
 static int run_number;
 std::stringstream tampf;
 std::vector<long int*> trace1,trace2;
+std::map<string, std::vector<long int*>> tracemap;
 char* tr_lit[] = {"cycle","good"};
 int num_lit = 2;
 Formula *root1;
 Formula *root2; // interchanging the traces
+// bool check_property(){
+//   long int *tr1, *tr2;
+//   if (trace1.size()!= trace2.size()){
+//     //throw fid;
+//   }
+//   for(std::vector<long int*>::size_type i =0;i!=trace1.size();i++){
+//     tr1 = trace1[i];
+//     cout << "trace "<< i <<endl;
+//     for( int j =0;j<num_lit;j++){
+// 	    cout <<dec << trace1[i][j] << " ";
+//     }
+//     cout << endl;
+//     //tr2 = trace2[i];
+//     if (root1->eval(tr1,tr2)){
+//       continue;
+//     }else{
+//       return false;
+//     }
+//   }
+// }
+
 bool check_property(){
-  long int *tr1, *tr2;
-  if (trace1.size()!= trace2.size()){
-    //throw fid;
-  }
-  for(std::vector<long int*>::size_type i =0;i!=trace1.size();i++){
-    tr1 = trace1[i];
-    cout << "trace "<< i <<endl;
+  long int *tr1, *tr2, *oldtr1;
+  tr1 = (long int*)malloc(num_lit);
+  oldtr1 = (long int*)malloc(num_lit);
+  cout << "length "<< tracemap[tr_lit[0]].size() << endl;
+  // return true;
+  for(std::vector<long int*>::size_type i =0;i!=tracemap[tr_lit[0]].size();i++){
+    tr1[0] = tracemap[tr_lit[0]][i][1];
+    oldtr1[0] = tr1[0];
+    if (i==0){
+      for (size_t j = 1; j < num_lit; j++) {
+        tr1[j] = tracemap[tr_lit[j]][0][1];
+        oldtr1[j] = tr1[j];
+        tracemap[tr_lit[j]].erase(tracemap[tr_lit[j]].begin());
+      }
+    }else{
+      for (size_t j = 1; j < num_lit; j++) {
+        if(tracemap[tr_lit[j]].empty()){
+          tr1[j] = oldtr1[j];
+        }else if (tracemap[tr_lit[j]][0][0]==tr1[0]){
+          tr1[j] = tracemap[tr_lit[j]][0][1];
+          oldtr1[j] = tr1[j];
+          tracemap[tr_lit[j]].erase(tracemap[tr_lit[j]].begin());
+        }else if (tracemap[tr_lit[j]][0][0]>tr1[0]){
+          tr1[j] = oldtr1[j];
+        }else{
+          std::cout << "error \n";
+        }
+      }
+    }
+
+    // tr1 = trace1[i];
+    cout << "trace "<< i << " " <<endl;
     for( int j =0;j<num_lit;j++){
-	    cout <<dec << trace1[i][j] << " ";
+	    cout <<dec << tr1[j] << " ";
     }
     cout << endl;
     //tr2 = trace2[i];
@@ -53,6 +101,7 @@ bool check_property(){
       return false;
     }
   }
+  return true;
 }
 void copy_array(auto dest,auto src, int length){
 	for(int i =0 ;i<length;i++){
@@ -68,19 +117,59 @@ bool array_not_equall(auto arr1, auto arr2,int start, int finish){
 }
 void write_trace(Voc8051_tb* top, std::ofstream& tracefile) {
   static long int oldval[2]={-1,-1};
-  long int *newval;
+  bool time_pushed = false;
+  long int *newval, *newtouple, *cycle;
+  cycle = (long int*)malloc(2);
+  cycle[0] = cycle[1] = main_time;
   newval = (long int*)malloc(2);
   newval[0]=main_time;
   newval[1]=top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA];
-  if (array_not_equall(newval,oldval,1,num_lit)){
-	  trace1.push_back(newval);
-	  copy_array(oldval,newval,num_lit);
-	  cout << oldval[1] <<" newval " << newval[1] << endl;
+  if (tracemap.empty() || newval[0]==14495){
+    cout << "tracemap empty \n";
+    for (size_t i = 1; i < num_lit; i++) {
+      newtouple = (long int*)malloc(2);
+      newtouple[1] = main_time;
+      newtouple[0] = newval[i];
+      tracemap[tr_lit[i]].push_back(newval);
+      if(!time_pushed){
+        tracemap[tr_lit[0]].push_back(cycle);
+        time_pushed = true;
+      }
+    }
+  }else{
+    for (size_t i = 1; i < num_lit; i++) {
+      newtouple = (long int*)malloc(2);
+      newtouple[0] = main_time;
+      newtouple[1] = newval[i];
+      if (newval[i]!= tracemap[tr_lit[i]].back()[1]){
+        cout << "newval " << newval[i] << " "<< tracemap[tr_lit[i]].back()[1] << endl;
+        tracemap[tr_lit[i]].push_back(newtouple);
+        if(!time_pushed){
+          tracemap[tr_lit[0]].push_back(cycle);
+          time_pushed = true;
+        }
+      }else{
+        delete newtouple;
+      }
+    }
   }
-  if(newval[0]==14495){
-	  trace1.push_back(newval);
-  }
+  delete newval;
 }
+// void write_trace(Voc8051_tb* top, std::ofstream& tracefile) {
+//   static long int oldval[2]={-1,-1};
+//   long int *newval;
+//   newval = (long int*)malloc(2);
+//   newval[0]=main_time;
+//   newval[1]=top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA];
+//   if (array_not_equall(newval,oldval,1,num_lit)){
+// 	  trace1.push_back(newval);
+// 	  copy_array(oldval,newval,num_lit);
+// 	  cout << oldval[1] <<" newval " << newval[1] << endl;
+//   }
+//   if(newval[0]==14495){
+// 	  trace1.push_back(newval);
+//   }
+// }
 
 
 
@@ -275,18 +364,20 @@ int  wait(unsigned long delay, Voc8051_tb *top,  std::ofstream& tracefile){
         }
         top->oc8051_tb__DOT__clk = clk;
         top->eval();
-	if (351<top->oc8051_tb__DOT__oc8051_top_1__DOT__pc && 371 > top->oc8051_tb__DOT__oc8051_top_1__DOT__pc){
-		cout << "pc " << top->oc8051_tb__DOT__oc8051_top_1__DOT__pc<<endl;
-	}
+
         write_trace(top, tracefile);
 
-        if (top->oc8051_tb__DOT__p0_out != p_zero){
-            if(top->oc8051_tb__DOT__p0_out == 0xde){
-                a = p_zero;
-            }
-            p_zero = top->oc8051_tb__DOT__p0_out;
-            //std::cout << p_zero << std::endl;
-        }
+
+        // if (a != top->oc8051_tb__DOT__data_out ||
+        //     b != top->oc8051_tb__DOT__oc8051_top_1__DOT__wr_addr ||
+        //     c != top->oc8051_tb__DOT__stb_o ||
+        //     d != top->oc8051_tb__DOT__ack_i        ){
+        //       std::cout << "write data, addr, stb, ack "<< std::hex << a << " " << b << " " << c << " " << d << std::endl;
+        //       a = top->oc8051_tb__DOT__data_out;
+        //       b = top->oc8051_tb__DOT__oc8051_top_1__DOT__wr_addr;
+        //       c = top->oc8051_tb__DOT__stb_o;
+        //       d = top->oc8051_tb__DOT__ack_i;
+        //     }
         if (p0 != top->oc8051_tb__DOT__p0_out ||
             p1 != top->oc8051_tb__DOT__p1_out ||
             p2 != top->oc8051_tb__DOT__p2_out ||
@@ -352,7 +443,7 @@ void test(Voc8051_tb* top, int option,  std::ofstream& tracefile){
     std::cout << " " << std::hex << "block" << (int)block[0] << std::endl;
 
     new_test(top);
-    
+
     if (option == 1)
       tamper(top,351,371);
     // giving two byte buffer in case initial nop is operand or data for the previous instruction
@@ -360,6 +451,7 @@ void test(Voc8051_tb* top, int option,  std::ofstream& tracefile){
     // aes_ctr_read(top,0,127);
     int r1 = wait(143950,top, tracefile);
     std::cout << "r1 " << r1 << std::endl;
+
 }
 
 int main(int argc, char *argv[]) {
@@ -388,8 +480,9 @@ int main(int argc, char *argv[]) {
 
 
     test(top.get(), 1, tracefile);
+
     cout << trace1.size() << endl;;
-    cout << "trace " << trace1[0][0] << " " << trace1[0][1]<<endl;;
+    // cout << "trace " << trace1[0][0] << " " << trace1[0][1]<<endl;;
     aes_ctr_read(top.get(),0,7);
     Verilated::reset_verilator();
     cout << " checking property" << endl;
@@ -408,7 +501,7 @@ int main(int argc, char *argv[]) {
               coverageBins.begin() + opcode_tracker.size());
     afl_copy(coverageBins.data(), coverageBins.size());
     if (!check_property()){
-            cout << "error " << check_property() << endl;
+            cout << "error property not satisfied " << check_property() << endl;
             std::ofstream tamperfile(tamperfilename);
             tamperfile << tampf.rdbuf();
             tamperfile.close();
