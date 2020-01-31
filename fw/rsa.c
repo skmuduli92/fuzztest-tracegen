@@ -110,7 +110,7 @@ void load(unsigned char* data, unsigned int length, unsigned char* startaddr, un
             for ( i = 0; i < length; i++) {
                   startaddr[i] = data[i];
             }
-            //P0 = 0xaf;
+            // P0 = 0xaf;
             return;
       }
 
@@ -147,7 +147,9 @@ void sha1(unsigned char *m, unsigned int len)
     unsigned int i;
     unsigned int mlen;
 
-
+    // for ( k = 0; k < len; k++) {
+    //   P1 = m[k];
+    // }
     // addresses have changed
     if(sha_regs.rd_addr != sha_m || sha_regs.wr_addr != hash)
     {
@@ -162,14 +164,24 @@ void sha1(unsigned char *m, unsigned int len)
 
     if(m != sha_m && len > 0) // don't copy if already in right address
       load(m,len,sha_m,0);
-
+    // for ( k = 0;mlen==320 && k < len; k++) {
+    //   P1 = sha_m[k];
+    //   P1 = 1;
+    // }
+	//writecarr(pshai, sha_m, m, len);
+// To check whether the loaded data is same as module[1]
+// if(len == 184){
+//       for ( i = 0; i < len; i++) {
+//             P2 = sha_m[i];
+//       }
+// }
     // add 100.. padding
     writec(pshai, sha_m+len, 0x80, 1);
-unlock_wr(sha_m+len,sha_m+mlen);
+    unlock_wr(sha_m+len,sha_m+mlen);
     for(i=len+1; i<mlen; i++)
     {
           sha_m[i] = 0;
-          //writec(pshai, sha_m+i, 0, 1);
+          // writec(pshai, sha_m+i, 0, 1);
    }
 
 
@@ -186,7 +198,9 @@ unlock_wr(sha_m+len,sha_m+mlen);
     writei(SHA, &sha_regs.len, mlen);
     writec(SHA, &sha_regs.start, 1, 1);  // start HW
     c_sha(len);         // do SW
-
+    P1 = 0xff;
+    // P1 = mlen;
+    // P1 = mlen>>8;
     while(sha_regs.state != 0);
 
     lock(SHA, &sha_regs.start, (unsigned char*)(&sha_regs.len));

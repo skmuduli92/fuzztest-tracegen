@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-cd ../sim
-make
 cd ../fw
 sdcc -c rsa.c
 sdcc secureboot.c rsa.rel
 python3 ../scripts/gen_text.py secureboot.ihx ../rom/secureboot.dat
-sdcc aes_test.c
+# sdcc aes_test.c
 python ../scripts/bootgen.py aes_test.ihx
-cd ../sim
-./sim ../rom/secureboot.dat ../fw/prog.hex
+cd ../fuzztest
+make
+./sim < afl-in/11.txt
+# cd ../sim
+# ./sim ../rom/secureboot.dat ../fw/prog.hex
