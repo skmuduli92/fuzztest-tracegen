@@ -45,8 +45,8 @@ struct image{
 
 enum status{
     UNDET,
-    FAIL,
-    PASS
+    PASS,
+    FAIL
 };
 
 //public key hash
@@ -104,17 +104,14 @@ void main() {
 
 
     if(!RSAinit(rsa_out, sha_in, sha_out)){
-	pass = FAIL;
-  //P0 = 0xaf;
-	fail("invalid input/output addresses");
-	return;
+    	pass = FAIL;
+    	fail("invalid input/output addresses");
+    	return;
     }
 
     // STAGE 1: read image into RAM
     unlock(pages[BOOT], boot, boot+MAX_IM_SIZE);
-    P0 = 0x00;
     // load(0, MAX_IM_SIZE, boot, 0);
-    P0 = 0x00;
     // image is loaded.
     // now we need to lock boot to boot + MAX_IM_SIZE
     lock(pages[BOOT], boot, boot+MAX_IM_SIZE);
@@ -122,19 +119,6 @@ void main() {
 
     // STAGE 2: check that key matches hash
     im  = (struct image*) boot;
-
-    /*for(i=0; i<N; i++){
-          P1 = im->mod[i];
-   }
-
-
-
-
-    // set signature key
-    for(i=0; i<N; i++){
-          P0 = im->exp[i];
-   }*/
-
     // set signature key
     unlock(RSA_KEYS, rsa_regs.exp, rsa_regs.exp+N);
     load(im->exp,N,rsa_regs.exp,0);
@@ -151,14 +135,11 @@ void main() {
     sha1(rsa_regs.exp, 2*N);
 
     for(i=0; i<H; i++){
-      P0 = sha_out[i];
-      P0 = pkhash[i];
-	if(sha_out[i] != pkhash[i]){
-	    pass = FAIL;  // FAIL: key hash mismatch
-      P0 = 11;
-	    fail("key hash mismatch");
-	    return;
-	}
+    	if(sha_out[i] != pkhash[i]){
+    	    pass = FAIL;  // FAIL: key hash mismatch
+    	    fail("key hash mismatch");
+    	    return;
+    	}
     }
 
     // STAGE 3: verify signature in boot
@@ -169,35 +150,28 @@ void main() {
 
     if(size > MAX_IM_SIZE)
     {
-	pass = FAIL; // FAIL: image too large
-	fail("header too large");
-  //P0 = 12;
-	return;
+    	pass = FAIL; // FAIL: image too large
+    	fail("header too large");
+    	return;
     }
 
 
     if(!verifySignature(im->exp, size, im->sig))
-
     {
-	pass = FAIL;  // FAIL: signature mismatch
-	fail("signature mismatch");
-  //P0 = 13;
-	return;
+    	pass = FAIL;  // FAIL: signature mismatch
+    	fail("signature mismatch");
+    	return;
     }
-
-
     // STAGE 4: load blocks
     if(num == 0){  // no blocks to load, done
-	pass = PASS;
-  //P0 = 14;
-	return;
+    	pass = PASS;
+    	return;
     }
 
     unlock(pages[PRG], program, program + MAX_PRG_SIZE);  // unlock memory space for program
     block = im->module;  // block data in header
     moddata = (unsigned char*)(block + num); // program data of this module
     size = 0;
-//P0 = num;
     for(i=0; i<num; i++)
     {
 
@@ -214,7 +188,6 @@ void main() {
       	{
       	    //addr_val = 0;
       	    pass = FAIL;
-            P0 = 0x15;
       	    fail("data does not fit in image");
       	    return;
       	}
@@ -224,7 +197,6 @@ void main() {
       	{
       	    //addr_val = 0;
       	    pass = FAIL;
-            P0 = 0x16;
       	    fail("program write out of range");
       	    return;
       	}
@@ -234,15 +206,6 @@ void main() {
       	    load(moddata, size, program+ldaddr, 0);
       	}
 
-            // P1 = size;
-            // P1 = size>>8;
-            // if (i==0) {
-              // P2 = 0xff;
-              // P2 =*(program+ldaddr);
-              // P2 = *(moddata);
-              // P3 = ldaddr;
-              // P3 = ldaddr>>8;
-            // }
 
       	// update to next module
       	moddata += size;
@@ -263,53 +226,36 @@ void main() {
         unsigned char *m;
       	size = block->size & 0xFFFF;     // size of current module
       	ldaddr = block->addr;   // address to load this module into
-        P0 = 0;
 	      sha1(program+ldaddr, size);
 
         m = program+ldaddr;
 
       	for(j=0; j<H; j++){
       	    if(sha_out[j] != block->hash[j]){
-      		pass = FAIL;
-
-                  P0 = 0x17;
-                  P2 = block->hash[j];
-                  // P1 = sha_out[j];
-                  P0 = i;
-                  // P1 = sha_out[j];
-      		fail("module hash mismatch");
-      		return;
+          		pass = FAIL;
+          		fail("module hash mismatch");
+          		return;
       	    }
+	     }
 
-
-	   }
-
-	// update to next module
-	moddata += size;
-	block++;
+  	// update to next module
+      	moddata += size;
+      	block++;
     }
 
     // check that program loaded correctly, for testing only
     for(i=0; i<moddata-(unsigned char*)block; i++){
-	//P0 = program[i];
-	if(program[i] != *((unsigned char*)block + i)){
-	    pass = FAIL;  // FAIL
-      //P0 = 18;
-	    fail("load is wrong");
-	    break;
-	}
+    	if(program[i] != *((unsigned char*)block + i)){
+    	    pass = FAIL;  // FAIL
+    	    fail("load is wrong");
+    	    break;
+    	}
     }
 
     // PASS or FAIL
     if(pass != FAIL){
 	       pass = PASS;
-         P0 = 0x19;
     }
-    //unlock_wr(boot, boot+MAX_IM_SIZE);
-    //unlock_wr((unsigned char*)&sha_regs.rd_addr, (unsigned char*)(&sha_regs.rd_addr+1));
-    //unlock_wr((unsigned char*)&sha_regs.wr_addr, (unsigned char*)(&sha_regs.wr_addr+1));
-    //unlock_wr((unsigned char*)&rsa_regs.opaddr, (unsigned char*)(&rsa_regs.opaddr+1));
-
     P0 = pass;
 
     quit();

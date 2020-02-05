@@ -7,6 +7,6 @@ python3 ../scripts/gen_text.py secureboot.ihx ../rom/secureboot.dat
 python ../scripts/bootgen.py aes_test.ihx
 cd ../fuzztest
 make
-./sim < afl-in/11.txt
+time ./sim < afl-in/11.txt
 # cd ../sim
 # ./sim ../rom/secureboot.dat ../fw/prog.hex

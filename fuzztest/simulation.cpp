@@ -109,7 +109,7 @@ void valid_correction(Voc8051_tb* top, int init, int fin){
 	    }
 	    break;
 	}
-	
+
 	i = next_instruction;
     }
 }
@@ -121,7 +121,7 @@ void tamper(Voc8051_tb* top, int init, int fin){
     for (int i = init; i<= fin; i++){
 	std::cin >> a;
 	a = a % 256;
-	std::cout << std::dec << "data[" << i << "]=" 
+	std::cout << std::dec << "data[" << i << "]="
 		  << std::hex << a << std::endl;
 
 	top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i] = (unsigned int)a;
@@ -152,7 +152,7 @@ int  wait(unsigned long delay, Voc8051_tb *top,  std::ofstream& tracefile){
 	top->oc8051_tb__DOT__clk = clk;
 	top->eval();
 
-	write_trace(top, tracefile);	
+	write_trace(top, tracefile);
 
 	if (top->oc8051_tb__DOT__p0_out != p_zero){
 	    if(top->oc8051_tb__DOT__p0_out == 0xde){
@@ -198,7 +198,7 @@ void new_test(Voc8051_tb *top){
     std::cout << "LOG: **INSIDE NEW TEST" << std::endl;
     int counter = 0 ;
     int num_buff,a,b;
-    
+
     std::ifstream infile;
 
     //    infile.open("secureboot");
@@ -217,16 +217,16 @@ void new_test(Voc8051_tb *top){
     for (;num_buff<10000;num_buff++){
 	top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[num_buff] = 0U;
     }
-    
+
     infile.close();
 
     std::cout << "LOG: ** finished writing data to xrom" << std::endl;
 
     // writing data to FSM_WRITER buffers
 
-    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_addr = FSM_WR_ADDR;
+    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_addr[0] = FSM_WR_ADDR;
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_delay[0] = 0X04;
-    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_data[0] = 10;
+    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_data[0] = 20;
 
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_delay[1] = 0x02;
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_data[1] = 0xDF;
@@ -260,12 +260,12 @@ void test(Voc8051_tb* top, int option,  std::ofstream& tracefile){
 	std::cout << "error reset top "  << std::endl;
 	return;
     }
-    
+
     CData *block = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__block;
     std::cout << " " << std::hex << "block" << (int)block[0] << std::endl;
 
     new_test(top);
-    
+
     //if (option == 1)
     // giving two byte buffer in case initial nop is operand or data for the previous instruction
     // 379 => 381
