@@ -1,19 +1,28 @@
-//
-// Created by sujit on 19/02/20.
-//
 
 #ifndef PROPERTYPARSER_PROBMODEL_H
 #define PROPERTYPARSER_PROBMODEL_H
 
 #include <random>
 
+
+////////////////////////////////////////////////////////////////////////////
+// NOTE:								  //
+//  - Functionlities current support only unsigned integers		  //
+//  - Number is draw from a uniform-distrubution and it doesn't guarantee //
+//    the outcome to satisfy the exact probability distribution provided. //
+////////////////////////////////////////////////////////////////////////////
+
+
 class ProbModel {
 public:
 
     ProbModel();
-    int prob80();
-    int probM(int num);
-    int nWithProbM(int num, int prob);
+    unsigned prob80();
+    unsigned probM(unsigned num);
+							      
+    unsigned nWithProbM(unsigned, unsigned);
+    unsigned findMaxBound(unsigned);
+    unsigned countDigits(unsigned);
 
 private:
     std::random_device rd;
