@@ -6,6 +6,10 @@
 
 void genPositiveTest(long* trace1, long* trace2, unsigned traceLength) {
 
+    for (unsigned idx; idx < traceLength; ++idx) {
+
+    }
+
 }
 
 void genNegativeTest(long* trace1, long* trace2, unsigned traceLength) {
@@ -16,8 +20,9 @@ void testSimpleLTLProp() {
 
     num_lit = 1;
     tr_lit.emplace_back("x");
+
     // property : whenever (1.x > 10), then (2.x > 10)
-    char prop[] = "(IMPLIES (GEQ (1.x) (10)) (GEQ (2.x) (10)))";
+    char prop[] = "(G (IMPLIES (GEQ (1.x) (10)) (GEQ (2.x) (10))))";
 
     std::cout << "=========== TEST SIMPLE LTL PROP ===========" << std::endl;
     Formula *formula = parse(prop);
