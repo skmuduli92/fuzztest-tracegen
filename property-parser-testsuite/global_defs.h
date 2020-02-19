@@ -1,6 +1,3 @@
-//
-// Created by sujit on 19/02/20.
-//
 
 #ifndef PROPERTYPARSER_GLOBAL_DEFS_H
 #define PROPERTYPARSER_GLOBAL_DEFS_H

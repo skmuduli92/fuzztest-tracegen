@@ -1,10 +1,3 @@
-//
-// Created by sujit on 19/02/20.
-//
-
-
-// TODO : error handling mechnaism for property parser
-//        1 - should throw error for wrong TEMPORAL, LOGICAL, RELATIONAL OPERATORS
 
 #include "property_parser.h"
 
