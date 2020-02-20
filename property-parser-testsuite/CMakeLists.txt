@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.15)
-project(PropertyParser)
+cmake_minimum_required(VERSION 2.8.11)
+project(test_property_parser)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -38,6 +38,6 @@ endif()
 include_directories(.)
 include_directories(cmake-build-debug/googletest-src/googletest/include)
 include_directories(cmake-build-debug/googletest-src/googlemock/include)
-add_executable(PropertyParser main.cpp test_simpleLTL.cpp parser_utils.cpp global_defs.h prob-models/ProbModel.cpp prob-models/ProbModel.h )
-target_link_libraries(PropertyParser gtest gtest_main)
+add_executable(test_property_parser main.cpp test_simpleLTL.cpp parser_utils.cpp global_defs.h prob-models/ProbModel.cpp prob-models/ProbModel.h )
+target_link_libraries(test_property_parser gtest gtest_main)
 #add_test(NAME property_parser_test COMMAND PropertyParser)
