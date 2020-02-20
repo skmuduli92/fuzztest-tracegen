@@ -5,5 +5,4 @@
 extern std::vector<std::string> tr_lit;
 extern int num_lit;
 
-
 #endif //PROPERTYPARSER_GLOBAL_DEFS_H

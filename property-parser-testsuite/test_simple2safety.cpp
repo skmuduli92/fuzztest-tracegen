@@ -20,8 +20,7 @@ TEST(PropertyParserTest, ValidTrace) {
     ProbModel pm;
     for (unsigned idx = 0; idx < traceLength; ++idx) {
         if (pm.probM(20)) {
-            trace1[idx] = 11;
-            trace2[idx] = 0;
+            trace1[idx] = trace2[idx] = 11;
         }
         else {
             trace1[idx] = trace2[idx] = 0;
@@ -29,7 +28,7 @@ TEST(PropertyParserTest, ValidTrace) {
     }
 
     EXPECT_TRUE(formula->eval(trace1.get(), trace2.get()));
-    
+
     if(HasFailure()) {
         std::cout << "Trace-1 : ";
         for (unsigned idx = 0; idx < traceLength; ++idx) {
