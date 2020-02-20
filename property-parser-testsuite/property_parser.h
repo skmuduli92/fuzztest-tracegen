@@ -6,6 +6,7 @@
 #include<string.h>
 #include<assert.h>
 #include<vector>
+#include <memory>
 
 #include "global_defs.h"
 
@@ -410,5 +411,5 @@ public:
 
 Formula* parse(char* f);
 
-void printTraces(const long *trace1, const long *trace2, unsigned traceLength);
+void printTraces(const std::unique_ptr<long[]>& trace1, const std::unique_ptr<long[]>& trace2, unsigned traceLength);
 #endif

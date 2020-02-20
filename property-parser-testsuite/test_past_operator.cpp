@@ -36,7 +36,7 @@ TEST(PropertyParserTest, ValidTracePastOperator) {
 
     EXPECT_TRUE(formula->eval(trace1.get(), trace2.get()));
     if (HasFailure())
-        printTraces(trace1.get(), trace2.get(), traceLength);
+        printTraces(trace1, trace2, traceLength);
 
     // TODO: print traces on failure
 }

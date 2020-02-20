@@ -255,7 +255,7 @@ Formula* parse(char* f) {
 }
 
 
-void printTraces(const long *trace1, const long *trace2, unsigned traceLength) {
+void printTraces(const std::unique_ptr<long[]>& trace1, const std::unique_ptr<long[]>& trace2, unsigned traceLength) {
     std::cout << "Trace-1 : ";
     for (unsigned idx = 0; idx < traceLength; ++idx) {
         std::cout << trace1[idx] << ", ";
