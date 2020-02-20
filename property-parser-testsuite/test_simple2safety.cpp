@@ -34,7 +34,7 @@ TEST(PropertyParserTest, ValidTrace) {
     }
 }
 
-TEST(PropertyParserTest, InValidTrace) {
+TEST(PropertyParserTest, InvalidTrace) {
 
     num_lit = 1;
     tr_lit.emplace_back("x");
