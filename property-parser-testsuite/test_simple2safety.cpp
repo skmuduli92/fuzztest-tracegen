@@ -30,16 +30,7 @@ TEST(PropertyParserTest, ValidTrace) {
     EXPECT_TRUE(formula->eval(trace1.get(), trace2.get()));
 
     if(HasFailure()) {
-        std::cout << "Trace-1 : ";
-        for (unsigned idx = 0; idx < traceLength; ++idx) {
-            std::cout << trace1[idx] << ", ";
-        }
-        std::cout << "\n";
-        std::cout << "Trace-2 : ";
-        for (unsigned idx = 0; idx < traceLength; ++idx) {
-            std::cout << trace2[idx] << ", ";
-        }
-        std::cout << "\n\n";
+        printTraces(trace1.get(), trace2.get(), traceLength);
     }
 }
 
@@ -68,15 +59,6 @@ TEST(PropertyParserTest, InValidTrace) {
     EXPECT_FALSE(formula->eval(trace1.get(), trace2.get()));
 
     if(HasFailure()) {
-        std::cout << "Trace-1 : ";
-        for (unsigned idx = 0; idx < traceLength; ++idx) {
-            std::cout << trace1[idx] << ", ";
-        }
-        std::cout << "\n";
-        std::cout << "Trace-2 : ";
-        for (unsigned idx = 0; idx < traceLength; ++idx) {
-            std::cout << trace2[idx] << ", ";
-        }
-        std::cout << "\n\n";
+        printTraces(trace1.get(), trace2.get(), traceLength);
     }
 }

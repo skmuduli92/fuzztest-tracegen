@@ -410,4 +410,5 @@ public:
 
 Formula* parse(char* f);
 
+void printTraces(const long *trace1, const long *trace2, unsigned traceLength);
 #endif

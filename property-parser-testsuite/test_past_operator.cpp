@@ -27,9 +27,13 @@ TEST(PropertyParserTest, ValidTracePastOperator) {
             trace2[idx] = 0;
         }
         else {
-            trace1[idx] = trace2[idx] = 0;
+            trace1[idx] = 0;
+            trace2[idx] = 11;
         }
     }
 
-    EXPECT_TRUE(true); // TODO: complete past operator testing, allowing to pass for now
+    bool result = formula->eval(trace1.get(), trace2.get());
+    EXPECT_TRUE(result);
+
+    // TODO: print traces on failure
 }

@@ -253,3 +253,17 @@ Formula* parse(char* f) {
 
     return node;
 }
+
+
+void printTraces(const long *trace1, const long *trace2, unsigned traceLength) {
+    std::cout << "Trace-1 : ";
+    for (unsigned idx = 0; idx < traceLength; ++idx) {
+        std::cout << trace1[idx] << ", ";
+    }
+    std::cout << "\n";
+    std::cout << "Trace-2 : ";
+    for (unsigned idx = 0; idx < traceLength; ++idx) {
+        std::cout << trace2[idx] << ", ";
+    }
+    std::cout << "\n\n";
+}
