@@ -1,7 +1,7 @@
 
 #include <memory>
 #include "property_parser.h"
-#include "ProbModel.h"
+#include "probmodel.h"
 
 #include <gtest/gtest.h>
 

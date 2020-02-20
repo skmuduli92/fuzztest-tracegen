@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include "ProbModel.h"
+#include "probmodel.h"
 
 
 unsigned ProbModel::prob80() {
