@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.10)
 project(test_property_parser)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -39,5 +39,11 @@ include_directories(.)
 include_directories(cmake-build-debug/googletest-src/googletest/include)
 include_directories(cmake-build-debug/googletest-src/googlemock/include)
 
-add_executable(test_property_parser main.cpp test_simple2safety.cpp parser_utils.cpp global_defs.h prob-models/ProbModel.cpp prob-models/ProbModel.h test_past_operator.cpp)
+add_executable(test_property_parser
+        main.cpp
+        test_simple2safety.cpp
+        parser_utils.cpp
+        global_defs.h prob-models/ProbModel.cpp prob-models/ProbModel.h
+        test_past_operator.cpp)
+
 target_link_libraries(test_property_parser gtest gtest_main)
