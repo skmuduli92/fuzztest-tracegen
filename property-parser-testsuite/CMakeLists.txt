@@ -44,6 +44,6 @@ add_executable(test_property_parser
         test_simple2safety.cpp
         parser_utils.cpp
         global_defs.h prob-models/ProbModel.cpp prob-models/ProbModel.h
-        test_past_operator.cpp)
+        test_once_operator.cpp)
 
 target_link_libraries(test_property_parser gtest gtest_main)
