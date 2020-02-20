@@ -35,15 +35,15 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
     include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
-include_directories(.)
+include_directories(include)
 include_directories(cmake-build-debug/googletest-src/googletest/include)
 include_directories(cmake-build-debug/googletest-src/googlemock/include)
 
 add_executable(test_property_parser
-        main.cpp
-        test_simple2safety.cpp
-        parser_utils.cpp
-        global_defs.h prob-models/ProbModel.cpp prob-models/ProbModel.h
-        test_once_operator.cpp)
+        src/main.cpp
+        src/test_simple2safety.cpp
+        src/parser_utils.cpp
+        src/ProbModel.cpp
+        src/test_once_operator.cpp)
 
 target_link_libraries(test_property_parser gtest gtest_main)
