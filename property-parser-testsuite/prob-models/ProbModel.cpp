@@ -24,7 +24,7 @@ unsigned ProbModel::probM(unsigned num) {
     return (dis(gen) <= num)? 1: 0;
 }
 
-unsigned ProbModel::countDigits(unsigned num) {    
+unsigned ProbModel::countDigits(unsigned num) {
     return snprintf(NULL, 0, "%u", num);
 }
 
@@ -34,8 +34,8 @@ unsigned ProbModel::findMaxBound(unsigned num) {
     unsigned maxBound = 1;
 
     while (((maxBound * 10) % 10 == 0) && (numDigits--))
-	maxBound = maxBound * 10;
-    
+        maxBound = maxBound * 10;
+
     return maxBound;
 }
 
@@ -43,12 +43,17 @@ unsigned ProbModel::nWithProbM(unsigned num, unsigned prob) {
 
     unsigned maxBound = findMaxBound(num);
 
+    // TODO: use the binary prob distribution to generate the supplied num
+    //       if the generated number 1 then return the supplied number, else
+    //       keep on drawing from another distribution until you get a number
+    //       other than the supplied number.
+
     if (maxBound < num) {
-	std::cerr << "Error: 'num' should be less than or equal to "
-		  << findMaxBound(std::numeric_limits<unsigned>::max())
-		  << std::endl;
-	
-	exit(1);
+        std::cerr << "Error: 'num' should be less than or equal to "
+                  << findMaxBound(std::numeric_limits<unsigned>::max())
+                  << std::endl;
+
+        exit(1);
     }
 
 

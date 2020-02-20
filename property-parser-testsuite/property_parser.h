@@ -38,11 +38,11 @@ public:
         return op;
     }
 
-    virtual bool eval(long int* temp1, long int* temp2){
+    virtual bool eval(const long* temp1, const long* temp2) const {
         return true;
     }
 
-    virtual int value(long int* temp1, long int* temp2){
+    virtual int value(const long* temp1, const long* temp2){
         return 0;
     }
 
@@ -55,7 +55,7 @@ public:
 class TRUE : public Formula {
 
 public:
-    virtual bool eval(long int* trace1, long int* trace2){
+    virtual bool eval(const long* trace1, const long* trace2){
         return true;
     }
 
@@ -72,7 +72,7 @@ public:
 
     CONSTANT(int i) : const_val(i) {}
 
-    int value(long int* trace1, long int* trace2){
+    int value(const long* trace1, const long* trace2){
         return const_val;
     }
 
@@ -91,7 +91,7 @@ public:
         tr_num = j;
     }
 
-    int value(long int* trace1, long int* trace2){
+    int value(const long* trace1, const long* trace2){
         if(tr_num==1){
             return trace1[lit_i];
         }else if (tr_num==2){
@@ -117,7 +117,7 @@ public:
         res = false;
     }
 
-    virtual bool eval(long int* trace1, long int* trace2){
+    virtual bool eval(const long* trace1, const long* trace2){
         res = old;
         old = child[0]->eval(trace1, trace2);
         return res;
@@ -142,7 +142,7 @@ public:
         res = true;
     }
 
-    virtual bool eval(long int* trace1, long int* trace2) {
+    virtual bool eval(const long* trace1, const long* trace2) {
         res = old;
         old = child[0]->eval(trace1, trace2);
         return res;
@@ -164,7 +164,7 @@ public:
         past = false;
     }
 
-    virtual bool eval(long int* trace1, long int* trace2) {
+    virtual bool eval(const long* trace1, const long* trace2) {
         past = past?true:child[0]->eval(trace1, trace2);
         return past;
     }
@@ -184,7 +184,7 @@ public:
         past = true;
     }
 
-    virtual bool eval(long int* trace1, long int* trace2) {
+    virtual bool eval(const long* trace1, const long* trace2) {
         past = past?child[0]->eval(trace1, trace2):false;
         return past;
     }
@@ -205,7 +205,7 @@ public:
         res = false;
     }
 
-    virtual bool eval(long int* trace1, long int* trace2){
+    virtual bool eval(const long* trace1, const long* trace2){
         if (child[1]->eval(trace1, trace2)) {
             res = true;
         }else if(res) {
@@ -231,7 +231,7 @@ public:
     NOT(){ // constructor
     }
 
-    virtual bool eval(long int* trace1, long int* trace2){
+    virtual bool eval(const long* trace1, const long* trace2){
         val = !child[0]->eval(trace1, trace2);
         return val;
     }
@@ -247,7 +247,7 @@ public:
 class AND : public Formula {
 public:
 
-    virtual bool eval(long int* trace1, long int* trace2){
+    virtual bool eval(const long* trace1, const long* trace2){
         val = child[1]->eval(trace1, trace2) & child[0]->eval(trace1, trace2);
         return val;
     }
@@ -265,7 +265,7 @@ public:
 class OR : public Formula{
 public:
 
-    virtual bool eval(long int* trace1, long int* trace2) {
+    virtual bool eval(const long* trace1, const long* trace2) {
         val = child[1]->eval(trace1, trace2) | child[0]->eval(trace1, trace2);
         return val;
     }
@@ -282,7 +282,7 @@ public:
 class IMPLIES : public Formula{
 public:
 
-    virtual bool eval(long int* trace1, long int* trace2) {
+    virtual bool eval(const long* trace1, const long* trace2) {
         if (child[0]->eval(trace1,trace2) && !child[1]->eval(trace1,trace2))
             return false;
         return true;
@@ -300,7 +300,7 @@ public:
 class EQL : public Formula{
 public:
 
-    virtual bool eval(long int* trace1, long int* trace2){
+    virtual bool eval(const long* trace1, const long* trace2){
         val = (child[0]->value(trace1, trace2) == child[1]->value(trace1, trace2));
         // cout << child[0]->value(trace1, trace2) << " " << child[1]->value(trace1, trace2) <<endl;
         return val;
@@ -318,7 +318,7 @@ public:
 class LEQ : public Formula{
 public:
 
-    virtual bool eval(long int* trace1, long int* trace2){
+    virtual bool eval(const long* trace1, const long* trace2){
         val = (child[0]->value(trace1, trace2) <= child[1]->value(trace1, trace2));
         // cout << child[0]->value(trace1, trace2) << " " << child[1]->value(trace1, trace2) <<endl;
         return val;
@@ -337,7 +337,7 @@ public:
 class GEQ : public Formula{
 public:
 
-    virtual bool eval(long int* trace1, long int* trace2){
+    virtual bool eval(const long* trace1, const long* trace2){
         val = (child[0]->value(trace1, trace2) >= child[1]->value(trace1, trace2));
         // cout << child[0]->value(trace1, trace2) << " " << child[1]->value(trace1, trace2) <<endl;
         return val;
@@ -354,7 +354,7 @@ public:
 
 class GREATER : public Formula{
 public:
-    virtual bool eval(long int* trace1, long int* trace2){
+    virtual bool eval(const long* trace1, const long* trace2){
         val = (child[0]->value(trace1, trace2) > child[1]->value(trace1, trace2));
         // cout << child[0]->value(trace1, trace2) << " " << child[1]->value(trace1, trace2) <<endl;
         return val;
@@ -371,9 +371,8 @@ public:
 
 class LESS : public Formula{
 public:
-    virtual bool eval(long int* trace1, long int* trace2){
+    virtual bool eval(const long* trace1, const long* trace2){
         val = (child[0]->value(trace1, trace2) < child[1]->value(trace1, trace2));
-        // cout << child[0]->value(trace1, trace2) << " " << child[1]->value(trace1, trace2) <<endl;
         return val;
     }
 
@@ -391,7 +390,7 @@ public:
     int startIndex;
     int endIndex;
 
-    virtual bool eval(long int* trace1, long int* trace2){
+    virtual bool eval(const long* trace1, const long* trace2){
         for (size_t i = startIndex; i <= endIndex; i++) {
             if (trace1[i]!=trace2[i]){
                 return false;

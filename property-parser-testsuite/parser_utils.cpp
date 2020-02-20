@@ -57,7 +57,6 @@ Formula* parse(char* f) {
             }
             CONSTANT* const_var = new CONSTANT(stoi(temp));
             node = const_var;
-            cout << "constant created "<< f <<endl;
             return node;
         }
 
@@ -75,7 +74,6 @@ Formula* parse(char* f) {
             if (strcmp(temp,tr_lit[i].c_str())==0 && strcmp(tr_lit[i].c_str(),temp)==0){
                 VARIABLE* variable = new VARIABLE(i, tr_num);
                 node = variable;
-                cout << "var created "<< f <<endl;
                 return node; // returns leaf node
             }
         }

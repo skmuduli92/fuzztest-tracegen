@@ -6,8 +6,8 @@
 
 
 ////////////////////////////////////////////////////////////////////////////
-// NOTE:								  //
-//  - Functionlities current support only unsigned integers		  //
+// NOTE:								                                  //
+//  - Functionlities current support only unsigned integers		          //
 //  - Number is draw from a uniform-distrubution and it doesn't guarantee //
 //    the outcome to satisfy the exact probability distribution provided. //
 ////////////////////////////////////////////////////////////////////////////
@@ -31,4 +31,4 @@ private:
 
 
 
-#endif //PROPERTYPARSER_PROBMODEL_H
+#endif // PROPERTYPARSER_PROBMODEL_H
