@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////
 // NOTE:								                                  //
 //  - Functionlities current support only unsigned integers		          //
-//  - Number is draw from a uniform-distrubution and it doesn't guarantee //
+//  - Number is draw from a uniform-distribution and it doesn't guarantee //
 //    the outcome to satisfy the exact probability distribution provided. //
 ////////////////////////////////////////////////////////////////////////////
 

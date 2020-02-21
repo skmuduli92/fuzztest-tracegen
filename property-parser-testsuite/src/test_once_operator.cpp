@@ -1,7 +1,3 @@
-//
-// Created by sujit on 20/02/20.
-//
-
 #include <memory>
 #include "property_parser.h"
 #include "probmodel.h"
@@ -9,12 +5,10 @@
 #include <gtest/gtest.h>
 
 
-TEST(PropertyParserTest, ValidTracePastOperator) {
+TEST(PropertyParserTest, ValidTraceOnceOperator) {
 
     num_lit = 1;
     tr_lit.emplace_back("x");
-
-
 
     Formula *formula = parse("(O (AND (GEQ (1.x) (10)) (GEQ (2.x) (10))))");
 
@@ -40,12 +34,10 @@ TEST(PropertyParserTest, ValidTracePastOperator) {
 
 }
 
-TEST(PropertyParserTest, InvalidTracePastOperator) {
+TEST(PropertyParserTest, InvalidTraceOnceOperator) {
 
     num_lit = 1;
     tr_lit.emplace_back("x");
-
-
 
     Formula *formula = parse("(O (AND (GEQ (1.x) (10)) (GEQ (2.x) (10))))");
 

@@ -40,10 +40,13 @@ include_directories(cmake-build-debug/googletest-src/googletest/include)
 include_directories(cmake-build-debug/googletest-src/googlemock/include)
 
 add_executable(test_property_parser
-        src/main.cpp
-        src/test_simple2safety.cpp
-        src/parser_utils.cpp
-        src/probmodel.cpp
-        src/test_once_operator.cpp)
+  src/main.cpp
+  src/parser_utils.cpp
+  src/probmodel.cpp
+  src/test_simple2safety.cpp
+  src/test_once_operator.cpp
+  src/test_yesterday_operator.cpp
+  src/test_eqlarray_operator.cpp
+  )
 
 target_link_libraries(test_property_parser gtest gtest_main)

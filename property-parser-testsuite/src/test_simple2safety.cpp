@@ -1,4 +1,3 @@
-
 #include <memory>
 #include "property_parser.h"
 #include "probmodel.h"
@@ -9,11 +8,12 @@
 TEST(PropertyParserTest, ValidTrace) {
 
     num_lit = 1;
+    tr_lit.clear();
     tr_lit.emplace_back("x");
 
     Formula *formula = parse("(G (IMPLIES (GEQ (1.x) (10)) (GEQ (2.x) (10))))");
 
-    const unsigned traceLength = 300;
+    const unsigned traceLength = 100;
     std::unique_ptr<long[]> trace1{new long[traceLength]};
     std::unique_ptr<long[]> trace2{new long[traceLength]};
 
@@ -37,11 +37,12 @@ TEST(PropertyParserTest, ValidTrace) {
 TEST(PropertyParserTest, InvalidTrace) {
 
     num_lit = 1;
+    tr_lit.clear();
     tr_lit.emplace_back("x");
 
     Formula *formula = parse("(G (IMPLIES (GEQ (1.x) (10)) (GEQ (2.x) (10))))");
 
-    const unsigned traceLength = 300;
+    const unsigned traceLength = 100;
     std::unique_ptr<long[]> trace1{new long[traceLength]};
     std::unique_ptr<long[]> trace2{new long[traceLength]};
 

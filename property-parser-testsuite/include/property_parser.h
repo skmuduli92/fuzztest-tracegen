@@ -399,6 +399,7 @@ public:
         }
         return true;
     }
+
     void display(){
         cout << "(EQLARRAY (";
         cout << startIndex;
