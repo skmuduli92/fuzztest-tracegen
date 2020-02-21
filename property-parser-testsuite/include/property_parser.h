@@ -412,5 +412,6 @@ public:
 
 Formula* parse(char* f);
 
-void printTraces(const std::unique_ptr<long[]>& trace1, const std::unique_ptr<long[]>& trace2, unsigned traceLength);
+void printTraces(Formula* formula, const std::unique_ptr<long[]>& trace1, const std::unique_ptr<long[]>& trace2, unsigned traceLength);
+
 #endif

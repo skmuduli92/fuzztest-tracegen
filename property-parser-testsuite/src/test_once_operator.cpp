@@ -30,7 +30,7 @@ TEST(PropertyParserTest, ValidTraceOnceOperator) {
 
     EXPECT_TRUE(formula->eval(trace1.get(), trace2.get()));
     if (HasFailure())
-        printTraces(trace1, trace2, traceLength);
+        printTraces(formula, trace1, trace2, traceLength);
 
 }
 
@@ -58,6 +58,6 @@ TEST(PropertyParserTest, InvalidTraceOnceOperator) {
 
     EXPECT_FALSE(formula->eval(trace1.get(), trace2.get()));
     if (HasFailure())
-        printTraces(trace1, trace2, traceLength);
+        printTraces(formula, trace1, trace2, traceLength);
 
 }

@@ -20,7 +20,7 @@ TEST(PropertyParserTest, ValidTraceEqlarray) {
 
     EXPECT_TRUE(formula->eval(trace1.get(), trace2.get()));
     if(HasFailure())
-        printTraces(trace1, trace2, traceLength);
+        printTraces(formula, trace1, trace2, traceLength);
 }
 
 TEST(PropertyParserTest, InvalidTraceEqlarray) {
@@ -41,8 +41,10 @@ TEST(PropertyParserTest, InvalidTraceEqlarray) {
 
     bool result = formula->eval(trace1.get(), trace2.get());
     std::cout << "result : " << result << std::endl;
+
     EXPECT_FALSE(result);
-    if(HasFailure())
-        printTraces(trace1, trace2, traceLength);
+    if(HasFailure()) {
+        printTraces(formula, trace1, trace2, traceLength);
+    }
 
 }
