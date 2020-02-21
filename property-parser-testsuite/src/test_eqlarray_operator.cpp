@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 
-TEST(PropertyParserTest, ValidTraceYesterday) {
+TEST(PropertyParserTest, ValidTraceEqlarray) {
 
     num_lit = 1;
     tr_lit.clear();
@@ -28,9 +28,9 @@ TEST(PropertyParserTest, ValidTraceYesterday) {
 
 }
 
-TEST(PropertyParserTest, InvalidTraceYesterday) {
+// TEST(PropertyParserTest, InvalidTraceEqlarray) {
 
-    // TODO : write test for eqlarray operator
+//     // TODO : write test for eqlarray operator
 
-    EXPECT_TRUE(true);
-}
+//     EXPECT_TRUE(true);
+// }

@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 
-TEST(PropertyParserTest, ValidTraceEqlarray) {
+TEST(PropertyParserTest, ValidTraceYOperator) {
 
     num_lit = 1;
     tr_lit.clear();
@@ -23,7 +23,7 @@ TEST(PropertyParserTest, ValidTraceEqlarray) {
         printTraces(formula, trace1, trace2, traceLength);
 }
 
-TEST(PropertyParserTest, InvalidTraceEqlarray) {
+TEST(PropertyParserTest, InvalidTraceYOperator) {
 
     num_lit = 1;
     tr_lit.clear();
