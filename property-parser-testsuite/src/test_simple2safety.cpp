@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 
-TEST(PropertyParserTest, ValidTrace) {
+TEST(PropertyParserTest, ValidTrace2safety) {
 
     num_lit = 1;
     tr_lit.clear();
@@ -34,7 +34,7 @@ TEST(PropertyParserTest, ValidTrace) {
     }
 }
 
-TEST(PropertyParserTest, InvalidTrace) {
+TEST(PropertyParserTest, InvalidTrace2safety) {
 
     num_lit = 1;
     tr_lit.clear();
