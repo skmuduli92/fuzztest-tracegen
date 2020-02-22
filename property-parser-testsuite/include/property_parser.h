@@ -1,4 +1,3 @@
-
 #ifndef _PROPERTY_PARSER_H_
 #define _PROPERTY_PARSER_H_
 
@@ -22,16 +21,11 @@ void substring(char* dest, char* src, int start, int finish);
 void cleanup(void);
 
 class Formula {
-private:
-//    Formula() : num_lit(0), tr_lit(NULL) {}
-protected:
 
 public:
     bool val;
     char* op;
     int lit_i;
-
-//    Formula(int nlit, char** lits) : num_lit(nlit), tr_lit(lits) {}
 
     vector<Formula*> child;
 
@@ -39,7 +33,7 @@ public:
         return op;
     }
 
-    virtual bool eval(const long* temp1, const long* temp2) const {
+    virtual bool eval(const long* temp1, const long* temp2) {
         return true;
     }
 
@@ -56,7 +50,7 @@ public:
 class TRUE : public Formula {
 
 public:
-    virtual bool eval(const long* trace1, const long* trace2){
+    virtual bool eval (const long* trace1, const long* trace2){
         return true;
     }
 
