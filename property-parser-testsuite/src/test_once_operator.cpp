@@ -8,15 +8,17 @@
 TEST(PropertyParserTest, ValidTraceOnceOperator) {
 
     num_lit = 1;
-    tr_lit.emplace_back("x");
+    tr_lit.clear();
+    tr_lit.emplace_back("p");
 
-    Formula *formula = parse("(O (AND (GEQ (1.x) (10)) (GEQ (2.x) (10))))");
+    Formula *formula = parse("(O (AND (GEQ (1.p) (10)) (GEQ (2.p) (10))))");
 
     const unsigned traceLength = 100;
     std::unique_ptr<long[]> trace1 = std::make_unique<long[]>(traceLength);
     std::unique_ptr<long[]> trace2 = std::make_unique<long[]>(traceLength);
 
     ProbModel pm;
+    bool result = false;
     for (unsigned idx = 0; idx < traceLength; ++idx) {
         if (pm.probM(20)) {
             trace1[idx] = 11;
@@ -26,9 +28,12 @@ TEST(PropertyParserTest, ValidTraceOnceOperator) {
             trace1[idx] = 0;
             trace2[idx] = 11;
         }
+	
+	result = formula->eval(&trace1[idx], &trace2[idx]);
     }
 
-    EXPECT_TRUE(formula->eval(trace1.get(), trace2.get()));
+    EXPECT_TRUE(result);
+
     if (HasFailure())
         printTraces(formula, trace1, trace2, traceLength);
 
@@ -37,15 +42,17 @@ TEST(PropertyParserTest, ValidTraceOnceOperator) {
 TEST(PropertyParserTest, InvalidTraceOnceOperator) {
 
     num_lit = 1;
-    tr_lit.emplace_back("x");
+    tr_lit.clear();
+    tr_lit.emplace_back("p");
 
-    Formula *formula = parse("(O (AND (GEQ (1.x) (10)) (GEQ (2.x) (10))))");
+    Formula *formula = parse("(O (AND (GEQ (1.p) (10)) (GEQ (2.p) (10))))");
 
     const unsigned traceLength = 100;
     std::unique_ptr<long[]> trace1 = std::make_unique<long[]>(traceLength);
     std::unique_ptr<long[]> trace2 = std::make_unique<long[]>(traceLength);
 
     ProbModel pm;
+    bool result = true;
     for (unsigned idx = 0; idx < traceLength; ++idx) {
         if (pm.probM(20)) {
             trace1[idx] = 11;
@@ -54,9 +61,11 @@ TEST(PropertyParserTest, InvalidTraceOnceOperator) {
         else {
             trace1[idx] = trace2[idx] = 0;
         }
+        result = formula->eval(&trace1[idx], &trace2[idx]);
     }
 
-    EXPECT_FALSE(formula->eval(trace1.get(), trace2.get()));
+    EXPECT_FALSE(result);
+
     if (HasFailure())
         printTraces(formula, trace1, trace2, traceLength);
 

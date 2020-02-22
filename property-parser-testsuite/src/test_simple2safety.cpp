@@ -18,6 +18,7 @@ TEST(PropertyParserTest, ValidTrace2safety) {
     std::unique_ptr<long[]> trace2{new long[traceLength]};
 
     ProbModel pm;
+    bool result = false;
     for (unsigned idx = 0; idx < traceLength; ++idx) {
         if (pm.probM(20)) {
             trace1[idx] = trace2[idx] = 11;
@@ -25,9 +26,10 @@ TEST(PropertyParserTest, ValidTrace2safety) {
         else {
             trace1[idx] = trace2[idx] = 0;
         }
+	result = formula->eval(&trace1[idx], &trace2[idx]);
     }
 
-    EXPECT_TRUE(formula->eval(trace1.get(), trace2.get()));
+    EXPECT_TRUE(result);
 
     if(HasFailure()) {
         printTraces(formula, trace1, trace2, traceLength);
@@ -47,6 +49,7 @@ TEST(PropertyParserTest, InvalidTrace2safety) {
     std::unique_ptr<long[]> trace2{new long[traceLength]};
 
     ProbModel pm;
+    bool result = true;
     for (unsigned idx = 0; idx < traceLength; ++idx) {
         if (pm.probM(20)) {
             trace1[idx] = 11;
@@ -55,9 +58,10 @@ TEST(PropertyParserTest, InvalidTrace2safety) {
         else {
             trace1[idx] = trace2[idx] = 0;
         }
+	result = formula->eval(&trace1[idx], &trace2[idx]);
     }
 
-    EXPECT_FALSE(formula->eval(trace1.get(), trace2.get()));
+    EXPECT_FALSE(result);
 
     if(HasFailure()) {
         printTraces(formula, trace1, trace2, traceLength);

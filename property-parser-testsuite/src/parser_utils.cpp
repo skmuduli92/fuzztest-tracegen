@@ -255,9 +255,16 @@ Formula* parse(char* f) {
 }
 
 
-void printTraces(Formula* formula, const std::unique_ptr<long[]>& trace1, const std::unique_ptr<long[]>& trace2, unsigned traceLength) {
+void printTraces(Formula* formula,
+		 const std::unique_ptr<long[]>& trace1,
+		 const std::unique_ptr<long[]>& trace2,
+		 unsigned traceLength) {
 
-    std::cout << "Formula: ";
+    std::cout << "\nliterals : ";
+    for ( std::string s : tr_lit) {
+	std::cout << s << ", ";
+    }
+    std::cout << "\nFormula: ";
     formula->display();
     std::cout << std::endl;
 
