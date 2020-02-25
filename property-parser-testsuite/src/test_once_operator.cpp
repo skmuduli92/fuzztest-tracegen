@@ -60,7 +60,8 @@ TEST(PropertyParserTest, InvalidTraceOnceOperator) {
             trace2[idx] = 0;
         }
         else {
-            trace1[idx] = trace2[idx] = 0;
+            trace1[idx] = 0;
+	    trace2[idx] = 11;
         }
         result = formula->eval(&trace1[idx], &trace2[idx]);
     }
