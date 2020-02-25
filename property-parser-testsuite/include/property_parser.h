@@ -160,7 +160,6 @@ public:
     }
 
     virtual bool eval(const long* trace1, const long* trace2) {
-	std::cout << "trace 1: " << *trace1 << " : trace2 " << *trace2 << std::endl;
         past = past?true:child[0]->eval(trace1, trace2);
         return past;
     }

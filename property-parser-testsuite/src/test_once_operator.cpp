@@ -21,14 +21,13 @@ TEST(PropertyParserTest, ValidTraceOnceOperator) {
     ProbModel pm;
     bool result = false;
     for (unsigned idx = 0; idx < traceLength; ++idx) {
-        if (pm.probM(20)) {
+        if (pm.probM(10)) {
             trace1[idx] = 11;
-            trace2[idx] = 0;
         }
         else {
             trace1[idx] = 0;
-            trace2[idx] = 11;
         }
+	trace2[idx] = 11;
 	result = formula->eval(&(trace1[idx]), &(trace2[idx]));
     }
 
