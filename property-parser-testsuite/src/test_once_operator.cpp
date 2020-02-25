@@ -14,9 +14,10 @@ TEST(PropertyParserTest, ValidTraceOnceOperator) {
     Formula *formula = parse("(O (AND (GEQ (1.p) (10)) (GEQ (2.p) (10))))");
 
     const unsigned traceLength = 100;
-    std::unique_ptr<long[]> trace1 = std::make_unique<long[]>(traceLength);
-    std::unique_ptr<long[]> trace2 = std::make_unique<long[]>(traceLength);
 
+    long* trace1 = new long[traceLength];
+    long* trace2 = new long[traceLength];
+    
     ProbModel pm;
     bool result = false;
     for (unsigned idx = 0; idx < traceLength; ++idx) {
@@ -28,8 +29,7 @@ TEST(PropertyParserTest, ValidTraceOnceOperator) {
             trace1[idx] = 0;
             trace2[idx] = 11;
         }
-	
-	result = formula->eval(&trace1[idx], &trace2[idx]);
+	result = formula->eval(&(trace1[idx]), &(trace2[idx]));
     }
 
     EXPECT_TRUE(result);
@@ -37,6 +37,8 @@ TEST(PropertyParserTest, ValidTraceOnceOperator) {
     if (HasFailure())
         printTraces(formula, trace1, trace2, traceLength);
 
+    delete(trace1);
+    delete(trace2);
 }
 
 TEST(PropertyParserTest, InvalidTraceOnceOperator) {
@@ -48,9 +50,9 @@ TEST(PropertyParserTest, InvalidTraceOnceOperator) {
     Formula *formula = parse("(O (AND (GEQ (1.p) (10)) (GEQ (2.p) (10))))");
 
     const unsigned traceLength = 100;
-    std::unique_ptr<long[]> trace1 = std::make_unique<long[]>(traceLength);
-    std::unique_ptr<long[]> trace2 = std::make_unique<long[]>(traceLength);
-
+    long* trace1 = new long[traceLength];
+    long* trace2 = new long[traceLength];
+    
     ProbModel pm;
     bool result = true;
     for (unsigned idx = 0; idx < traceLength; ++idx) {
@@ -69,4 +71,6 @@ TEST(PropertyParserTest, InvalidTraceOnceOperator) {
     if (HasFailure())
         printTraces(formula, trace1, trace2, traceLength);
 
+    delete(trace1);
+    delete(trace2);
 }

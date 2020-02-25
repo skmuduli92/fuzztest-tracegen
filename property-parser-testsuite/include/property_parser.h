@@ -160,6 +160,7 @@ public:
     }
 
     virtual bool eval(const long* trace1, const long* trace2) {
+	std::cout << "trace 1: " << *trace1 << " : trace2 " << *trace2 << std::endl;
         past = past?true:child[0]->eval(trace1, trace2);
         return past;
     }
@@ -406,6 +407,6 @@ public:
 
 Formula* parse(char* f);
 
-void printTraces(Formula* formula, const std::unique_ptr<long[]>& trace1, const std::unique_ptr<long[]>& trace2, unsigned traceLength);
+void printTraces(Formula* formula, const long* trace1, const long* trace2, unsigned traceLength);
 
 #endif

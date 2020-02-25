@@ -14,8 +14,8 @@ TEST(PropertyParserTest, ValidTrace2safety) {
     Formula *formula = parse("(G (IMPLIES (GEQ (1.x) (10)) (GEQ (2.x) (10))))");
 
     const unsigned traceLength = 100;
-    std::unique_ptr<long[]> trace1{new long[traceLength]};
-    std::unique_ptr<long[]> trace2{new long[traceLength]};
+    long* trace1 = new long[traceLength];
+    long* trace2 = new long[traceLength];
 
     ProbModel pm;
     bool result = false;
@@ -34,6 +34,9 @@ TEST(PropertyParserTest, ValidTrace2safety) {
     if(HasFailure()) {
         printTraces(formula, trace1, trace2, traceLength);
     }
+    
+    free(trace1);
+    free(trace2);
 }
 
 TEST(PropertyParserTest, InvalidTrace2safety) {
@@ -45,8 +48,8 @@ TEST(PropertyParserTest, InvalidTrace2safety) {
     Formula *formula = parse("(G (IMPLIES (GEQ (1.x) (10)) (GEQ (2.x) (10))))");
 
     const unsigned traceLength = 100;
-    std::unique_ptr<long[]> trace1{new long[traceLength]};
-    std::unique_ptr<long[]> trace2{new long[traceLength]};
+    long* trace1 = new long[traceLength];
+    long* trace2 = new long[traceLength];
 
     ProbModel pm;
     bool result = true;
@@ -66,4 +69,8 @@ TEST(PropertyParserTest, InvalidTrace2safety) {
     if(HasFailure()) {
         printTraces(formula, trace1, trace2, traceLength);
     }
+
+    
+    free(trace1);
+    free(trace2);
 }
