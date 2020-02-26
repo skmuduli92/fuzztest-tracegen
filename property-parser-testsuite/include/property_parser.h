@@ -87,13 +87,17 @@ public:
     }
 
     int value(const long* trace1, const long* trace2){
+        int r = -1;
         if(tr_num==1){
-            return trace1[lit_i];
+            r = trace1[lit_i];
         }else if (tr_num==2){
-            return trace2[lit_i];
+            r = trace2[lit_i];
         }else{
             assert(0);
         }
+        // DEBUG:
+        // printf("value(%d.%d) = %d\n", tr_num, lit_i, r);
+        return r;
     }
 
     void display(){
