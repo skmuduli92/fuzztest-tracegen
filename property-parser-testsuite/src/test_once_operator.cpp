@@ -11,7 +11,8 @@ TEST(PropertyParserTest, ValidTraceOnceOperator) {
     tr_lit.clear();
     tr_lit.emplace_back("p");
 
-    Formula *formula = parse("(O (AND (GEQ (1.p) (10)) (GEQ (2.p) (10))))");
+    std::string property("(O (AND (GEQ (1.p) (10)) (GEQ (2.p) (10))))");
+    Formula *formula = parse(property.c_str());
 
     const unsigned traceLength = 100;
 

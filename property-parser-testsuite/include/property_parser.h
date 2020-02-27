@@ -17,7 +17,7 @@ using namespace std;
 
 // Class to store tree nodes for the property
 
-void substring(char* dest, char* src, int start, int finish);
+void substring(char* dest, const char* src, int start, int finish);
 void cleanup(void);
 
 class Formula {
@@ -404,7 +404,7 @@ public:
 };
 // forall: Do we need to implement it ?
 
-Formula* parse(char* f);
+Formula* parse(const char* f);
 
 void printTraces(Formula* formula, const long* trace1, const long* trace2, unsigned traceLength);
 

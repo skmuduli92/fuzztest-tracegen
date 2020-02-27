@@ -1,7 +1,7 @@
 
 #include "property_parser.h"
 
-void substring(char* dest, char* src, int start, int finish) {
+void substring(char* dest, const char* src, int start, int finish) {
 
     int j=0,i;
     for ( i = start; i <= finish; i++) {
@@ -19,7 +19,7 @@ void cleanup(void) {
     tr_lit.clear();
 }
 
-Formula* parse(char* f) {
+Formula* parse(const char* f) {
 
     char* left=NULL;// left side of the operator
     char* right=NULL;// right side of the operator
@@ -31,7 +31,7 @@ Formula* parse(char* f) {
 
     int count = -1;// counting "(" if property in brackets
     int i,j; // just variable to keep track of indexes
-    char *c = f; // c pointer to identify whether  f is literal/ variable(leaf node)
+    const char *c = f; // c pointer to identify whether  f is literal/ variable(leaf node)
     bool lit = true;// assuming f is literal/variable
     int tr_num; // initial and final index of $ in $op$ respectively
     // std::cout << "parsing " << f << endl;
