@@ -6,8 +6,8 @@
 
 
 ////////////////////////////////////////////////////////////////////////////
-// NOTE:								                                  //
-//  - Functionlities current support only unsigned integers		          //
+// NOTE:                                                                  //
+//  - Functionlities current support only unsigned integers               //
 //  - Number is draw from a uniform-distribution and it doesn't guarantee //
 //    the outcome to satisfy the exact probability distribution provided. //
 ////////////////////////////////////////////////////////////////////////////
@@ -19,7 +19,7 @@ public:
     ProbModel();
     unsigned prob80();
     unsigned probM(unsigned num);
-							      
+                                                              
     unsigned nWithProbM(unsigned, unsigned);
     unsigned findMaxBound(unsigned);
     unsigned countDigits(unsigned);

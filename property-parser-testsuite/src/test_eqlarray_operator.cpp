@@ -27,8 +27,8 @@ TEST(PropertyParserTest, ValidTraceEqlarray) {
         printTraces(formula, trace1, trace2, traceLength);
 
    
-    delete(trace1);
-    delete(trace2); 
+    delete [] (trace1);
+    delete [] (trace2); 
 }
 
 TEST(PropertyParserTest, InvalidTraceEqlarray) {
@@ -55,6 +55,6 @@ TEST(PropertyParserTest, InvalidTraceEqlarray) {
     if(HasFailure())
         printTraces(formula, trace1, trace2, traceLength);
 
-    delete(trace1);
-    delete(trace2);
+    delete [] (trace1);
+    delete [] (trace2);
 }

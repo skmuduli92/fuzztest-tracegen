@@ -36,8 +36,8 @@ TEST(PropertyParserTest, ValidTrace2safety) {
         printTraces(formula, trace1, trace2, traceLength);
     }
     
-    free(trace1);
-    free(trace2);
+    delete [] (trace1);
+    delete [] (trace2);
 }
 
 TEST(PropertyParserTest, InvalidTrace2safety) {
@@ -118,11 +118,10 @@ TEST(PropertyParserTest, InvalidTraceObsDet) {
             }
         }
         result = result && formula->eval(&trace1[idx], &trace2[idx]);
-        /* DEBUG:
-        printf("[%d] %5d %5d %5d %5d %5d --> %d\n", 
-                (int) good, idx, trace1[INDEX_X], trace1[INDEX_Y], trace2[INDEX_X], trace2[INDEX_Y],
-                (int) result);
-        */
+        // DEBUG:
+        // printf("[%d] %5d %5d %5d %5d %5d --> %d\n", 
+        //         (int) good, idx, trace1[INDEX_X], trace1[INDEX_Y], trace2[INDEX_X], trace2[INDEX_Y],
+        //         (int) result);
     }
 
     if (good) {
