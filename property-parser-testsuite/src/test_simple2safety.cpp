@@ -183,3 +183,44 @@ TEST(PropertyParserTest, InvalidTraceObsDetBadOut) {
     delete [] trace1;
     delete [] trace2;
 }
+
+
+TEST(PropertyParserTest, PLTLImpliesVacuousTruth) {
+
+    num_lit = 2;
+    tr_lit.clear();
+    tr_lit.emplace_back("x");
+    tr_lit.emplace_back("y");
+
+    Formula *formula = parse("(G (IMPLIES (EQL (1.y) (2.y)) (O (EQL (1.x) (2.x)))))");
+
+    // producing a trace where 1.y is never equal to 2.y, hence expected result is TRUE
+    
+    const unsigned traceLength = 10;
+    long* tr1 = new long[traceLength];
+    long* tr2 = new long[traceLength];
+    
+    int IDX = 0, IDY = 1;
+    bool result = false;
+
+    while(IDY < traceLength) {
+
+      tr1[IDX] = tr1[IDY] = 0;
+      tr2[IDX] = tr2[IDY] = 1;
+
+      result = formula->eval(&tr1[IDX], &tr2[IDX]);
+      result = formula->eval(&tr1[IDY], &tr2[IDY]);
+      
+      IDX = IDX + 1;
+      IDY = IDY + 1;
+    }
+    
+    EXPECT_TRUE(result);
+
+    if(HasFailure()) {
+      printTraces(formula, tr1, tr2, traceLength);
+      }
+    
+    delete[] (tr1);
+    delete[] (tr2);
+}
