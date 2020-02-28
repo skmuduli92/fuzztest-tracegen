@@ -219,7 +219,7 @@ TEST(PropertyParserTest, PLTLImpliesVacuousTruth) {
 
     if(HasFailure()) {
       printTraces(formula, tr1, tr2, traceLength);
-      }
+    }
     
     delete[] (tr1);
     delete[] (tr2);

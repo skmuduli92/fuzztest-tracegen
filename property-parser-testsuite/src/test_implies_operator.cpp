@@ -23,6 +23,5 @@ TEST(PropertyParserTest, ValidTraceIMPLIESVacuous) {
       result = formula->eval(tr1, tr2);
     }
 
-    EXPECT_TRUE(result);
-    
+    EXPECT_TRUE(result);    
 }
