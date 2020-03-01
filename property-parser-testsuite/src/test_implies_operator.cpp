@@ -1,10 +1,11 @@
 #include <memory>
 #include <stdlib.h>
 #include "property_parser.h"
+#include "probmodel.h"
 
 #include <gtest/gtest.h>
 
-TEST(PropertyParserTest, ValidTraceIMPLIESVacuous) {
+TEST(PropertyParserTest, ValidTraceImpliesVacuous) {
 
     num_lit = 1;
     tr_lit.clear();
@@ -24,4 +25,66 @@ TEST(PropertyParserTest, ValidTraceIMPLIESVacuous) {
     }
 
     EXPECT_TRUE(result);    
+}
+
+TEST(PropertyParserTest, ValidTraceImpliesOperator) {
+
+    num_lit = 1;
+    tr_lit.clear();
+    tr_lit.emplace_back("x");
+
+    Formula *formula = parse("(G (IMPLIES (EQL (1.x) (1)) (EQL (2.x) (2))))");
+
+    // testing if the property evaluates to true on a valie trace
+
+    long tr[] = {1, 2};
+    bool result = false;
+
+    const int traceLength = 100;
+    ProbModel pm;
+
+    for (int idx; idx < traceLength; ++idx) {
+	if (pm.probM(20)) {
+	    // trace 1:  1....
+	    // trace 2:  2....
+	    result = formula->eval(&tr[0], &tr[1]);
+	}
+	else {
+	    // trace 1:  2....
+	    // trace 2:  2....
+	    unsigned rand_idx = rand() % 2;
+	    result = formula->eval(&tr[1], &tr[rand_idx]);
+	}
+    }
+
+    EXPECT_TRUE(result);
+}
+
+TEST(PropertyParserTest, InvalidTraceImpliesOperator) {
+
+    num_lit = 1;
+    tr_lit.clear();
+    tr_lit.emplace_back("x");
+
+    Formula *formula = parse("(G (IMPLIES (EQL (1.x) (1)) (EQL (2.x) (2))))");
+    
+    long tr[] = {1, 2};
+    bool result = true;
+    const int traceLength = 100;
+    ProbModel pm;
+    
+    for (int idx; idx < traceLength; ++idx) {
+
+	if (pm.probM(20)) {
+	    // trace 1:  1....
+	    // trace 2:  1....
+	    result = formula->eval(&tr[0], &tr[0]);
+	}
+	else {
+	    unsigned rand_idx = rand() % 2;
+	    result = formula->eval(&tr[1], &tr[rand_idx]);
+	}
+    }
+
+    EXPECT_FALSE(result);
 }
