@@ -1,7 +1,13 @@
+#ifndef _PROPERTY_PARSER_H_DEFINED_
+#define _PROPERTY_PARSER_H_DEFINED_
+
 #include<iostream>
 #include<string.h>
 #include<assert.h>
 #include<vector>
+
+#include "trace.h"
+
 using namespace std;
 class VARIABLE;
 extern char *tr_lit[];
@@ -577,3 +583,4 @@ Formula* parse(char* f){
 return node;
 
 }
+#endif

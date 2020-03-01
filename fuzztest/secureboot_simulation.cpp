@@ -17,6 +17,8 @@
 
 #include "coverage.h"
 #include "property_parser.h"
+#include "trace.h"
+#include "formula.h"
 
 #define DEBUG_REG_ADDR 0xEFFE
 #define DEBUG_REG_DATA 0xEFFF
