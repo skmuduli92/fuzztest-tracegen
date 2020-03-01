@@ -122,6 +122,67 @@ namespace HyperPLTL {
     virtual void display(std::ostream& out) const;
     virtual bool eval(uint32_t cycle, const TraceList& traces);
   };
+
+  /** Formula !a */
+  class Not : public Proposition {
+  public:
+    Not(PVarMap m, PProposition f)
+      : Proposition(m)
+    {
+      args.push_back(f);
+    }
+    virtual void display(std::ostream& out) const;
+    virtual bool eval(uint32_t cycle, const TraceList& traces);
+  };
+
+  /** Formula a /\ b */
+  class And : public Proposition {
+  public:
+    And(PVarMap m, PProposition a, PProposition b)
+      : Proposition(m)
+    {
+      args.push_back(a);
+      args.push_back(b);
+    }
+    And(PVarMap m, std::vector<PProposition> props)
+      : Proposition(m)
+    {
+      std::copy(props.begin(), props.end(), std::back_inserter(args));
+    }
+    virtual void display(std::ostream& out) const;
+    virtual bool eval(uint32_t cycle, const TraceList& traces);
+  };
+
+  /** Formula a \/ b */
+  class Or : public Proposition {
+  public:
+    Or(PVarMap m, PProposition a, PProposition b)
+      : Proposition(m)
+    {
+      args.push_back(a);
+      args.push_back(b);
+    }
+    Or(PVarMap m, std::vector<PProposition> props)
+      : Proposition(m)
+    {
+      std::copy(props.begin(), props.end(), std::back_inserter(args));
+    }
+    virtual void display(std::ostream& out) const;
+    virtual bool eval(uint32_t cycle, const TraceList& traces);
+  };
+
+  /** Formula a => b */
+  class Implies : public Proposition {
+  public:
+    Implies(PVarMap m, PProposition a, PProposition b)
+      : Proposition(m)
+    {
+      args.push_back(a);
+      args.push_back(b);
+    }
+    virtual void display(std::ostream& out) const;
+    virtual bool eval(uint32_t cycle, const TraceList& traces);
+  };
 }
 
 #endif
