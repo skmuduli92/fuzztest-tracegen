@@ -242,3 +242,5 @@ flycheck_*.el
 .idea/
 cmake-build-debug/
 build/
+
+*.swp
