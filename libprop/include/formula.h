@@ -34,6 +34,13 @@ namespace HyperPLTL {
       assert (pos != indices.end());
       return pos->second;
     }
+
+    unsigned addVar(const std::string& name) {
+      unsigned idx = names.size();
+      names.push_back(name);
+      indices[name] = idx;
+      return idx;
+    }
   };
 
   class Formula {

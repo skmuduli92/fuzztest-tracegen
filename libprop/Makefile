@@ -22,7 +22,7 @@ else
     OPTFLAGS:=-O3
 endif
 
-INCLUDE:=
+INCLUDE:=-I./include/
 
 DEFINES:=
 
@@ -30,12 +30,22 @@ CXXFLAGS:=-c -Wall -Werror -Wno-error=deprecated -fopenmp -std=c++17 \
 	${INCLUDE} ${DEFINES} ${DBGFLAGS} ${OPTFLAGS} ${PGFLAGS} \
 	-Wno-strict-overflow
 
-#Find all the C++ files in the current directory.
-SOURCES:=$(shell find . -name "*.cpp" | grep -v mcqd.cpp)
+#Find all the C++ files in the src directory.
+SOURCES:=$(shell find src/ -name "*.cpp")
 #These are the dependency files, which make will clean up after it creates them
 DEPFILES:=$(patsubst %.cpp,%.d,$(SOURCES))
 #Objects
 OBJECTS:=$(patsubst %.cpp,%.o,$(SOURCES))
+
+#Find all the C++ files in the src directory.
+TEST_SOURCES:=$(shell find test/ -name "*.cpp")
+#These are the dependency files, which make will clean up after it creates them
+TEST_DEPFILES:=$(patsubst %.cpp,%.d,$(TEST_SOURCES))
+#Objects
+TEST_OBJECTS:=$(patsubst %.cpp,%.o,$(TEST_SOURCES))
+
+testprop: $(TEST_OBJECTS) libprop.a 
+	$(LD) -o $@ $(LDFLAGS) $^
 
 libprop.a: $(OBJECTS)
 	$(AR) rc $@ $<
@@ -47,8 +57,9 @@ libprop.a: $(OBJECTS)
 
 # This include statement pulls in the commands to build the .o files.
 include $(subst .cpp,.d,$(SOURCES))
+include $(subst .cpp,.d,$(TEST_SOURCES))
 
 .PHONY: clean
 
 clean:
-	rm *.a *.o
+	rm *.a *.o *.d src/*.o src/*.d test/*.o test/*.d
