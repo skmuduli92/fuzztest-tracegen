@@ -9,51 +9,111 @@
 #include "trace.h"
 
 namespace HyperPLTL {
+  class VarMap;
+  class Formula;
+  class Proposition;
+  class Term;
+
+  typedef std::shared_ptr<VarMap> PVarMap;
+  typedef std::shared_ptr<Formula> PFormula;
+  typedef std::shared_ptr<Proposition> PProposition;
+  typedef std::shared_ptr<Term> PTerm;
+
   class VarMap {
     std::vector<std::string> names;
     std::map<std::string, unsigned> indices;
 
+  public:
     const std::string& getName(unsigned i) const {
       assert(i < names.size());
       return names[i];
     }
 
-    const std::string& getIndex(const std::string& name) const {
+    int getIndex(const std::string& name) const {
       auto pos = indices.find(name);
       assert (pos != indices.end());
       return pos->second;
     }
   };
 
-  class Formula{
+  class Formula {
+  protected:
+    PVarMap var_map;
+    std::vector<PFormula> args;
+    // constructor.
+    Formula(PVarMap m) : var_map(m) {}
   public:
-    std::vector<std::shared_ptr<Formula>> args;
 
     // write this formula to the screen.
     virtual void display(std::ostream& out) const = 0;
+
+  };
+
+  class Term : public Formula {
+  protected:
+    Term(PVarMap m) : Formula(m) {}
+  public:
+    virtual ValueType value(uint32_t cycle, unsigned trace, const TraceList& traces) = 0;
+  };
+
+  class Proposition : public Formula {
+  protected:
+    Proposition(PVarMap m) : Formula(m) {}
+  public:
     // evaluate the formula at this time index.
     virtual bool eval(uint32_t cycle, const TraceList& traces) = 0;
-
   };
 
   /** Write formula. the output stream (delegates to display). */
   std::ostream& operator<<(std::ostream& out, const Formula& t);
 
   /** Formula true. */
-  class True : public Formula {
+  class True : public Proposition {
   public:
-    True() {}
+    True(PVarMap m) : Proposition(m) {}
 
     virtual void display(std::ostream& out) const;
     virtual bool eval(uint32_t cycle, const TraceList& traces);
   };
 
-  /** Formula var(name). */
-  class Variable : public Formula {
-    std::string name;
+  /** Formula var(name): this is an integer valued variable. */
+  class Variable : public Term {
+    unsigned index;
   public:
-    Variable(const char* n) :  name(n) {}
-    Variable(const std::string& n) : name(n) {}
+    Variable(PVarMap m, unsigned i)
+      : Term(m)
+      , index(i) 
+    {}
+
+    virtual void display(std::ostream& out) const;
+    virtual ValueType value(uint32_t cycle, unsigned trace, const TraceList& traces);
+  };
+
+  /** Predicate =(v_1,v_2,v_n). */
+  class Equal : public Proposition {
+  public:
+    Equal(PVarMap m, const std::vector<PTerm>& terms) 
+      : Proposition(m)
+    {
+      std::copy(terms.begin(), terms.end(), std::back_inserter(args));
+    }
+    virtual void display(std::ostream& out) const;
+    virtual bool eval(uint32_t cycle, const TraceList& traces);
+  };
+
+  /** Formula G(phi). */
+  class Always : public Proposition {
+    bool past;
+  public:
+    Always(PVarMap m, PProposition f) 
+      : Proposition(m)
+      , past(true)
+    {
+      args.push_back(f);
+    }
+    
+    virtual void display(std::ostream& out) const;
+    virtual bool eval(uint32_t cycle, const TraceList& traces);
   };
 }
 

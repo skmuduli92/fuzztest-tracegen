@@ -71,10 +71,12 @@ public:
   }
 };
 
+typedef uint32_t ValueType;
+
 class Trace
 {
   /** A vector of traces for each boolean variable. */
-  std::vector< VarTrace<uint32_t> > variables;
+  std::vector< VarTrace<ValueType> > variables;
   /** The last valid time cycle in this trace. */
   unsigned lastCycle;
 public:
@@ -85,7 +87,7 @@ public:
   {}
 
   /** Update the value of variable i at time cycle. */
-  void updateValue(unsigned i, uint32_t cycle, uint32_t value)
+  void updateValue(unsigned i, uint32_t cycle, ValueType value)
   {
     assert (i < variables.size());
     if (lastCycle < cycle) { cycle = lastCycle; }
