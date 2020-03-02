@@ -9,7 +9,7 @@ void test1()
 
   PVarMap varmap(new VarMap());
   unsigned idx_v = varmap->addVar("x");
-  PTerm v(new Variable(varmap, idx_v));
+  PTerm v(new TermVar(varmap, idx_v));
 
   cout << *v << endl;
 }

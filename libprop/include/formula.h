@@ -11,34 +11,56 @@
 namespace HyperPLTL {
   class VarMap;
   class Formula;
-  class Proposition;
+  class TraceProp;
+  class HyperProp;
   class Term;
 
   typedef std::shared_ptr<VarMap> PVarMap;
   typedef std::shared_ptr<Formula> PFormula;
-  typedef std::shared_ptr<Proposition> PProposition;
+  typedef std::shared_ptr<TraceProp> PTraceProp;
+  typedef std::shared_ptr<HyperProp> PHyperProp;
   typedef std::shared_ptr<Term> PTerm;
 
   class VarMap {
-    std::vector<std::string> names;
-    std::map<std::string, unsigned> indices;
+    std::vector<std::string> varNames;
+    std::map<std::string, unsigned> varIndices;
+    std::vector<std::string> propNames;
+    std::map<std::string, unsigned> propIndices;
 
   public:
-    const std::string& getName(unsigned i) const {
-      assert(i < names.size());
-      return names[i];
+    const std::string& getVarName(unsigned i) const {
+      assert(i < varNames.size());
+      return varNames[i];
     }
 
-    int getIndex(const std::string& name) const {
-      auto pos = indices.find(name);
-      assert (pos != indices.end());
+    int getVarIndex(const std::string& name) const {
+      auto pos = varIndices.find(name);
+      assert (pos != varIndices.end());
       return pos->second;
     }
 
     unsigned addVar(const std::string& name) {
-      unsigned idx = names.size();
-      names.push_back(name);
-      indices[name] = idx;
+      unsigned idx = varNames.size();
+      varNames.push_back(name);
+      varIndices[name] = idx;
+      return idx;
+    }
+
+    const std::string& getPropName(unsigned i) const {
+      assert(i < propNames.size());
+      return propNames[i];
+    }
+
+    int getPropIndex(const std::string& name) const {
+      auto pos = propIndices.find(name);
+      assert (pos != propIndices.end());
+      return pos->second;
+    }
+
+    unsigned addProp(const std::string& name) {
+      unsigned idx = propNames.size();
+      propNames.push_back(name);
+      propIndices[name] = idx;
       return idx;
     }
   };
@@ -56,16 +78,27 @@ namespace HyperPLTL {
 
   };
 
+  // integer-sorted terms.
   class Term : public Formula {
   protected:
     Term(PVarMap m) : Formula(m) {}
   public:
-    virtual ValueType value(uint32_t cycle, unsigned trace, const TraceList& traces) = 0;
+    virtual ValueType termValue(uint32_t cycle, unsigned trace, const TraceList& traces) = 0;
   };
 
-  class Proposition : public Formula {
+  // trace propositions (booleans).
+  class TraceProp : public Formula {
   protected:
-    Proposition(PVarMap m) : Formula(m) {}
+    TraceProp(PVarMap m) : Formula(m) {}
+  public:
+    // evaluate the proposition in a particular trace.
+    virtual bool propValue(uint32_t cycle, unsigned trace, const TraceList& traces) = 0;
+  };
+
+  // hyper-propositions (defined over multiple traces).
+  class HyperProp : public Formula {
+  protected:
+    HyperProp(PVarMap m) : Formula(m) {}
   public:
     // evaluate the formula at this time index.
     virtual bool eval(uint32_t cycle, const TraceList& traces) = 0;
@@ -75,32 +108,45 @@ namespace HyperPLTL {
   std::ostream& operator<<(std::ostream& out, const Formula& t);
 
   /** Formula true. */
-  class True : public Proposition {
+  class True : public TraceProp {
   public:
-    True(PVarMap m) : Proposition(m) {}
+    True(PVarMap m) : TraceProp(m) {}
 
     virtual void display(std::ostream& out) const;
-    virtual bool eval(uint32_t cycle, const TraceList& traces);
+    virtual bool propValue(uint32_t cycle, unsigned trace, const TraceList& traces);
   };
 
-  /** Formula var(name): this is an integer valued variable. */
-  class Variable : public Term {
+  /** Formula TermVar(name): this is an integer valued variable. */
+  class TermVar : public Term {
     unsigned index;
   public:
-    Variable(PVarMap m, unsigned i)
+    TermVar(PVarMap m, unsigned i)
       : Term(m)
       , index(i) 
     {}
 
     virtual void display(std::ostream& out) const;
-    virtual ValueType value(uint32_t cycle, unsigned trace, const TraceList& traces);
+    virtual ValueType termValue(uint32_t cycle, unsigned trace, const TraceList& traces);
   };
 
-  /** Predicate =(v_1,v_2,v_n). */
-  class Equal : public Proposition {
+  /** Formula PropVar(name): this is a boolean variable. */
+  class PropVar : public TraceProp {
+    unsigned index;
+  public:
+    PropVar(PVarMap m, unsigned i)
+      : TraceProp(m)
+      , index(i)
+    {}
+
+    virtual void display(std::ostream& out) const;
+    virtual bool propValue(uint32_t cycle, unsigned trace, const TraceList& traces);
+  };
+
+  /** Predicate (eq v_1,v_2,...,v_n). */
+  class Equal : public HyperProp {
   public:
     Equal(PVarMap m, const std::vector<PTerm>& terms) 
-      : Proposition(m)
+      : HyperProp(m)
     {
       std::copy(terms.begin(), terms.end(), std::back_inserter(args));
     }
@@ -108,12 +154,26 @@ namespace HyperPLTL {
     virtual bool eval(uint32_t cycle, const TraceList& traces);
   };
 
+  /** TraceSelect. */
+  class TraceSelect : public HyperProp {
+    unsigned trace;
+  public:
+    TraceSelect(PVarMap m, unsigned tr, PTraceProp p)
+      : HyperProp(m)
+      , trace(tr)
+    {
+      args.push_back(p);
+    }
+    virtual void display(std::ostream& out) const;
+    virtual bool eval(uint32_t cycle, const TraceList& traces);
+  };
+
   /** Formula G(phi). */
-  class Always : public Proposition {
+  class Always : public HyperProp {
     bool past;
   public:
-    Always(PVarMap m, PProposition f) 
-      : Proposition(m)
+    Always(PVarMap m, PHyperProp f) 
+      : HyperProp(m)
       , past(true)
     {
       args.push_back(f);
@@ -124,10 +184,10 @@ namespace HyperPLTL {
   };
 
   /** Formula !a */
-  class Not : public Proposition {
+  class Not : public HyperProp {
   public:
-    Not(PVarMap m, PProposition f)
-      : Proposition(m)
+    Not(PVarMap m, PHyperProp f)
+      : HyperProp(m)
     {
       args.push_back(f);
     }
@@ -136,16 +196,16 @@ namespace HyperPLTL {
   };
 
   /** Formula a /\ b */
-  class And : public Proposition {
+  class And : public HyperProp {
   public:
-    And(PVarMap m, PProposition a, PProposition b)
-      : Proposition(m)
+    And(PVarMap m, PHyperProp a, PHyperProp b)
+      : HyperProp(m)
     {
       args.push_back(a);
       args.push_back(b);
     }
-    And(PVarMap m, std::vector<PProposition> props)
-      : Proposition(m)
+    And(PVarMap m, std::vector<PHyperProp> props)
+      : HyperProp(m)
     {
       std::copy(props.begin(), props.end(), std::back_inserter(args));
     }
@@ -154,16 +214,16 @@ namespace HyperPLTL {
   };
 
   /** Formula a \/ b */
-  class Or : public Proposition {
+  class Or : public HyperProp {
   public:
-    Or(PVarMap m, PProposition a, PProposition b)
-      : Proposition(m)
+    Or(PVarMap m, PHyperProp a, PHyperProp b)
+      : HyperProp(m)
     {
       args.push_back(a);
       args.push_back(b);
     }
-    Or(PVarMap m, std::vector<PProposition> props)
-      : Proposition(m)
+    Or(PVarMap m, std::vector<PHyperProp> props)
+      : HyperProp(m)
     {
       std::copy(props.begin(), props.end(), std::back_inserter(args));
     }
@@ -172,10 +232,10 @@ namespace HyperPLTL {
   };
 
   /** Formula a => b */
-  class Implies : public Proposition {
+  class Implies : public HyperProp {
   public:
-    Implies(PVarMap m, PProposition a, PProposition b)
-      : Proposition(m)
+    Implies(PVarMap m, PHyperProp a, PHyperProp b)
+      : HyperProp(m)
     {
       args.push_back(a);
       args.push_back(b);

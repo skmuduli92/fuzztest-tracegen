@@ -75,7 +75,9 @@ typedef uint32_t ValueType;
 
 class Trace
 {
-  /** A vector of traces for each boolean variable. */
+  /** A vector of traces for each propositional variable. */
+  std::vector< VarTrace<bool> > propositions;
+  /** A vector of traces for each term variable. */
   std::vector< VarTrace<ValueType> > variables;
   /** The last valid time cycle in this trace. */
   unsigned lastCycle;
@@ -87,17 +89,30 @@ public:
   {}
 
   /** Update the value of variable i at time cycle. */
-  void updateValue(unsigned i, uint32_t cycle, ValueType value)
+  void updateTermValue(unsigned i, uint32_t cycle, ValueType value)
   {
     assert (i < variables.size());
     if (lastCycle < cycle) { cycle = lastCycle; }
     variables[i].updateValue(cycle, value);
   }
 
+  /** Update the value of proposition i at time cycle. */
+  void updatePropValue(unsigned i, uint32_t cycle, bool value) {
+    assert (i < propositions.size());
+    if (lastCycle < cycle) { cycle = lastCycle; }
+    propositions[i].updateValue(cycle, value);
+  }
+
   /** Return the value of variable i at time cycle. */
-  uint32_t valueAt(unsigned i, uint32_t cycle) {
+  uint32_t termValueAt(unsigned i, uint32_t cycle) {
     assert (i < variables.size());
     return variables[i][cycle];
+  }
+
+  /** Return the value of a proposition i at time cycle. */
+  bool propValueAt(unsigned i, uint32_t cycle) {
+    assert (i < propositions.size());
+    return propositions[i][cycle];
   }
 };
 

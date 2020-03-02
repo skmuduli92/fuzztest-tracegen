@@ -14,23 +14,37 @@ namespace HyperPLTL {
     out << "true";
   }
 
-  bool True::eval(uint32_t cycle, const TraceList& traces) {
+  bool True::propValue(uint32_t cycle, unsigned trace, const TraceList& traces) {
     return true;
   }
 
   // ---------------------------------------------------------------------- //
-  //                           class Variable                               //
+  //                            class TermVar                               //
   // ---------------------------------------------------------------------- //
-  void Variable::display(std::ostream& out) const
+  void TermVar::display(std::ostream& out) const
   {
-    out << var_map->getName(index);
+    out << var_map->getVarName(index);
   }
 
-  ValueType Variable::value(uint32_t cycle, unsigned trace, const TraceList& traces)
+  ValueType TermVar::termValue(uint32_t cycle, unsigned trace, const TraceList& traces)
+  {
+    assert (traces.size() > trace);
+    return traces[trace]->termValueAt(index, cycle);
+  }
+
+  // ---------------------------------------------------------------------- //
+  //                            class PropVar                               //
+  // ---------------------------------------------------------------------- //
+  void PropVar::display(std::ostream& out) const
+  {
+    out << var_map->getPropName(index);
+  }
+
+  bool PropVar::propValue(uint32_t cycle, unsigned trace, const TraceList& traces)
   {
     // eval not well-defined when multiple traces are available.
-    assert (traces.size() > trace);
-    return traces[trace]->valueAt(index, cycle);
+    assert(trace < traces.size());
+    return traces[trace]->propValueAt(index, cycle);
   }
 
   // ---------------------------------------------------------------------- //
@@ -51,15 +65,31 @@ namespace HyperPLTL {
     // eval not well-defined when multiple traces are available.
     assert (traces.size() > 0);
     ValueType v0 = std::dynamic_pointer_cast<Term>(
-                        args[0])->value(cycle, 0, traces);
+                        args[0])->termValue(cycle, 0, traces);
     for (unsigned i=1; i != traces.size(); i++) {
       if (std::dynamic_pointer_cast<Term>(
-                  args[i])->value(cycle, i, traces) != v0) 
+                  args[i])->termValue(cycle, i, traces) != v0) 
       {
         return false;
       }
     }
     return true;
+  }
+
+  // ---------------------------------------------------------------------- //
+  //                          class TraceSelect                             //
+  // ---------------------------------------------------------------------- //
+  void TraceSelect::display(std::ostream& out) const
+  {
+    out << "(trace-select " << trace << " ";
+    args[0]->display(out);
+    out << ")";
+  }
+
+  bool TraceSelect::eval(uint32_t cycle, const TraceList& traces)
+  {
+    auto p = std::dynamic_pointer_cast<TraceProp>(args[0]);
+    return p->propValue(cycle, trace, traces);
   }
 
   // ---------------------------------------------------------------------- //
@@ -74,7 +104,7 @@ namespace HyperPLTL {
 
   bool Always::eval(uint32_t cycle, const TraceList& traces)
   {
-    PProposition f = std::dynamic_pointer_cast<Proposition>(args[0]);
+    auto f = std::dynamic_pointer_cast<HyperProp>(args[0]);
     return (past = past && f->eval(cycle, traces));
   }
 
@@ -91,7 +121,7 @@ namespace HyperPLTL {
   bool Not::eval(uint32_t cycle, const TraceList& traces)
   {
     using namespace std;
-    auto p = dynamic_pointer_cast<Proposition>(args[0]);
+    auto p = dynamic_pointer_cast<HyperProp>(args[0]);
     return !p->eval(cycle, traces);
   }
 
@@ -110,9 +140,10 @@ namespace HyperPLTL {
 
   bool And::eval(uint32_t cycle, const TraceList& traces)
   {
+    using namespace std;
     bool r = true;
     for (auto arg : args) {
-      PProposition p = std::dynamic_pointer_cast<Proposition>(arg);
+      auto p = dynamic_pointer_cast<HyperProp>(arg);
       r = r && p->eval(cycle, traces);
     }
     return r;
@@ -131,11 +162,11 @@ namespace HyperPLTL {
     out << ")";
   }
 
-  bool Or ::eval(uint32_t cycle, const TraceList& traces)
+  bool Or::eval(uint32_t cycle, const TraceList& traces)
   {
     bool r = false;
     for (auto arg : args) {
-      PProposition p = std::dynamic_pointer_cast<Proposition>(arg);
+      auto p = std::dynamic_pointer_cast<HyperProp>(arg);
       r = r || p->eval(cycle, traces);
     }
     return r;
@@ -156,8 +187,8 @@ namespace HyperPLTL {
 
   bool Implies ::eval(uint32_t cycle, const TraceList& traces)
   {
-    PProposition p1 = std::dynamic_pointer_cast<Proposition>(args[0]);
-    PProposition p2 = std::dynamic_pointer_cast<Proposition>(args[1]);
+    auto p1 = std::dynamic_pointer_cast<HyperProp>(args[0]);
+    auto p2 = std::dynamic_pointer_cast<HyperProp>(args[1]);
     return (!p1->eval(cycle, traces) || p2->eval(cycle, traces));
   }
 }
