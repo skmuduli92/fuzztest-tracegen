@@ -49,6 +49,7 @@ TEST(PropertyParserTest, InvalidTraceEqlarray) {
     }
 
     trace2[traceLength - 1] = 10;
+    trace2[traceLength - 2] = 5;
 
     EXPECT_FALSE(formula->eval(trace1, trace2));
 
