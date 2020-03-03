@@ -82,7 +82,8 @@ TEST(PropertyParserTest, InvalidTraceLEQ) {
             result = formula->eval(&tr[randIdx], &tr[randIdx]);
         }
     }
-    
+
+    EXPECT_FALSE(result);
 }
 
 TEST(PropertyParserTest, InvalidTraceLEQ_2Literals) {
@@ -93,17 +94,15 @@ TEST(PropertyParserTest, InvalidTraceLEQ_2Literals) {
     tr_lit.emplace_back("y");
     
     Formula *formula = parse("(O (AND (LEQ (1.x) (2.x)) (GEQ (1.y) (2.y))))");
-    bool result = false;
+    bool result = true;
     const long tr[] = {1, 2};
     ProbModel pm;
 
     // FIXME : check how to use the API for two_literals
     // tests may be failing due to wrong usage of the API
     for(unsigned idx = 0; idx < 100; ++idx) {
-        std::cout << tr[0] << " : " << tr[0] << std::endl;
-        result = formula->eval(&tr[0], &tr[0]);
-        std::cout << tr[1] << " : " << tr[1] << std::endl;
-        result = formula->eval(&tr[1], &tr[1]);
+        result = formula->eval(&tr[1], &tr[0]);
+        result = formula->eval(&tr[0], &tr[1]);
     }
 
     EXPECT_FALSE(result);
