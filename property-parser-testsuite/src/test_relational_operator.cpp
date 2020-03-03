@@ -102,7 +102,7 @@ TEST(PropertyParserTest, InvalidTraceLEQ_2Literals) {
     // tests may be failing due to wrong usage of the API
     for(unsigned idx = 0; idx < 100; ++idx) {
         result = formula->eval(&tr[1], &tr[0]);
-        result = formula->eval(&tr[0], &tr[1]);
+        result = formula->eval(&tr[1], &tr[1]);
     }
 
     EXPECT_FALSE(result);
