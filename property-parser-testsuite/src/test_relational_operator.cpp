@@ -12,7 +12,7 @@ TEST(PropertyParserTest, ValidTraceLEQ) {
     num_lit = 1;
     tr_lit.clear();
     tr_lit.emplace_back("x");
-    
+
     Formula *formula = parse("(O (LEQ (1.x) (2.x)))");
     bool result = false;
     const long tr[] = {1, 2};
@@ -26,7 +26,7 @@ TEST(PropertyParserTest, ValidTraceLEQ) {
         else
             result = formula->eval(&tr[pm.probM(50)], &tr[pm.probM(50)]);
     }
-    
+
     EXPECT_TRUE(result);
 }
 
@@ -37,7 +37,7 @@ TEST(PropertyParserTest, ValidTraceLEQ_2Literals) {
     tr_lit.clear();
     tr_lit.emplace_back("x");
     tr_lit.emplace_back("y");
-    
+
     Formula *formula = parse("(O (AND (LEQ (1.x) (2.x)) (GEQ (1.y) (2.y))))");
     bool result = false;
     const long tr[] = {1, 2};
@@ -55,7 +55,7 @@ TEST(PropertyParserTest, ValidTraceLEQ_2Literals) {
             result = formula->eval(&tr[pm.probM(50)], &tr[pm.probM(50)]);
         }
     }
-        
+
     EXPECT_TRUE(result);
 }
 
@@ -65,7 +65,7 @@ TEST(PropertyParserTest, InvalidTraceLEQ) {
     num_lit = 1;
     tr_lit.clear();
     tr_lit.emplace_back("x");
-    
+
     Formula *formula = parse("(O (LEQ (1.x) (2.x)))");
     bool result = false;
     const long tr[] = {1, 2};
@@ -92,7 +92,7 @@ TEST(PropertyParserTest, InvalidTraceLEQ_2Literals) {
     tr_lit.clear();
     tr_lit.emplace_back("x");
     tr_lit.emplace_back("y");
-    
+
     Formula *formula = parse("(O (AND (LEQ (1.x) (2.x)) (GEQ (1.y) (2.y))))");
     bool result = true;
     const long tr[] = {1, 2};
@@ -111,7 +111,7 @@ TEST(PropertyParserTest, InvalidTraceLEQ_2Literals) {
 
 
 /////////////////////////////////
-// Test cases for EQ operator //
+// Test cases for EQL operator //
 /////////////////////////////////
 
 TEST(PropertyParserTest, ValidTraceEQL) {
@@ -119,7 +119,7 @@ TEST(PropertyParserTest, ValidTraceEQL) {
     num_lit = 1;
     tr_lit.clear();
     tr_lit.emplace_back("x");
-    
+
     Formula *formula = parse("(O (EQL (1.x) (2.x)))");
 
     bool result = false;
@@ -130,13 +130,13 @@ TEST(PropertyParserTest, ValidTraceEQL) {
     for (unsigned idx = 0; idx < 100; ++idx) {
 
         if(pm.probM(20)) {
-	    unsigned randIdx = pm.probM(50);
+            unsigned randIdx = pm.probM(50);
             result = formula->eval(&tr[randIdx], &tr[randIdx]);
-	}
+        }
         else
             result = formula->eval(&tr[pm.probM(50)], &tr[pm.probM(50)]);
     }
-    
+
     EXPECT_TRUE(result);
 }
 
@@ -146,7 +146,7 @@ TEST(PropertyParserTest, ValidTraceEQL_2Literals) {
     tr_lit.clear();
     tr_lit.emplace_back("x");
     tr_lit.emplace_back("y");
-    
+
     Formula *formula = parse("(O (AND (EQL (1.x) (2.x)) (LEQ (1.y) (2.y))))");
     bool result = false;
     const long tr[] = {1, 2};
@@ -156,7 +156,7 @@ TEST(PropertyParserTest, ValidTraceEQL_2Literals) {
 
     for(unsigned idx = 0; idx < 100; ++idx) {
         if (idx == validIdx) {
-	    unsigned rand_idx = pm.probM(50);
+            unsigned rand_idx = pm.probM(50);
             result = formula->eval(&tr[rand_idx], &tr[rand_idx]);
             result = formula->eval(&tr[0], &tr[1]);
         }
@@ -165,7 +165,7 @@ TEST(PropertyParserTest, ValidTraceEQL_2Literals) {
             result = formula->eval(&tr[pm.probM(50)], &tr[pm.probM(50)]);
         }
     }
-        
+
     EXPECT_TRUE(result);
 }
 
@@ -174,7 +174,7 @@ TEST(PropertyParserTest, InvalidTraceEQL) {
     num_lit = 1;
     tr_lit.clear();
     tr_lit.emplace_back("x");
-    
+
     Formula *formula = parse("(O (EQL (1.x) (2.x)))");
     bool result = false;
     const long tr[] = {1, 2};
@@ -186,7 +186,7 @@ TEST(PropertyParserTest, InvalidTraceEQL) {
         if(pm.probM(20))
             result = formula->eval(&tr[1], &tr[0]);
         else
-	    result = formula->eval(&tr[0], &tr[1]);
+            result = formula->eval(&tr[0], &tr[1]);
     }
 
     EXPECT_FALSE(result);
@@ -198,7 +198,7 @@ TEST(PropertyParserTest, InvalidTraceEQL_2Literals) {
     tr_lit.clear();
     tr_lit.emplace_back("x");
     tr_lit.emplace_back("y");
-    
+
     Formula *formula = parse("(O (AND (EQL (1.x) (2.x)) (LEQ (1.y) (2.y))))");
     bool result = true;
     const long tr[] = {1, 2};
@@ -207,11 +207,11 @@ TEST(PropertyParserTest, InvalidTraceEQL_2Literals) {
     const unsigned validIdx = 20;
 
     for(unsigned idx = 0; idx < 100; ++idx) {
-	unsigned rand_idx = pm.probM(50);
-	result = formula->eval(&tr[rand_idx], &tr[1-rand_idx]);
-	result = formula->eval(&tr[0], &tr[1]);
+        unsigned rand_idx = pm.probM(50);
+        result = formula->eval(&tr[rand_idx], &tr[1-rand_idx]);
+        result = formula->eval(&tr[0], &tr[1]);
     }
-        
+
     EXPECT_FALSE(result);
 }
 
@@ -220,14 +220,101 @@ TEST(PropertyParserTest, InvalidTraceEQL_2Literals) {
 // Test cases for GEQ operator //
 /////////////////////////////////
 
-TEST(PropertyParserTest, ValidTraceGEQ) {}
+TEST(PropertyParserTest, ValidTraceGEQ) {
 
-TEST(PropertyParserTest, ValidTraceGEQ_2Literals) {}
+    num_lit = 1;
+    tr_lit.clear();
+    tr_lit.emplace_back("x");
 
-TEST(PropertyParserTest, InvalidTraceGEQ) {}
+    Formula *formula = parse("(O (GEQ (1.x) (2.x)))");
 
-TEST(PropertyParserTest, InvalidTraceGEQ_2Literals) {}
+    bool result = false;
+    const long tr[] = {1, 2};
 
+    ProbModel pm;
+
+    for (unsigned idx = 0; idx < 100; ++idx) {
+
+        if(pm.probM(20)) {
+            result = formula->eval(&tr[1], &tr[0]);
+        }
+        else
+            result = formula->eval(&tr[pm.probM(50)], &tr[pm.probM(50)]);
+    }
+
+    EXPECT_TRUE(result);
+}
+
+TEST(PropertyParserTest, ValidTraceGEQ_2Literals) {
+
+    num_lit = 2;
+    tr_lit.clear();
+    tr_lit.emplace_back("x");
+    tr_lit.emplace_back("y");
+
+    Formula *formula = parse("(O (AND (EQL (1.x) (2.x)) (LEQ (1.y) (2.y))))");
+    bool result = false;
+    const long tr[] = {1, 2};
+
+    ProbModel pm;
+    const unsigned validIdx = 20;
+
+    for(unsigned idx = 0; idx < 100; ++idx) {
+        if (idx == validIdx) {
+            unsigned rand_idx = pm.probM(50);
+            result = formula->eval(&tr[rand_idx], &tr[rand_idx]);
+            result = formula->eval(&tr[0], &tr[1]);
+        }
+        else {
+            result = formula->eval(&tr[pm.probM(50)], &tr[pm.probM(50)]);
+            result = formula->eval(&tr[pm.probM(50)], &tr[pm.probM(50)]);
+        }
+    }
+
+    EXPECT_TRUE(result);
+}
+
+TEST(PropertyParserTest, InvalidTraceGEQ) {
+
+    num_lit = 1;
+    tr_lit.clear();
+    tr_lit.emplace_back("x");
+
+    Formula *formula = parse("(O (GEQ (1.x) (2.x)))");
+    bool result = false;
+    const long tr[] = {1, 2};
+
+    ProbModel pm;
+
+    for (unsigned idx = 0; idx < 100; ++idx) {
+        result = formula->eval(&tr[0], &tr[1]);
+    }
+
+    EXPECT_FALSE(result);
+}
+
+TEST(PropertyParserTest, InvalidTraceGEQ_2Literals) {
+
+    num_lit = 2;
+    tr_lit.clear();
+    tr_lit.emplace_back("x");
+    tr_lit.emplace_back("y");
+
+    Formula *formula = parse("(O (AND (GEQ (1.x) (2.x)) (LEQ (1.y) (2.y))))");
+    bool result = true;
+    const long tr[] = {1, 2};
+
+    ProbModel pm;
+    const unsigned validIdx = 20;
+
+    for(unsigned idx = 0; idx < 100; ++idx) {
+        unsigned rand_idx = pm.probM(50);
+        result = formula->eval(&tr[0], &tr[1]);
+        result = formula->eval(&tr[0], &tr[1]);
+    }
+
+    EXPECT_FALSE(result);
+}
 
 ////////////////////////////////////
 // Test cases for LESSER operator //
