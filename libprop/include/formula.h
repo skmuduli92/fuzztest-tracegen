@@ -145,10 +145,10 @@ namespace HyperPLTL {
   /** Predicate (eq v_1,v_2,...,v_n). */
   class Equal : public HyperProp {
   public:
-    Equal(PVarMap m, const std::vector<PTerm>& terms) 
+    Equal(PVarMap m, PTerm term) 
       : HyperProp(m)
     {
-      std::copy(terms.begin(), terms.end(), std::back_inserter(args));
+      args.push_back(term);
     }
     virtual void display(std::ostream& out) const;
     virtual bool eval(uint32_t cycle, const TraceList& traces);

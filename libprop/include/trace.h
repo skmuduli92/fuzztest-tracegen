@@ -7,6 +7,9 @@
 
 #include <assert.h>
 
+class Trace;
+typedef std::shared_ptr<Trace> PTrace;
+
 template<class T> 
   struct VarTrace
 {
@@ -63,7 +66,7 @@ public:
 
   /** Return the element at a particular index. */
   const T& operator[](uint32_t t) {
-    assert (datapoints.size() > 0 && t <= lastCycle);
+    assert (datapoints.size() > 0);
     auto pos = std::lower_bound(datapoints.begin(), datapoints.end(), t);
     // move to the previous element.
     pos--;
@@ -92,14 +95,14 @@ public:
   void updateTermValue(unsigned i, uint32_t cycle, ValueType value)
   {
     assert (i < variables.size());
-    if (lastCycle < cycle) { cycle = lastCycle; }
+    if (lastCycle < cycle) { lastCycle = cycle; }
     variables[i].updateValue(cycle, value);
   }
 
   /** Update the value of proposition i at time cycle. */
   void updatePropValue(unsigned i, uint32_t cycle, bool value) {
     assert (i < propositions.size());
-    if (lastCycle < cycle) { cycle = lastCycle; }
+    if (lastCycle < cycle) { lastCycle = cycle; }
     propositions[i].updateValue(cycle, value);
   }
 
@@ -116,5 +119,5 @@ public:
   }
 };
 
-typedef std::vector< std::shared_ptr<Trace> > TraceList;
+typedef std::vector<PTrace> TraceList;
 #endif

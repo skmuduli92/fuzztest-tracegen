@@ -30,6 +30,8 @@ CXXFLAGS:=-c -Wall -Werror -Wno-error=deprecated -fopenmp -std=c++17 \
 	${INCLUDE} ${DEFINES} ${DBGFLAGS} ${OPTFLAGS} ${PGFLAGS} \
 	-Wno-strict-overflow
 
+LDFLAGS:=${DBGFLAGS}
+
 #Find all the C++ files in the src directory.
 SOURCES:=$(shell find src/ -name "*.cpp")
 #These are the dependency files, which make will clean up after it creates them
@@ -62,4 +64,4 @@ include $(subst .cpp,.d,$(TEST_SOURCES))
 .PHONY: clean
 
 clean:
-	rm *.a *.o *.d src/*.o src/*.d test/*.o test/*.d
+	rm -f *.a *.o *.d src/*.o src/*.d test/*.o test/*.d

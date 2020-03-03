@@ -64,11 +64,10 @@ namespace HyperPLTL {
   {
     // eval not well-defined when multiple traces are available.
     assert (traces.size() > 0);
-    ValueType v0 = std::dynamic_pointer_cast<Term>(
-                        args[0])->termValue(cycle, 0, traces);
+    PTerm arg = std::dynamic_pointer_cast<Term>(args[0]);
+    ValueType v0 = arg->termValue(cycle, 0, traces);
     for (unsigned i=1; i != traces.size(); i++) {
-      if (std::dynamic_pointer_cast<Term>(
-                  args[i])->termValue(cycle, i, traces) != v0) 
+      if (arg->termValue(cycle, i, traces) != v0) 
       {
         return false;
       }
