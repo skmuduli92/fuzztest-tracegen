@@ -28,41 +28,13 @@ namespace HyperPLTL {
     std::map<std::string, unsigned> propIndices;
 
   public:
-    const std::string& getVarName(unsigned i) const {
-      assert(i < varNames.size());
-      return varNames[i];
-    }
 
-    int getVarIndex(const std::string& name) const {
-      auto pos = varIndices.find(name);
-      assert (pos != varIndices.end());
-      return pos->second;
-    }
-
-    unsigned addVar(const std::string& name) {
-      unsigned idx = varNames.size();
-      varNames.push_back(name);
-      varIndices[name] = idx;
-      return idx;
-    }
-
-    const std::string& getPropName(unsigned i) const {
-      assert(i < propNames.size());
-      return propNames[i];
-    }
-
-    int getPropIndex(const std::string& name) const {
-      auto pos = propIndices.find(name);
-      assert (pos != propIndices.end());
-      return pos->second;
-    }
-
-    unsigned addProp(const std::string& name) {
-      unsigned idx = propNames.size();
-      propNames.push_back(name);
-      propIndices[name] = idx;
-      return idx;
-    }
+    unsigned addProp(const std::string& name);
+    unsigned addVar(const std::string& name);
+    const std::string& getPropName(unsigned i) const;
+    int getPropIndex(const std::string& name) const;
+    const std::string& getVarName(unsigned i) const;
+    int getVarIndex(const std::string& name) const;
   };
 
   class Formula {

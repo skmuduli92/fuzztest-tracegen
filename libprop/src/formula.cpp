@@ -1,6 +1,7 @@
 #include "formula.h"
 
 namespace HyperPLTL {
+    
   std::ostream& operator<<(std::ostream& out, const Formula& t)
   {
     t.display(out);
@@ -68,9 +69,9 @@ namespace HyperPLTL {
     ValueType v0 = arg->termValue(cycle, 0, traces);
     for (unsigned i=1; i != traces.size(); i++) {
       if (arg->termValue(cycle, i, traces) != v0) 
-      {
-        return false;
-      }
+	{
+	  return false;
+	}
     }
     return true;
   }
@@ -189,5 +190,46 @@ namespace HyperPLTL {
     auto p1 = std::dynamic_pointer_cast<HyperProp>(args[0]);
     auto p2 = std::dynamic_pointer_cast<HyperProp>(args[1]);
     return (!p1->eval(cycle, traces) || p2->eval(cycle, traces));
+  }
+
+
+  //////////////////////////////////////////////
+  // VarMap class member function definitions //
+  //////////////////////////////////////////////
+
+  const std::string& VarMap::getVarName(unsigned i) const {
+    assert(i < varNames.size());
+    return varNames[i];
+  }
+
+  int VarMap::getVarIndex(const std::string& name) const {
+    auto pos = varIndices.find(name);
+    assert (pos != varIndices.end());
+    return pos->second;
+  }
+
+  unsigned  VarMap::addVar(const std::string& name) {
+    unsigned idx = varNames.size();
+    varNames.push_back(name);
+    varIndices[name] = idx;
+    return idx;
+  }
+
+  const std::string&  VarMap::getPropName(unsigned i) const {
+    assert(i < propNames.size());
+    return propNames[i];
+  }
+
+  int  VarMap::getPropIndex(const std::string& name) const {
+    auto pos = propIndices.find(name);
+    assert (pos != propIndices.end());
+    return pos->second;
+  }
+
+  unsigned  VarMap::addProp(const std::string& name) {
+    unsigned idx = propNames.size();
+    propNames.push_back(name);
+    propIndices[name] = idx;
+    return idx;
   }
 }
