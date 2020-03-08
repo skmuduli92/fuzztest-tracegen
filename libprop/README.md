@@ -26,4 +26,4 @@
 
 **Inheritance diagram**
 
-<img src="doc/class_hyper_p_l_t_l_1_1_formula__inherit__graph.png" />
+<img src="./doc/inherit_graph_0.png" />

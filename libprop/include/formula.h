@@ -76,18 +76,6 @@ namespace HyperPLTL {
     virtual bool eval(uint32_t cycle, const TraceList& traces) = 0;
   };
 
-  /** Write formula. the output stream (delegates to display). */
-  std::ostream& operator<<(std::ostream& out, const Formula& t);
-
-  /** Formula true. */
-  class True : public TraceProp {
-  public:
-    True(PVarMap m) : TraceProp(m) {}
-
-    virtual void display(std::ostream& out) const;
-    virtual bool propValue(uint32_t cycle, unsigned trace, const TraceList& traces);
-  };
-
   /** Formula TermVar(name): this is an integer valued variable. */
   class TermVar : public Term {
     unsigned index;
@@ -114,6 +102,17 @@ namespace HyperPLTL {
     virtual bool propValue(uint32_t cycle, unsigned trace, const TraceList& traces);
   };
 
+  /** Formula true. */
+  class True : public TraceProp {
+  public:
+    True(PVarMap m) : TraceProp(m) {}
+
+    virtual void display(std::ostream& out) const;
+    virtual bool propValue(uint32_t cycle, unsigned trace, const TraceList& traces);
+  };
+
+
+  
   /** Predicate (eq v_1,v_2,...,v_n). */
   class Equal : public HyperProp {
   public:
@@ -136,21 +135,6 @@ namespace HyperPLTL {
     {
       args.push_back(p);
     }
-    virtual void display(std::ostream& out) const;
-    virtual bool eval(uint32_t cycle, const TraceList& traces);
-  };
-
-  /** Formula G(phi). */
-  class Always : public HyperProp {
-    bool past;
-  public:
-    Always(PVarMap m, PHyperProp f) 
-      : HyperProp(m)
-      , past(true)
-    {
-      args.push_back(f);
-    }
-    
     virtual void display(std::ostream& out) const;
     virtual bool eval(uint32_t cycle, const TraceList& traces);
   };
@@ -215,6 +199,31 @@ namespace HyperPLTL {
     virtual void display(std::ostream& out) const;
     virtual bool eval(uint32_t cycle, const TraceList& traces);
   };
+
+  
+  /** Formula G(phi). */
+  class Always : public HyperProp {
+    bool past;
+  public:
+    Always(PVarMap m, PHyperProp f) 
+      : HyperProp(m)
+      , past(true)
+    {
+      args.push_back(f);
+    }
+    
+    virtual void display(std::ostream& out) const;
+    virtual bool eval(uint32_t cycle, const TraceList& traces);
+  };
+
+
+  class Yesterday : public HyperProp {};
+  
+  class Once : public HyperProp {};
+
+  class Since : public HyperProp {};
+
+
 }
 
 #endif
