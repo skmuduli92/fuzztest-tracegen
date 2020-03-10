@@ -36,10 +36,7 @@ template<class T>
   uint32_t lastCycle;
 
 public:
-  VarTrace() 
-    : lastCycle(0)
-  {
-  }
+  VarTrace() : lastCycle(0) {}
 
   /** updateValue(t, value) must be called every cycle.
     * It will insert into the vector if needed.
@@ -117,6 +114,9 @@ public:
     assert (i < propositions.size());
     return propositions[i][cycle];
   }
+
+  /// get trace length (un-compressed)
+  size_t length(void) { return lastCycle; }
 };
 
 typedef std::vector<PTrace> TraceList;

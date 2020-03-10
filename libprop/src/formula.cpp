@@ -8,6 +8,46 @@ namespace HyperPLTL {
     return out;
   }
 
+  //////////////////////////////////////////////
+  // VarMap class member function definitions //
+  //////////////////////////////////////////////
+
+  const std::string& VarMap::getVarName(unsigned i) const {
+    assert(i < varNames.size());
+    return varNames[i];
+  }
+
+  int VarMap::getVarIndex(const std::string& name) const {
+    auto pos = varIndices.find(name);
+    assert (pos != varIndices.end());
+    return pos->second;
+  }
+
+  unsigned  VarMap::addVar(const std::string& name) {
+    unsigned idx = varNames.size();
+    varNames.push_back(name);
+    varIndices[name] = idx;
+    return idx;
+  }
+
+  const std::string&  VarMap::getPropName(unsigned i) const {
+    assert(i < propNames.size());
+    return propNames[i];
+  }
+
+  int  VarMap::getPropIndex(const std::string& name) const {
+    auto pos = propIndices.find(name);
+    assert (pos != propIndices.end());
+    return pos->second;
+  }
+
+  unsigned  VarMap::addProp(const std::string& name) {
+    unsigned idx = propNames.size();
+    propNames.push_back(name);
+    propIndices[name] = idx;
+    return idx;
+  }
+
   // ---------------------------------------------------------------------- //
   //                               class True                               //
   // ---------------------------------------------------------------------- //
@@ -68,10 +108,8 @@ namespace HyperPLTL {
     PTerm arg = std::dynamic_pointer_cast<Term>(args[0]);
     ValueType v0 = arg->termValue(cycle, 0, traces);
     for (unsigned i=1; i != traces.size(); i++) {
-      if (arg->termValue(cycle, i, traces) != v0) 
-	{
-	  return false;
-	}
+      if (arg->termValue(cycle, i, traces) != v0)
+	return false;
     }
     return true;
   }
@@ -90,22 +128,6 @@ namespace HyperPLTL {
   {
     auto p = std::dynamic_pointer_cast<TraceProp>(args[0]);
     return p->propValue(cycle, trace, traces);
-  }
-
-  // ---------------------------------------------------------------------- //
-  //                            class Always                                //
-  // ---------------------------------------------------------------------- //
-  void Always::display(std::ostream& out) const
-  {
-    out << "(G ";
-    args[0]->display(out);
-    out << ")";
-  }
-
-  bool Always::eval(uint32_t cycle, const TraceList& traces)
-  {
-    auto f = std::dynamic_pointer_cast<HyperProp>(args[0]);
-    return (past = past && f->eval(cycle, traces));
   }
 
   // ---------------------------------------------------------------------- //
@@ -173,7 +195,7 @@ namespace HyperPLTL {
   }
 
   // ---------------------------------------------------------------------- //
-  //                        class Implies                                  //
+  //                        class Implies                                   //
   // ---------------------------------------------------------------------- //
   void Implies ::display(std::ostream& out) const
   {
@@ -193,43 +215,42 @@ namespace HyperPLTL {
   }
 
 
-  //////////////////////////////////////////////
-  // VarMap class member function definitions //
-  //////////////////////////////////////////////
+  
+  // ---------------------------------------------------------------------- //
+  //                            class Always                                //
+  // ---------------------------------------------------------------------- //
 
-  const std::string& VarMap::getVarName(unsigned i) const {
-    assert(i < varNames.size());
-    return varNames[i];
+  void Always::display(std::ostream& out) const
+  {
+    out << "(G ";
+    args[0]->display(out);
+    out << ")";
   }
 
-  int VarMap::getVarIndex(const std::string& name) const {
-    auto pos = varIndices.find(name);
-    assert (pos != varIndices.end());
-    return pos->second;
+  bool Always::eval(uint32_t cycle, const TraceList& traces)
+  {
+    auto f = std::dynamic_pointer_cast<HyperProp>(args[0]);
+    past = past && f->eval(cycle, traces);
+    return past;
+  }
+  
+  // ---------------------------------------------------------------------- //
+  //                        class Yesterday                                 //
+  // ---------------------------------------------------------------------- //
+
+  void Yesterday::display(std::ostream& out) const {
+    out << "(Y ";
+    args[0]->display(out);
+    out << ")";
   }
 
-  unsigned  VarMap::addVar(const std::string& name) {
-    unsigned idx = varNames.size();
-    varNames.push_back(name);
-    varIndices[name] = idx;
-    return idx;
+  bool Yesterday::eval(uint32_t cycle, const TraceList& traces)
+  {
+    auto f = std::dynamic_pointer_cast<HyperProp>(args[0]);
+
+    bool past = present;
+    present = f->eval(cycle, traces);
+    return past;
   }
 
-  const std::string&  VarMap::getPropName(unsigned i) const {
-    assert(i < propNames.size());
-    return propNames[i];
-  }
-
-  int  VarMap::getPropIndex(const std::string& name) const {
-    auto pos = propIndices.find(name);
-    assert (pos != propIndices.end());
-    return pos->second;
-  }
-
-  unsigned  VarMap::addProp(const std::string& name) {
-    unsigned idx = propNames.size();
-    propNames.push_back(name);
-    propIndices[name] = idx;
-    return idx;
-  }
 }

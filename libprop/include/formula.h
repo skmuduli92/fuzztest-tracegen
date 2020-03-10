@@ -47,7 +47,6 @@ namespace HyperPLTL {
 
     // write this formula to the screen.
     virtual void display(std::ostream& out) const = 0;
-
   };
 
   // integer-sorted terms.
@@ -217,8 +216,20 @@ namespace HyperPLTL {
   };
 
 
-  class Yesterday : public HyperProp {};
-  
+  class Yesterday : public HyperProp {
+      bool present;
+  public:
+      Yesterday(PVarMap m, PHyperProp f)
+      : HyperProp(m)
+      , present(false)
+      {
+        args.push_back(f);
+      }
+
+      virtual void display(std::ostream& out) const;
+      virtual bool eval(uint32_t cycle, const TraceList& traces);
+  };
+
   class Once : public HyperProp {};
 
   class Since : public HyperProp {};
