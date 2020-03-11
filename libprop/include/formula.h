@@ -220,8 +220,8 @@ namespace HyperPLTL {
       bool present;
   public:
       Yesterday(PVarMap m, PHyperProp f)
-      : HyperProp(m)
-      , present(false)
+	  : HyperProp(m)
+	  , present(false)
       {
         args.push_back(f);
       }
@@ -230,10 +230,18 @@ namespace HyperPLTL {
       virtual bool eval(uint32_t cycle, const TraceList& traces);
   };
 
-  class Once : public HyperProp {};
+  class Once : public HyperProp {
+      bool valid;
+    public:
+      Once(PVarMap m, PHyperProp f)
+	  : HyperProp(m), valid(false)
+	  {
+	      args.push_back(f);
+	  }
 
-  class Since : public HyperProp {};
-
+      virtual void display(std::ostream& out) const;
+      virtual bool eval(uint32_t cycle, const TraceList& traces);
+  };
 
 }
 

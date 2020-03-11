@@ -107,9 +107,10 @@ namespace HyperPLTL {
     assert (traces.size() > 0);
     PTerm arg = std::dynamic_pointer_cast<Term>(args[0]);
     ValueType v0 = arg->termValue(cycle, 0, traces);
-    for (unsigned i=1; i != traces.size(); i++) {
+    
+    for (unsigned i = 1; i != traces.size(); i++) {
       if (arg->termValue(cycle, i, traces) != v0)
-	return false;
+          return false;
     }
     return true;
   }
@@ -211,9 +212,8 @@ namespace HyperPLTL {
   {
     auto p1 = std::dynamic_pointer_cast<HyperProp>(args[0]);
     auto p2 = std::dynamic_pointer_cast<HyperProp>(args[1]);
-    return (!p1->eval(cycle, traces) || p2->eval(cycle, traces));
+    return (!p1->eval(cycle, traces)) || p2->eval(cycle, traces);
   }
-
 
   
   // ---------------------------------------------------------------------- //
@@ -244,13 +244,35 @@ namespace HyperPLTL {
     out << ")";
   }
 
-  bool Yesterday::eval(uint32_t cycle, const TraceList& traces)
-  {
-    auto f = std::dynamic_pointer_cast<HyperProp>(args[0]);
+  bool Yesterday::eval(uint32_t cycle, const TraceList& traces) {
 
+    // FIXME : need to fix yesterday computation logic or trace compression
+    // mechanism, the evaluation seems to be returning past values
+
+    auto f = std::dynamic_pointer_cast<HyperProp>(args[0]);
     bool past = present;
     present = f->eval(cycle, traces);
     return past;
+  }
+
+  // ---------------------------------------------------------------------- //
+  //                        class once                                      //
+  // ---------------------------------------------------------------------- //
+
+  void Once::display(std::ostream& out) const {
+    out << "(O ";
+    args[0]->display(out);
+    out << ")";
+  }
+
+  bool Once::eval(uint32_t cycle, const TraceList& traces) {
+
+    // FIXME : need to fix yesterday computation logic or trace compression
+    // mechanism, the evaluation seems to be returning past values
+
+    auto f = std::dynamic_pointer_cast<HyperProp>(args[0]);
+    valid = valid || f->eval(cycle, traces);
+    return valid;
   }
 
 }

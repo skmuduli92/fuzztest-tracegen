@@ -2,6 +2,16 @@
 
 **Build instructions**
 
+* Installing dependencies
+
+  ```bash
+  sudo apt-get install googletest
+  cd /usr/src/googletest
+  sudo cmake .
+  sudo make
+  sudo make install
+  ```
+
 - Debug build [ *default* ]
 
   ```bash
@@ -10,8 +20,6 @@
   cmake ..
   make
   ```
-
-  
 
 - Release build
 
@@ -22,7 +30,11 @@
   make
   ```
 
+- Running test in build directory
 
+  ```bash
+  make test
+  ```
 
 **Inheritance diagram**
 

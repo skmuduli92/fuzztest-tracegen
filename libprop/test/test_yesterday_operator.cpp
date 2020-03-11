@@ -7,7 +7,7 @@ using namespace HyperPLTL;
 using namespace std;
 
 
-PHyperProp createTestProperty() {
+PHyperProp propertyYOperator() {
     // TODO: add new method to get varmap size
     PVarMap varmap(new VarMap());
     unsigned xIndex = varmap->addVar("x");
@@ -26,7 +26,7 @@ PHyperProp createTestProperty() {
 
 TEST(PropertyLibTest, ValidTraceYOperator) {
 
-    PHyperProp property = createTestProperty();
+  PHyperProp property = propertyYOperator();
 
     PTrace trace1(new Trace(2));
     PTrace trace2(new Trace(2));
@@ -75,7 +75,7 @@ TEST(PropertyLibTest, ValidTraceYOperator) {
 }
 
 TEST(PropertyLibTest, InvalidTraceYOperator) {
-    PHyperProp property = createTestProperty();
+    PHyperProp property = propertyYOperator();
 
     PTrace trace1(new Trace(2));
     PTrace trace2(new Trace(2));
@@ -125,5 +125,27 @@ TEST(PropertyLibTest, InvalidTraceYOperator) {
 
 
 TEST(PropertyLibTest, InvalidTraceYeqXNeverTrue) {
-    // this check the property evaluation value when (Y (eq x) is never true
+    // check the property evaluation value when (Y (eq x) is never true
+
+    PHyperProp property = propertyYOperator();
+
+    PTrace trace1(new Trace(2));
+    PTrace trace2(new Trace(2));
+    TraceList tracelist({trace1, trace2});
+
+    bool result = false;
+    unsigned traceLength = rand() % 20 + 20;
+
+    for(size_t cycle = 0; cycle < traceLength; ++cycle) {
+	unsigned xvalue = rand() % 100;
+	// setting 'x' var value
+	trace1->updateTermValue(0, cycle, xvalue);
+	trace2->updateTermValue(0, cycle, 100 - xvalue);
+	// setting 'y' var value
+	trace1->updateTermValue(1, cycle, rand() % 100);
+	trace2->updateTermValue(1, cycle, rand() % 100);
+	result = property->eval(cycle, tracelist);
+    }
+
+    EXPECT_TRUE(result);
 }
