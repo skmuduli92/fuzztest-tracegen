@@ -23,6 +23,8 @@ include_directories(include)
 file(GLOB SRC_FILES "src/*.cpp")
 file(GLOB TEST_SRC_FILES "test/*.cpp")
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_library(libprop ${SRC_FILES})
 
 # Finding  googltest framework installed in the system
