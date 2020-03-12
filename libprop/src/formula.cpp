@@ -266,13 +266,35 @@ namespace HyperPLTL {
   }
 
   bool Once::eval(uint32_t cycle, const TraceList& traces) {
-
-    // FIXME : need to fix yesterday computation logic or trace compression
-    // mechanism, the evaluation seems to be returning past values
-
     auto f = std::dynamic_pointer_cast<HyperProp>(args[0]);
     valid = valid || f->eval(cycle, traces);
     return valid;
   }
 
+  // ---------------------------------------------------------------------- //
+  //                        class since                                     //
+  // ---------------------------------------------------------------------- //
+
+  void Since::display(std::ostream& out) const {
+    out << "(S ";
+    args[0]->display(out);
+    out << ")";
+  }
+
+  bool Since::eval(uint32_t cycle, const TraceList& traces) {
+    // S(f1, f2)
+    bool f1 = std::dynamic_pointer_cast<HyperProp>(args[0]);
+    bool f2 = std::dynamic_pointer_cast<HyperProp>(args[1]);
+
+    if (flagF2 == false) {
+      flagF2 = f2;
+    } else {
+      // if f2 has become true once, need to check if f1 is true there onwards
+      flagF1 = flagF1 && f1;
+      return flagF1;
+    }
+
+    return false;
+  }
+  
 }

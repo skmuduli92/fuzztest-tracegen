@@ -235,13 +235,33 @@ namespace HyperPLTL {
     public:
       Once(PVarMap m, PHyperProp f)
 	  : HyperProp(m), valid(false)
-	  {
-	      args.push_back(f);
-	  }
+      {
+	  args.push_back(f);
+      }
 
       virtual void display(std::ostream& out) const;
       virtual bool eval(uint32_t cycle, const TraceList& traces);
   };
+
+
+  ///////////////////////////////////////////////////////
+  // f1 S f2 : f2 occured at some past time and f1 has //
+  //           held since that time until present      //
+  ///////////////////////////////////////////////////////
+  
+  class Since : public HyperProp {
+    bool valid;    
+  public:
+    Since(PVarMap m, PHyperProp f)
+	: HyperProp(m), validF1(true), validF2(false)
+    {
+	args.push_back(f);
+    }
+
+    virtual void display(std::ostream& out) const;
+    virtual bool eval(uint32_t cycle, const TraceList& traces);
+  };
+
 
 }
 
