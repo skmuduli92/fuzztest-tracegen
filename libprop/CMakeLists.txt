@@ -26,6 +26,7 @@ add_library(libprop ${SRC_FILES})
 
 # Finding  googltest framework installed in the system
 enable_testing()
+find_package(Threads REQUIRED)
 find_package(GTest REQUIRED)
 if(NOT GTEST_FOUND)
   message("Install googletest framework in your system")

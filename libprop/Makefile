@@ -32,6 +32,9 @@ CXXFLAGS:=-c -Wall -Werror -Wno-error=deprecated -fopenmp -std=c++17 \
 
 LDFLAGS:=${DBGFLAGS}
 
+# google-test and pthread libraries for testing framekwork
+GTEST_FLAGS:=-lgtest -lpthread
+
 #Find all the C++ files in the src directory.
 SOURCES:=$(shell find src/ -name "*.cpp")
 #These are the dependency files, which make will clean up after it creates them
@@ -46,8 +49,8 @@ TEST_DEPFILES:=$(patsubst %.cpp,%.d,$(TEST_SOURCES))
 #Objects
 TEST_OBJECTS:=$(patsubst %.cpp,%.o,$(TEST_SOURCES))
 
-testprop: $(TEST_OBJECTS) libprop.a 
-	$(LD) -o $@ $(LDFLAGS) $^
+testprop: $(TEST_OBJECTS) libprop.a
+	$(LD) -o $@ ${LDFLAGS} $^ ${GTEST_FLAGS}
 
 libprop.a: $(OBJECTS)
 	$(AR) rc $@ $<
@@ -64,4 +67,4 @@ include $(subst .cpp,.d,$(TEST_SOURCES))
 .PHONY: clean
 
 clean:
-	rm -f *.a *.o *.d src/*.o src/*.d test/*.o test/*.d
+	rm -f *.a *.o *.d src/*.o src/*.d test/*.o test/*.d testprop

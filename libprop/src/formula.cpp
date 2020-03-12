@@ -278,6 +278,7 @@ namespace HyperPLTL {
   void Since::display(std::ostream& out) const {
     out << "(S ";
     args[0]->display(out);
+    args[1]->display(out);
     out << ")";
   }
 
@@ -290,8 +291,8 @@ namespace HyperPLTL {
       validF2 = f2->eval(cycle, traces);
     } else {
       // if f2 has become true once, need to check if f1 is true there onwards
-      validF1 = validF1 && f1->eval(cycle, traces);
-      return validF1;
+      if(f1->eval(cycle, traces)) return true;
+      else return false;
     }
 
     return false;

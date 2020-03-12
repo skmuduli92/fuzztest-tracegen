@@ -23,7 +23,6 @@ PHyperProp propertyOnceOperator() {
 
 TEST(PropertyLIbTest, ValidTraceOnceOperator) {
   PHyperProp property = propertyOnceOperator();
-  property->display(std::cout); std::cout << std::endl;
 
   PTrace trace1(new Trace(2));
   PTrace trace2(new Trace(2));
@@ -37,12 +36,14 @@ TEST(PropertyLIbTest, ValidTraceOnceOperator) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(0, cycle, xvalue);
-    trace2->updateTermValue(0, cycle, 100 - xvalue);
+    xvalue = (xvalue == 50) ? 51 : (100 - xvalue);	
+    trace2->updateTermValue(0, cycle, xvalue);
     // setting 'y' var value
 
     unsigned yvalue = rand() % 100;
     trace1->updateTermValue(1, cycle, yvalue);
-    trace2->updateTermValue(1, cycle, 100 - yvalue);
+    yvalue = (yvalue == 50) ? 51 : (100 - yvalue);
+    trace2->updateTermValue(1, cycle, yvalue);
     result = property->eval(cycle, tracelist);
   }
 
@@ -58,12 +59,14 @@ TEST(PropertyLIbTest, ValidTraceOnceOperator) {
       unsigned xvalue = rand() % 100;
       // setting 'x' var value
       trace1->updateTermValue(0, cycle, xvalue);
-      trace2->updateTermValue(0, cycle, 100 - xvalue);
+      xvalue = (xvalue == 50) ? 51 : (100 - xvalue);	
+      trace2->updateTermValue(0, cycle, xvalue);
       // setting 'y' var value
 
       unsigned yvalue = rand() % 100;
       trace1->updateTermValue(1, cycle, yvalue);
-      trace2->updateTermValue(1, cycle, 100 - yvalue);
+      yvalue = (yvalue == 50) ? 51 : (100 - yvalue);
+      trace2->updateTermValue(1, cycle, yvalue);
       result = property->eval(cycle, tracelist);
   }
 
@@ -72,7 +75,6 @@ TEST(PropertyLIbTest, ValidTraceOnceOperator) {
 
 TEST(PropertyLIbTest, InvalidTraceOnceOperator) {
   PHyperProp property = propertyOnceOperator();
-  property->display(std::cout); std::cout << std::endl;
 
   PTrace trace1(new Trace(2));
   PTrace trace2(new Trace(2));
@@ -86,7 +88,8 @@ TEST(PropertyLIbTest, InvalidTraceOnceOperator) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(0, cycle, xvalue);
-    trace2->updateTermValue(0, cycle, 100 - xvalue);
+    xvalue = (xvalue == 50) ? 51 : (100 - xvalue);
+    trace2->updateTermValue(0, cycle, xvalue);
     // setting 'y' var value
 
     unsigned yvalue = rand() % 100;
@@ -105,7 +108,8 @@ TEST(PropertyLIbTest, InvalidTraceOnceOperator) {
 
       unsigned yvalue = rand() % 100;
       trace1->updateTermValue(1, cycle, yvalue);
-      trace2->updateTermValue(1, cycle, 100 - yvalue);
+      yvalue = (yvalue == 50) ? 51 : (100 - yvalue);
+      trace2->updateTermValue(1, cycle, yvalue);
       result = property->eval(cycle, tracelist);
   }
 
