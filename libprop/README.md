@@ -26,7 +26,7 @@
   make
   ```
 
-- Running test in build directory
+- Running tests in build directory
 
   ```bash
   make test
