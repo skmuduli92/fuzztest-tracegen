@@ -250,12 +250,13 @@ namespace HyperPLTL {
   ///////////////////////////////////////////////////////
   
   class Since : public HyperProp {
-    bool valid;    
+    bool validF1, validF2;    
   public:
-    Since(PVarMap m, PHyperProp f)
-	: HyperProp(m), validF1(true), validF2(false)
+    Since(PVarMap m, PHyperProp f1, PHyperProp f2)
+      : HyperProp(m), validF1(true), validF2(false)
     {
-	args.push_back(f);
+	args.push_back(f1);
+	args.push_back(f2);
     }
 
     virtual void display(std::ostream& out) const;
