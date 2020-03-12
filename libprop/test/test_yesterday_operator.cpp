@@ -35,16 +35,6 @@ TEST(PropertyLibTest, ValidTraceYOperator) {
   size_t cycle = 0;
   bool result = true;
 
-  unsigned traceLength = rand() % 20 + 20;
-
-  for( ; cycle < traceLength; ++cycle) {
-    trace1->updateTermValue(0, cycle, rand() % 100);
-    trace2->updateTermValue(0, cycle, rand() % 100);
-    trace1->updateTermValue(1, cycle, rand() % 100);
-    trace2->updateTermValue(1, cycle, rand() % 100);
-    result = property->eval(cycle, tracelist);
-  }
-
   trace1->updateTermValue(0, cycle, 20);
   trace2->updateTermValue(0, cycle, 20);
   trace1->updateTermValue(1, cycle, rand() % 10);
@@ -59,17 +49,9 @@ TEST(PropertyLibTest, ValidTraceYOperator) {
   trace2->updateTermValue(1, cycle, 10);
 
   result = property->eval(cycle, tracelist);
-  cycle = cycle + 1;
-
 
   // FIXME : remove this after fixing yesterday computation logic
   // eval is returning value from previous cycle
-  trace1->updateTermValue(0, cycle, 0);
-  trace2->updateTermValue(0, cycle, 0);
-  trace1->updateTermValue(1, cycle, 0);
-  trace2->updateTermValue(1, cycle, 0);
-  result = property->eval(cycle, tracelist);
-  cycle = cycle + 1;
 
   EXPECT_TRUE(result);
 }
@@ -86,7 +68,7 @@ TEST(PropertyLibTest, InvalidTraceYOperator) {
 
   unsigned traceLength = rand() % 20 + 20;
 
-  for( ; cycle < traceLength; ++cycle) {
+  for ( ; cycle < traceLength; ++cycle) {
     trace1->updateTermValue(0, cycle, rand() % 100);
     trace2->updateTermValue(0, cycle, rand() % 100);
     trace1->updateTermValue(1, cycle, rand() % 100);
@@ -113,13 +95,6 @@ TEST(PropertyLibTest, InvalidTraceYOperator) {
 
   // FIXME : remove this after fixing yesterday computation logic
   // eval is returning value from previous cycle
-  trace1->updateTermValue(0, cycle, 0);
-  trace2->updateTermValue(0, cycle, 0);
-  trace1->updateTermValue(1, cycle, 0);
-  trace2->updateTermValue(1, cycle, 0);
-  result = property->eval(cycle, tracelist);
-  cycle = cycle + 1;
-
   EXPECT_FALSE(result);
 }
 

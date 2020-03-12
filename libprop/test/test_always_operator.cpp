@@ -31,7 +31,7 @@ PHyperProp property2AlwaysOperator() {
     return property;
 }
 
-TEST(PropertyLIbTest, ValidTraceAlwaysOperator_Test1) {
+TEST(PropertyLibTest, ValidTraceAlwaysOperator_Test1) {
   PHyperProp property = property1AlwaysOperator();
 
   PTrace trace1(new Trace(1));
@@ -53,7 +53,7 @@ TEST(PropertyLIbTest, ValidTraceAlwaysOperator_Test1) {
   EXPECT_TRUE(result);
 }
 
-TEST(PropertyLIbTest, InvalidTraceAlwaysOperator_Test1) {
+TEST(PropertyLibTest, InvalidTraceAlwaysOperator_Test1) {
   PHyperProp property = property1AlwaysOperator();
 
   PTrace trace1(new Trace(1));
@@ -80,7 +80,7 @@ TEST(PropertyLIbTest, InvalidTraceAlwaysOperator_Test1) {
   EXPECT_TRUE(result);
 }
 
-TEST(PropertyLIbTest, ValidTraceAlwaysOperator_Test2) {
+TEST(PropertyLibTest, ValidTraceAlwaysOperator_Test2) {
   PHyperProp property = property2AlwaysOperator();
 
   PTrace trace1(new Trace(2));
@@ -121,7 +121,7 @@ TEST(PropertyLIbTest, ValidTraceAlwaysOperator_Test2) {
 }
 
 
-TEST(PropertyLIbTest, InvalidTraceAlwaysOperator_Test2) {
+TEST(PropertyLibTest, InvalidTraceAlwaysOperator_Test2) {
   PHyperProp property = property2AlwaysOperator();
 
   PTrace trace1(new Trace(2));

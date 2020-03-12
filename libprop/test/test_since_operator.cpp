@@ -21,7 +21,7 @@ PHyperProp propertySinceOperator() {
   return eqYSINCEeqX;
 }
 
-TEST(PropertyLIbTest, ValidTraceSinceOperator) {
+TEST(PropertyLibTest, ValidTraceSinceOperator) {
   PHyperProp property = propertySinceOperator();
 
   PTrace trace1(new Trace(2));
@@ -76,7 +76,7 @@ TEST(PropertyLIbTest, ValidTraceSinceOperator) {
   EXPECT_TRUE(result);
 }
 
-TEST(PropertyLIbTest, InvalidTraceSinceOperator_Test1) {
+TEST(PropertyLibTest, InvalidTraceSinceOperator_Test1) {
 
   // eqX never becomes true, hence SINCE(eqY, eqX) should fail.
   PHyperProp property = propertySinceOperator();
@@ -107,7 +107,7 @@ TEST(PropertyLIbTest, InvalidTraceSinceOperator_Test1) {
   EXPECT_FALSE(result);  
 }
 
-TEST(PropertyLIbTest, InvalidTraceSinceOperator_Test2) {
+TEST(PropertyLibTest, InvalidTraceSinceOperator_Test2) {
 
   // eqX is always true but eqY never becomes true
   PHyperProp property = propertySinceOperator();

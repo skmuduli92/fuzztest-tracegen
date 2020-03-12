@@ -21,7 +21,7 @@ PHyperProp propertyOnceOperator() {
     return property;
 }
 
-TEST(PropertyLIbTest, ValidTraceOnceOperator) {
+TEST(PropertyLibTest, ValidTraceOnceOperator) {
   PHyperProp property = propertyOnceOperator();
 
   PTrace trace1(new Trace(2));
@@ -69,7 +69,7 @@ TEST(PropertyLIbTest, ValidTraceOnceOperator) {
   EXPECT_TRUE(result);
 }
 
-TEST(PropertyLIbTest, InvalidTraceOnceOperator) {
+TEST(PropertyLibTest, InvalidTraceOnceOperator) {
   PHyperProp property = propertyOnceOperator();
 
   PTrace trace1(new Trace(2));
