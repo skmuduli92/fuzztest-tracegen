@@ -39,3 +39,5 @@
 **Inheritance diagram**
 
 <img src="./doc/inherit_graph_0.png" />
+
+[(complete class diagram)](https://raw.githubusercontent.com/tgourav/fuzztest/master/libprop/doc/class_hyper_p_l_t_l_1_1_formula__inherit__graph.png)
