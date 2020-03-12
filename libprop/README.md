@@ -31,6 +31,11 @@
   ```bash
   make test
   ```
+- Running tests individually in build directory
+  ```bash
+  ./bin/testlibprop --gtest_filter="[TEST_NAME]"
+  ```
+  e.g. <code>./bin/testlibprop --gtest_filter="PropertyLibTest.ValidTraceNotOperator"</code>
 
 **Inheritance diagram**
 
