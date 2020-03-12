@@ -5,11 +5,7 @@
 * Installing dependencies
 
   ```bash
-  sudo apt-get install googletest
-  cd /usr/src/googletest
-  sudo cmake .
-  sudo make
-  sudo make install
+  sudo ./setup.sh
   ```
 
 - Debug build [ *default* ]
