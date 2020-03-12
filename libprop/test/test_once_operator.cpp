@@ -36,14 +36,12 @@ TEST(PropertyLIbTest, ValidTraceOnceOperator) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(0, cycle, xvalue);
-    xvalue = (xvalue == 50) ? 51 : (100 - xvalue);	
-    trace2->updateTermValue(0, cycle, xvalue);
+    trace2->updateTermValue(0, cycle, !xvalue);
     // setting 'y' var value
 
     unsigned yvalue = rand() % 100;
     trace1->updateTermValue(1, cycle, yvalue);
-    yvalue = (yvalue == 50) ? 51 : (100 - yvalue);
-    trace2->updateTermValue(1, cycle, yvalue);
+    trace2->updateTermValue(1, cycle, !yvalue);
     result = property->eval(cycle, tracelist);
   }
 
@@ -59,14 +57,12 @@ TEST(PropertyLIbTest, ValidTraceOnceOperator) {
       unsigned xvalue = rand() % 100;
       // setting 'x' var value
       trace1->updateTermValue(0, cycle, xvalue);
-      xvalue = (xvalue == 50) ? 51 : (100 - xvalue);	
-      trace2->updateTermValue(0, cycle, xvalue);
+      trace2->updateTermValue(0, cycle, !xvalue);
       // setting 'y' var value
 
       unsigned yvalue = rand() % 100;
       trace1->updateTermValue(1, cycle, yvalue);
-      yvalue = (yvalue == 50) ? 51 : (100 - yvalue);
-      trace2->updateTermValue(1, cycle, yvalue);
+      trace2->updateTermValue(1, cycle, !yvalue);
       result = property->eval(cycle, tracelist);
   }
 
@@ -88,8 +84,7 @@ TEST(PropertyLIbTest, InvalidTraceOnceOperator) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(0, cycle, xvalue);
-    xvalue = (xvalue == 50) ? 51 : (100 - xvalue);
-    trace2->updateTermValue(0, cycle, xvalue);
+    trace2->updateTermValue(0, cycle, !xvalue);
     // setting 'y' var value
 
     unsigned yvalue = rand() % 100;
@@ -108,8 +103,7 @@ TEST(PropertyLIbTest, InvalidTraceOnceOperator) {
 
       unsigned yvalue = rand() % 100;
       trace1->updateTermValue(1, cycle, yvalue);
-      yvalue = (yvalue == 50) ? 51 : (100 - yvalue);
-      trace2->updateTermValue(1, cycle, yvalue);
+      trace2->updateTermValue(1, cycle, !yvalue);
       result = property->eval(cycle, tracelist);
   }
 

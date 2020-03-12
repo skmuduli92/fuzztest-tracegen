@@ -40,7 +40,7 @@ TEST(PropertyLIbTest, ValidTraceSinceOperator) {
     xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(0, cycle, xvalue);
-    trace2->updateTermValue(0, cycle, 100 - xvalue);
+    trace2->updateTermValue(0, cycle, !xvalue);
 
     // setting 'y' var value
     trace1->updateTermValue(1, cycle, rand() % 100);
@@ -96,8 +96,7 @@ TEST(PropertyLIbTest, InvalidTraceSinceOperator_Test1) {
     xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(0, cycle, xvalue);
-    xvalue = (xvalue == 50) ? 51 : (100 - xvalue);	
-    trace2->updateTermValue(0, cycle, xvalue);
+    trace2->updateTermValue(0, cycle, !xvalue);
     // setting 'y' var value
     trace1->updateTermValue(1, cycle, rand() % 100);
     trace2->updateTermValue(1, cycle, rand() % 100);
@@ -132,9 +131,8 @@ TEST(PropertyLIbTest, InvalidTraceSinceOperator_Test2) {
     trace2->updateTermValue(0, cycle, xvalue);
     // setting 'y' var value
     yvalue = rand() % 100;
-    trace1->updateTermValue(1, cycle, rand() % 100);
-    yvalue = (yvalue == 50) ? 51 : (100 - yvalue);	
-    trace2->updateTermValue(1, cycle, rand() % 100);
+    trace1->updateTermValue(1, cycle, yvalue);
+    trace2->updateTermValue(1, cycle, !yvalue);
 
     result = property->eval(cycle, tracelist);
   }
