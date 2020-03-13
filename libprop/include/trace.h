@@ -15,8 +15,6 @@ struct VarTrace
 {
   /// DataPoint stores the value of a signal at a particular time index.
   using DataPoint = std::pair<uint32_t, T>;
-
-  /// vector of data points.
   std::vector<DataPoint> datapoints;
 
   /// time when the last addition was performed.
@@ -25,14 +23,16 @@ struct VarTrace
  public:
   VarTrace() : lastCycle(0) {}
 
-  /** updateValue(t, value) must be called every cycle.
+  /**
+   * updateValue(t, value) must be called every cycle.
    * It will insert into the vector if needed.
    */
   void updateValue(uint32_t time, const T& v) {
     if (datapoints.size() == 0) {
       assert (time == 0);
       datapoints.push_back(DataPoint(time, v));
-    } else {
+    }
+    else {
       // must update a time index only once.
       assert (time > lastCycle);
 
@@ -45,6 +45,7 @@ struct VarTrace
         datapoints.push_back(std::pair(time, v));
       } // else nothing to do.
     }
+    
     lastCycle = time;
   }
 
@@ -57,7 +58,6 @@ struct VarTrace
     auto upperCmp = [](const unsigned int v, const std::pair<unsigned int, T>& cv) { return v < cv.first; };
     auto lower = std::lower_bound(datapoints.begin(), datapoints.end(), cycle, lowerCmp);
     auto upper = std::upper_bound(datapoints.begin(), datapoints.end(), cycle, upperCmp);                                 
-
     assert((lower - datapoints.begin()) >= 0);
     
     if (lower == upper)
@@ -65,6 +65,8 @@ struct VarTrace
     else
       return lower->second;
   }
+
+  size_t size() const { return datapoints.size(); }
 };
 
 typedef uint32_t ValueType;
