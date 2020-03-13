@@ -13,26 +13,13 @@ typedef std::shared_ptr<Trace> PTrace;
 template<class T> 
 struct VarTrace
 {
-  /** DataPoint stores the value of a signal at a particular time index. */
-  struct DataPoint {
-    uint32_t cycle;
-    T value;
+  /// DataPoint stores the value of a signal at a particular time index.
+  using DataPoint = std::pair<uint32_t, T>;
 
-    // Constructor.
-    DataPoint(uint32_t c, const T& v) : cycle(c), value(v) {}
-    // Comparison operator for datapoint.
-    bool operator<(const DataPoint& r) const {
-      return cycle < r.cycle;
-    }
-    // Comparison operator for datapoints with uint32_t's.
-    bool operator<(uint32_t r) const {
-      return cycle < r;
-    }
-  };
-
-  // vector of data points.
+  /// vector of data points.
   std::vector<DataPoint> datapoints;
-  // time when the last addition was performed.
+
+  /// time when the last addition was performed.
   uint32_t lastCycle;
 
  public:
@@ -54,31 +41,29 @@ struct VarTrace
       assert (last <= time);
 
       // check if we need to add.
-      if (datapoints[last].value != v) {
-        datapoints.push_back(DataPoint(time, v));
+      if (datapoints[last].second != v) {
+        datapoints.push_back(std::pair(time, v));
       } // else nothing to do.
     }
     lastCycle = time;
   }
 
-  /** Return the element at a particular index. */
-  const T& operator[](uint32_t key) {
+  /// Return the element at a particular index.
+  const T operator[](uint32_t cycle) {
+
     assert (datapoints.size() > 0);
-
-    auto lower = std::lower_bound(datapoints.begin(), datapoints.end(), key);
-
-    // TODO: check why default overloaded operator '<' is not working in upper_bound?
-    auto upper = std::upper_bound(datapoints.begin(), datapoints.end(), key,
-                                  /* comparator	*/  [](const unsigned value, DataPoint d) { return value < d.cycle;});
-
+    
+    auto lowerCmp = [](const std::pair<unsigned int, T>& cv, const unsigned int v) { return cv.first < v; };
+    auto upperCmp = [](const unsigned int v, const std::pair<unsigned int, T>& cv) { return v < cv.first; };
+    auto lower = std::lower_bound(datapoints.begin(), datapoints.end(), cycle, lowerCmp);
+    auto upper = std::upper_bound(datapoints.begin(), datapoints.end(), cycle, upperCmp);                                 
 
     assert((lower - datapoints.begin()) >= 0);
     
     if (lower == upper)
-      return (lower - 1)->value;
+      return (lower - 1)->second;
     else
-      return lower->value;
-  
+      return lower->second;
   }
 };
 
@@ -88,11 +73,15 @@ class Trace
 {
   /** A vector of traces for each propositional variable. */
   std::vector< VarTrace<bool> > propositions;
+
   /** A vector of traces for each term variable. */
   std::vector< VarTrace<ValueType> > variables;
+
   /** The last valid time cycle in this trace. */
   unsigned lastCycle;
+
  public:
+
   /** Create a trace capable of storing numVars variables. */
   Trace(unsigned numVars) 
       : variables(numVars)
