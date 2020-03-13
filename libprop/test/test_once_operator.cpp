@@ -7,18 +7,18 @@ using namespace std;
 
 
 PHyperProp propertyOnceOperator() {
-    PVarMap varmap(new VarMap());
-    unsigned xIndex = varmap->addVar("x");
-    unsigned yIndex = varmap->addVar("y");
-    PTerm x(new TermVar(varmap, xIndex));
-    PTerm y(new TermVar(varmap, yIndex));
+  PVarMap varmap(new VarMap());
+  unsigned xIndex = varmap->addVar("x");
+  unsigned yIndex = varmap->addVar("y");
+  PTerm x(new TermVar(varmap, xIndex));
+  PTerm y(new TermVar(varmap, yIndex));
 
-    PHyperProp eqX(new Equal(varmap, x));
-    PHyperProp eqY(new Equal(varmap, y));
-    PHyperProp andEqXEqY(new And(varmap, eqX, eqY));
-    // (O (And (eqX, eqY)))
-    PHyperProp property(new Once(varmap, andEqXEqY));
-    return property;
+  PHyperProp eqX(new Equal(varmap, x));
+  PHyperProp eqY(new Equal(varmap, y));
+  PHyperProp andEqXEqY(new And(varmap, eqX, eqY));
+  // (O (And (eqX, eqY)))
+  PHyperProp property(new Once(varmap, andEqXEqY));
+  return property;
 }
 
 TEST(PropertyLibTest, ValidTraceOnceOperator) {
@@ -54,16 +54,16 @@ TEST(PropertyLibTest, ValidTraceOnceOperator) {
   
   traceLength = rand() % 20 + 20 + cycle;
   for(; cycle < traceLength; ++cycle) {
-      unsigned xvalue = rand() % 100;
-      // setting 'x' var value
-      trace1->updateTermValue(0, cycle, xvalue);
-      trace2->updateTermValue(0, cycle, !xvalue);
-      // setting 'y' var value
+    unsigned xvalue = rand() % 100;
+    // setting 'x' var value
+    trace1->updateTermValue(0, cycle, xvalue);
+    trace2->updateTermValue(0, cycle, !xvalue);
+    // setting 'y' var value
 
-      unsigned yvalue = rand() % 100;
-      trace1->updateTermValue(1, cycle, yvalue);
-      trace2->updateTermValue(1, cycle, !yvalue);
-      result = property->eval(cycle, tracelist);
+    unsigned yvalue = rand() % 100;
+    trace1->updateTermValue(1, cycle, yvalue);
+    trace2->updateTermValue(1, cycle, !yvalue);
+    result = property->eval(cycle, tracelist);
   }
 
   EXPECT_TRUE(result);
@@ -95,16 +95,16 @@ TEST(PropertyLibTest, InvalidTraceOnceOperator) {
   
   traceLength = rand() % 20 + 20 + cycle;
   for(; cycle < traceLength; ++cycle) {
-      unsigned xvalue = rand() % 100;
-      // setting 'x' var value
-      trace1->updateTermValue(0, cycle, xvalue);
-      trace2->updateTermValue(0, cycle, xvalue);
-      // setting 'y' var value
+    unsigned xvalue = rand() % 100;
+    // setting 'x' var value
+    trace1->updateTermValue(0, cycle, xvalue);
+    trace2->updateTermValue(0, cycle, xvalue);
+    // setting 'y' var value
 
-      unsigned yvalue = rand() % 100;
-      trace1->updateTermValue(1, cycle, yvalue);
-      trace2->updateTermValue(1, cycle, !yvalue);
-      result = property->eval(cycle, tracelist);
+    unsigned yvalue = rand() % 100;
+    trace1->updateTermValue(1, cycle, yvalue);
+    trace2->updateTermValue(1, cycle, !yvalue);
+    result = property->eval(cycle, tracelist);
   }
 
   EXPECT_FALSE(result);

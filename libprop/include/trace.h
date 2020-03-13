@@ -35,8 +35,8 @@ struct VarTrace
   // time when the last addition was performed.
   uint32_t lastCycle;
 
-public:
-VarTrace() : lastCycle(0) {}
+ public:
+  VarTrace() : lastCycle(0) {}
 
   /** updateValue(t, value) must be called every cycle.
    * It will insert into the vector if needed.
@@ -69,7 +69,7 @@ VarTrace() : lastCycle(0) {}
 
     // TODO: check why default overloaded operator '<' is not working in upper_bound?
     auto upper = std::upper_bound(datapoints.begin(), datapoints.end(), key,
-		  /* comparator	*/  [](const unsigned value, DataPoint d) { return value < d.cycle;});
+                                  /* comparator	*/  [](const unsigned value, DataPoint d) { return value < d.cycle;});
 
 
     assert((lower - datapoints.begin()) >= 0);
@@ -95,9 +95,9 @@ class Trace
  public:
   /** Create a trace capable of storing numVars variables. */
   Trace(unsigned numVars) 
-     : variables(numVars)
+      : variables(numVars)
       , lastCycle(0)
-    {}
+  {}
 
   /** Update the value of variable i at time cycle. */
   void updateTermValue(unsigned i, uint32_t cycle, ValueType value)
