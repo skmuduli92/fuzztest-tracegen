@@ -67,11 +67,13 @@ VarTrace() : lastCycle(0) {}
 
     auto lower = std::lower_bound(datapoints.begin(), datapoints.end(), key);
 
-    // TODO: why default overloaded operator '<' is not working in upper_bound
-    auto upper = std::upper_bound(datapoints.begin(), datapoints.end(),
-				  key,
-				  [](const unsigned value, DataPoint d) { return value < d.cycle;});
+    // TODO: check why default overloaded operator '<' is not working in upper_bound?
+    auto upper = std::upper_bound(datapoints.begin(), datapoints.end(), key,
+		  /* comparator	*/  [](const unsigned value, DataPoint d) { return value < d.cycle;});
 
+
+    assert((lower - datapoints.begin()) >= 0);
+    
     if (lower == upper)
       return (lower - 1)->value;
     else
