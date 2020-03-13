@@ -77,10 +77,12 @@ TEST(PropertyLibTest, InvalidTraceAlwaysOperator_Test1) {
   trace2->updateTermValue(0, cycle, !xvalue);
   result = property->eval(cycle, tracelist);
   
-  EXPECT_TRUE(result);
+  EXPECT_FALSE(result);
 }
 
 TEST(PropertyLibTest, ValidTraceAlwaysOperator_Test2) {
+
+  // (G (Or (eqX, eqY)))
   PHyperProp property = property2AlwaysOperator();
 
   PTrace trace1(new Trace(2));
@@ -122,6 +124,8 @@ TEST(PropertyLibTest, ValidTraceAlwaysOperator_Test2) {
 
 
 TEST(PropertyLibTest, InvalidTraceAlwaysOperator_Test2) {
+
+  // (G (Or (eqX, eqY)))
   PHyperProp property = property2AlwaysOperator();
 
   PTrace trace1(new Trace(2));
@@ -131,7 +135,6 @@ TEST(PropertyLibTest, InvalidTraceAlwaysOperator_Test2) {
   bool result = false;
   unsigned traceLength = rand() % 20 + 20;
 
-  // tr1.x is always equal to tr2.x
   for (size_t cycle = 0; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % std::numeric_limits<unsigned>::max();
     unsigned yvalue = rand() % std::numeric_limits<unsigned>::max();
@@ -149,6 +152,7 @@ TEST(PropertyLibTest, InvalidTraceAlwaysOperator_Test2) {
       trace2->updateTermValue(1, cycle, yvalue);
     }
     else {
+      // violating state
       trace1->updateTermValue(0, cycle, xvalue);
       trace2->updateTermValue(0, cycle, !xvalue);
       trace1->updateTermValue(1, cycle, yvalue);

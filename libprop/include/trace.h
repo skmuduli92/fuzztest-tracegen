@@ -11,7 +11,7 @@ class Trace;
 typedef std::shared_ptr<Trace> PTrace;
 
 template<class T> 
-  struct VarTrace
+struct VarTrace
 {
   /** DataPoint stores the value of a signal at a particular time index. */
   struct DataPoint {
@@ -36,11 +36,11 @@ template<class T>
   uint32_t lastCycle;
 
 public:
-  VarTrace() : lastCycle(0) {}
+VarTrace() : lastCycle(0) {}
 
   /** updateValue(t, value) must be called every cycle.
-    * It will insert into the vector if needed.
-    */
+   * It will insert into the vector if needed.
+   */
   void updateValue(uint32_t time, const T& v) {
     if (datapoints.size() == 0) {
       assert (time == 0);
@@ -62,12 +62,21 @@ public:
   }
 
   /** Return the element at a particular index. */
-  const T& operator[](uint32_t t) {
+  const T& operator[](uint32_t key) {
     assert (datapoints.size() > 0);
-    auto pos = std::lower_bound(datapoints.begin(), datapoints.end(), t);
-    // move to the previous element.
-    pos--;
-    return (pos->value);
+
+    auto lower = std::lower_bound(datapoints.begin(), datapoints.end(), key);
+
+    // TODO: why default overloaded operator '<' is not working in upper_bound
+    auto upper = std::upper_bound(datapoints.begin(), datapoints.end(),
+				  key,
+				  [](const unsigned value, DataPoint d) { return value < d.cycle;});
+
+    if (lower == upper)
+      return (lower - 1)->value;
+    else
+      return lower->value;
+  
   }
 };
 
@@ -81,12 +90,12 @@ class Trace
   std::vector< VarTrace<ValueType> > variables;
   /** The last valid time cycle in this trace. */
   unsigned lastCycle;
-public:
+ public:
   /** Create a trace capable of storing numVars variables. */
   Trace(unsigned numVars) 
-    : variables(numVars)
-    , lastCycle(0)
-  {}
+     : variables(numVars)
+      , lastCycle(0)
+    {}
 
   /** Update the value of variable i at time cycle. */
   void updateTermValue(unsigned i, uint32_t cycle, ValueType value)

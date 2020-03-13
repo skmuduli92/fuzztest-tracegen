@@ -107,5 +107,5 @@ TEST(PropertyLibTest, InvalidTraceOnceOperator) {
       result = property->eval(cycle, tracelist);
   }
 
-  EXPECT_TRUE(result);
+  EXPECT_FALSE(result);
 }
