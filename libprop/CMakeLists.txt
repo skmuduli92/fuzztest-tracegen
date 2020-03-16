@@ -32,8 +32,15 @@ if(NOT GTEST_FOUND)
   message("Install googletest framework in your system")
 endif(NOT GTEST_FOUND)
 
-# build and link
+# building cexp-cpp library
+add_subdirectory(sexp-cpp)
+
+# building libprop library
 add_library(libprop ${SRC_FILES})
+
+# building libprop test
+# TODO: create a flag for optionally build test
 add_executable(testlibprop ${TEST_SRC_FILES})
 target_link_libraries(testlibprop libprop gtest pthread)
 gtest_add_tests(TARGET testlibprop)
+
