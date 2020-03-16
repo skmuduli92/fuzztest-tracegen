@@ -28,7 +28,6 @@ TEST(PropertyLibTest, ValidTraceSinceOperator) {
   PTrace trace2(new Trace(2));
   TraceList tracelist({trace1, trace2});
 
-  property->display(std::cout); std::cout << std::endl;
   bool result = false;
 
   size_t cycle = 0;
@@ -85,7 +84,6 @@ TEST(PropertyLibTest, InvalidTraceSinceOperator_Test1) {
   PTrace trace2(new Trace(2));
   TraceList tracelist({trace1, trace2});
 
-  property->display(std::cout); std::cout << std::endl;
   bool result = false;
 
   size_t cycle = 0;
@@ -116,7 +114,6 @@ TEST(PropertyLibTest, InvalidTraceSinceOperator_Test2) {
   PTrace trace2(new Trace(2));
   TraceList tracelist({trace1, trace2});
 
-  property->display(std::cout); std::cout << std::endl;
   bool result = false;
 
   size_t cycle = 0;

@@ -17,7 +17,6 @@ PHyperProp propertyNotOperator() {
 
 TEST(PropertyLibTest, ValidTraceNotOperator) {
   PHyperProp property = propertyNotOperator();
-  property->display(std::cout); std::cout << std::endl;
 
   PTrace trace1(new Trace(1));
   PTrace trace2(new Trace(1));
@@ -39,7 +38,6 @@ TEST(PropertyLibTest, ValidTraceNotOperator) {
 
 TEST(PropertyLibTest, InvalidTraceNotOperator) {
   PHyperProp property = propertyNotOperator();
-  property->display(std::cout); std::cout << std::endl;
 
   PTrace trace1(new Trace(1));
   PTrace trace2(new Trace(1));
