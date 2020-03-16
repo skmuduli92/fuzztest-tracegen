@@ -38,12 +38,12 @@ std::pair<PTrace, PTrace> createSatTraces1(unsigned xIndex, unsigned yIndex)
         }
     }
 
-    for (unsigned cyc=0; cyc != traceLen; cyc++) {
-        cout << setw(5) << trace1->termValueAt(0, cyc) << "/" <<
-             setw(5) << trace2->termValueAt(0, cyc) << ";" <<
-             setw(5) << trace1->termValueAt(1, cyc) << "/" <<
-             setw(5) << trace2->termValueAt(1, cyc) << ";" << endl;
-    }
+    // for (unsigned cyc=0; cyc != traceLen; cyc++) {
+    //     cout << setw(5) << trace1->termValueAt(0, cyc) << "/" <<
+    //          setw(5) << trace2->termValueAt(0, cyc) << ";" <<
+    //          setw(5) << trace1->termValueAt(1, cyc) << "/" <<
+    //          setw(5) << trace2->termValueAt(1, cyc) << ";" << endl;
+    // }
 
     return pair(trace1, trace2);
 }
@@ -71,7 +71,7 @@ void test1()
     PHyperProp GeqY(new Always(varmap, eqY));
     // (G (eq x)) => (G (eq y))
     PHyperProp F(new Implies(varmap, GeqX, GeqY));
-    cout << "formula: "; F->display(cout); cout << endl;
+    // cout << "formula: "; F->display(cout); cout << endl;
 
     auto traces = createSatTraces1(xIndex, yIndex);
 }
@@ -96,7 +96,7 @@ TEST(TestPropLib, TestALWAYSSimple) {
     PHyperProp GeqY(new Always(varmap, eqY));
     // (G (eq x)) => (G (eq y))
     PHyperProp F(new Implies(varmap, GeqX, GeqY));
-    cout << "formula: "; F->display(cout); cout << endl;
+    // cout << "formula: "; F->display(cout); cout << endl;
 
     bool result = false;
 
@@ -132,7 +132,7 @@ TEST(TestPropLib, TestYesterdaySimple) {
 
     // (Y (eq x)) => (eq y)
     PHyperProp F(new Implies(varmap, YesterdayEqX, eqY));
-    F->display(std::cout); std::cout << std::endl;
+    // F->display(std::cout); std::cout << std::endl;
     bool result = true;
 
     PTrace trace1(new Trace(2));
@@ -181,8 +181,6 @@ TEST(TestPropLib, TestYesterdaySimple) {
     result = F->eval(cycle, tracelist);
     cycle = cycle + 1;
 
-
-    // FIXME : remove this after fixing yesterday computation logic
     trace1->updateTermValue(0, cycle, 0);
     trace2->updateTermValue(0, cycle, 0);
     trace1->updateTermValue(1, cycle, 0);

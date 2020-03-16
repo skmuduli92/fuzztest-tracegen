@@ -50,9 +50,6 @@ TEST(PropertyLibTest, ValidTraceYOperator) {
 
   result = property->eval(cycle, tracelist);
 
-  // FIXME : remove this after fixing yesterday computation logic
-  // eval is returning value from previous cycle
-
   EXPECT_TRUE(result);
 }
 
@@ -92,9 +89,6 @@ TEST(PropertyLibTest, InvalidTraceYOperator) {
   result = property->eval(cycle, tracelist);
   cycle = cycle + 1;
 
-
-  // FIXME : remove this after fixing yesterday computation logic
-  // eval is returning value from previous cycle
   EXPECT_FALSE(result);
 }
 
