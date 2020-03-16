@@ -1,3 +1,3 @@
-[submodule "libprop/sexp-cpp"]
-	path = libprop/sexp-cpp
+[submodule "libprop/parser"]
+	path = libprop/parser
 	url = https://gitlab.com/skmuduli92/sexp-cpp.git
