@@ -5,6 +5,16 @@ project(libprop)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-Wall -Werror -Wno-strict-overflow")
 
+
+# finding boost regexp component
+find_package(Boost COMPONENTS regex)
+
+# finding  googltest framework installed in the system
+enable_testing()
+find_package(Threads REQUIRED)
+find_package(GTest REQUIRED)
+
+
 if( NOT CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE Debug CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
@@ -24,16 +34,9 @@ file(GLOB TEST_SRC_FILES "test/*.cpp")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# finding  googltest framework installed in the system
-enable_testing()
-find_package(Threads REQUIRED)
-find_package(GTest REQUIRED)
-if(NOT GTEST_FOUND)
-  message("Install googletest framework in your system")
-endif(NOT GTEST_FOUND)
-
 # building libprop library
 add_library(libprop ${SRC_FILES})
+
 
 # building libprop test
 # TODO: create a flag for optionally build test
