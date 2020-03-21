@@ -8,20 +8,9 @@ using namespace std;
 
 
 PHyperProp propertyYOperator() {
-  // TODO: add new method to get varmap size
-  PVarMap varmap(new VarMap());
-  unsigned xIndex = varmap->addVar("x");
-  unsigned yIndex = varmap->addVar("y");
-  PTerm x(new TermVar(varmap, xIndex));
-  PTerm y(new TermVar(varmap, yIndex));
-
-  PHyperProp eqX(new Equal(varmap, x));
-  PHyperProp eqY(new Equal(varmap, y));
-  PHyperProp YesterdayEqX(new Yesterday(varmap, eqX));
-  // (Y (eq x)) => (eq y)
-  PHyperProp property(new Implies(varmap, YesterdayEqX, eqY));
-
-  return property;
+  std::string property("(IMPLIES (Y (EQ x)) (EQ x))");
+  auto prop = parse_formula(property);
+  return prop;
 }
 
 TEST(PropertyLibTest, ValidTraceYOperator) {

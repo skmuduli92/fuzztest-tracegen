@@ -7,28 +7,13 @@ using namespace std;
 
 
 PHyperProp property1AlwaysOperator() {
-  PVarMap varmap(new VarMap());
-  unsigned xIndex = varmap->addVar("x");
-  PTerm x(new TermVar(varmap, xIndex));
-
-  PHyperProp eqX(new Equal(varmap, x));
-  PHyperProp property(new Always(varmap, eqX));
-  return property;
+  std::string formula("(G (EQ x))");
+  return parse_formula(formula);
 }
 
 PHyperProp property2AlwaysOperator() {
-  PVarMap varmap(new VarMap());
-  unsigned xIndex = varmap->addVar("x");
-  unsigned yIndex = varmap->addVar("y");
-  PTerm x(new TermVar(varmap, xIndex));
-  PTerm y(new TermVar(varmap, yIndex));
-
-  PHyperProp eqX(new Equal(varmap, x));
-  PHyperProp eqY(new Equal(varmap, y));
-  PHyperProp eqX_OR_eqY(new Or(varmap, eqX, eqY));
-  // (G (Or (eqX, eqY)))
-  PHyperProp property(new Always(varmap, eqX_OR_eqY));
-  return property;
+  std::string formula("(G (OR (EQ x) (EQ y)))"); 
+  return parse_formula(formula);
 }
 
 TEST(PropertyLibTest, ValidTraceAlwaysOperator_Test1) {

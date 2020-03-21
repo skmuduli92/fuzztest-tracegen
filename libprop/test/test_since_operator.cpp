@@ -7,18 +7,10 @@ using namespace std;
 
 
 PHyperProp propertySinceOperator() {
-  PVarMap varmap(new VarMap());
-  unsigned xIndex = varmap->addVar("x");
-  unsigned yIndex = varmap->addVar("y");
-  PTerm x(new TermVar(varmap, xIndex));
-  PTerm y(new TermVar(varmap, yIndex));
-
-  PHyperProp eqX(new Equal(varmap, x));
-  PHyperProp eqY(new Equal(varmap, y));
-
-  // eqY SINCE eqX    
-  PHyperProp eqYSINCEeqX(new Since(varmap, eqY, eqX));
-  return eqYSINCEeqX;
+  std::string formula("(S (EQ x) (EQ y))");
+  auto prop = parse_formula(formula);
+  prop->display(std::cout);
+  return prop;
 }
 
 TEST(PropertyLibTest, ValidTraceSinceOperator) {

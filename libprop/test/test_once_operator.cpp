@@ -7,18 +7,8 @@ using namespace std;
 
 
 PHyperProp propertyOnceOperator() {
-  PVarMap varmap(new VarMap());
-  unsigned xIndex = varmap->addVar("x");
-  unsigned yIndex = varmap->addVar("y");
-  PTerm x(new TermVar(varmap, xIndex));
-  PTerm y(new TermVar(varmap, yIndex));
-
-  PHyperProp eqX(new Equal(varmap, x));
-  PHyperProp eqY(new Equal(varmap, y));
-  PHyperProp andEqXEqY(new And(varmap, eqX, eqY));
-  // (O (And (eqX, eqY)))
-  PHyperProp property(new Once(varmap, andEqXEqY));
-  return property;
+  PHyperProp prop = parse_formula(std::string("(O (AND (EQ x) (EQ y)))"));
+  return prop;
 }
 
 TEST(PropertyLibTest, ValidTraceOnceOperator) {
