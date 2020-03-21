@@ -337,8 +337,8 @@ PHyperProp parse_formula(std::string const& str) {
   typedef std::string::const_iterator iterator_type;
   typedef sexpr::ast::VarNode s_expr;
   
-  auto& grammar = sexpr::grammar::varexpr;    // Our grammar
-  s_expr expr;                // Our program (AST)
+  auto& grammar = sexpr::grammar::varexpr;
+  s_expr expr;
 
   iterator_type iter = str.begin();
   iterator_type end = str.end();
