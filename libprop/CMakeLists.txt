@@ -32,9 +32,6 @@ if(NOT GTEST_FOUND)
   message("Install googletest framework in your system")
 endif(NOT GTEST_FOUND)
 
-# building cexp-cpp library
-add_subdirectory(sexp-cpp)
-
 # building libprop library
 add_library(libprop ${SRC_FILES})
 
