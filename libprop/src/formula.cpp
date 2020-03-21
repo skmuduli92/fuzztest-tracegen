@@ -25,6 +25,10 @@ int VarMap::getVarIndex(const std::string& name) const {
 
 unsigned  VarMap::addVar(const std::string& name) {
   unsigned idx = varNames.size();
+
+  if (hasVar(name))
+    return varIndices[name];
+  
   varNames.push_back(name);
   varIndices[name] = idx;
   return idx;

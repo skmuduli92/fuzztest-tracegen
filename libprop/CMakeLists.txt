@@ -7,7 +7,7 @@ set(CMAKE_CXX_FLAGS "-Wall -Werror -Wno-strict-overflow")
 
 
 # finding boost regexp component
-find_package(Boost COMPONENTS regex)
+find_package(Boost REQUIRED)
 
 # finding  googltest framework installed in the system
 enable_testing()
@@ -36,7 +36,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # building libprop library
 add_library(libprop ${SRC_FILES})
-
+add_executable(runlibprop ${SRC_FILES})
 
 # building libprop test
 # TODO: create a flag for optionally build test
