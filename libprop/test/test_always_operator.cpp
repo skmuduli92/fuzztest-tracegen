@@ -76,6 +76,9 @@ TEST(PropertyLibTest, ValidTraceAlwaysOperator_Test2) {
 
   bool result = false;
   unsigned traceLength = rand() % 20 + 20;
+  unsigned xid = property->getVarId("x");
+  unsigned yid = property->getVarId("y");
+
 
   // tr1.x is always equal to tr2.x
   for (size_t cycle = 0; cycle < traceLength; ++cycle) {
@@ -83,22 +86,22 @@ TEST(PropertyLibTest, ValidTraceAlwaysOperator_Test2) {
     unsigned yvalue = rand() % std::numeric_limits<unsigned>::max();
     
     if(cycle % 3 == 0) {
-      trace1->updateTermValue(0, cycle, xvalue);
-      trace2->updateTermValue(0, cycle, xvalue);
-      trace1->updateTermValue(1, cycle, yvalue);
-      trace2->updateTermValue(1, cycle, yvalue);
+      trace1->updateTermValue(xid, cycle, xvalue);
+      trace2->updateTermValue(xid, cycle, xvalue);
+      trace1->updateTermValue(yid, cycle, yvalue);
+      trace2->updateTermValue(yid, cycle, yvalue);
     }
     else if(cycle % 3 == 1) {
-      trace1->updateTermValue(0, cycle, xvalue);
-      trace2->updateTermValue(0, cycle, !xvalue);
-      trace1->updateTermValue(1, cycle, yvalue);
-      trace2->updateTermValue(1, cycle, yvalue);
+      trace1->updateTermValue(xid, cycle, xvalue);
+      trace2->updateTermValue(xid, cycle, !xvalue);
+      trace1->updateTermValue(yid, cycle, yvalue);
+      trace2->updateTermValue(yid, cycle, yvalue);
     }
     else {
-      trace1->updateTermValue(0, cycle, xvalue);
-      trace2->updateTermValue(0, cycle, xvalue);
-      trace1->updateTermValue(1, cycle, yvalue);
-      trace2->updateTermValue(1, cycle, !yvalue);
+      trace1->updateTermValue(xid, cycle, xvalue);
+      trace2->updateTermValue(xid, cycle, xvalue);
+      trace1->updateTermValue(yid, cycle, yvalue);
+      trace2->updateTermValue(yid, cycle, !yvalue);
     }
 
     result = property->eval(cycle, tracelist);
@@ -116,6 +119,8 @@ TEST(PropertyLibTest, InvalidTraceAlwaysOperator_Test2) {
   PTrace trace1(new Trace(2));
   PTrace trace2(new Trace(2));
   TraceList tracelist({trace1, trace2});
+  unsigned xid = property->getVarId("x");
+  unsigned yid = property->getVarId("y");
 
   bool result = false;
   unsigned traceLength = rand() % 20 + 20;
@@ -125,23 +130,23 @@ TEST(PropertyLibTest, InvalidTraceAlwaysOperator_Test2) {
     unsigned yvalue = rand() % std::numeric_limits<unsigned>::max();
     
     if(cycle % 3 == 0) {
-      trace1->updateTermValue(0, cycle, xvalue);
-      trace2->updateTermValue(0, cycle, xvalue);
-      trace1->updateTermValue(1, cycle, yvalue);
-      trace2->updateTermValue(1, cycle, yvalue);
+      trace1->updateTermValue(xid, cycle, xvalue);
+      trace2->updateTermValue(xid, cycle, xvalue);
+      trace1->updateTermValue(yid, cycle, yvalue);
+      trace2->updateTermValue(yid, cycle, yvalue);
     }
     else if(cycle % 3 == 1) {
-      trace1->updateTermValue(0, cycle, xvalue);
-      trace2->updateTermValue(0, cycle, !xvalue);
-      trace1->updateTermValue(1, cycle, yvalue);
-      trace2->updateTermValue(1, cycle, yvalue);
+      trace1->updateTermValue(xid, cycle, xvalue);
+      trace2->updateTermValue(xid, cycle, !xvalue);
+      trace1->updateTermValue(yid, cycle, yvalue);
+      trace2->updateTermValue(yid, cycle, yvalue);
     }
     else {
       // violating state
-      trace1->updateTermValue(0, cycle, xvalue);
-      trace2->updateTermValue(0, cycle, !xvalue);
-      trace1->updateTermValue(1, cycle, yvalue);
-      trace2->updateTermValue(1, cycle, !yvalue);
+      trace1->updateTermValue(xid, cycle, xvalue);
+      trace2->updateTermValue(xid, cycle, !xvalue);
+      trace1->updateTermValue(yid, cycle, yvalue);
+      trace2->updateTermValue(yid, cycle, !yvalue);
     }
 
     result = property->eval(cycle, tracelist);

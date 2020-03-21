@@ -165,13 +165,13 @@ auto const gexpr_def = gstr >> termexpr;
 auto const yexpr_def = ystr >> termexpr;
 auto const oexpr_def = ostr >> termexpr;
 auto const sexpr_def = sstr >> termexpr >> termexpr;
-auto const eqlexpr_def = eqstr >> idexpr;
+
 auto const termexpr_def = varexpr | ('(' >> eqlexpr >> ')');
+auto const eqlexpr_def = eqstr >> idexpr;
 
 BOOST_SPIRIT_DEFINE( idexpr, varexpr, notexpr, andexpr, orexpr, impexpr, termexpr);
 BOOST_SPIRIT_DEFINE(gexpr, yexpr, oexpr, sexpr)
 BOOST_SPIRIT_DEFINE(eqlexpr)
-
 }
 
 namespace sexpr::ast {
@@ -344,20 +344,10 @@ PHyperProp parse_formula(std::string const& str) {
   iterator_type end = str.end();
   boost::spirit::x3::ascii::space_type space;
   bool r = phrase_parse(iter, end, grammar, space, expr);
-
-  std::cout << "string : " << str << std::endl;
   
-  if (r && iter == end)
-  {
-    std::cout << "-------------------------\n";
-    std::cout << "Parsing succeeded\n";
-    std::cout << "-------------------------\n";
-  }
-  else
-  {
-    std::cout << "-------------------------\n";
-    std::cout << "Parsing failed\n";
-    std::cout << "-------------------------\n";
+  if (!r || iter != end) {
+    std::cerr << "Error : Parsing failed\n";
+    exit(1);
   }
 
   sexpr::ast::HPLTLBuilder propbuilder;

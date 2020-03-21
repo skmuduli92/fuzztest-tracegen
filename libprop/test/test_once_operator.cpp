@@ -17,6 +17,8 @@ TEST(PropertyLibTest, ValidTraceOnceOperator) {
   PTrace trace1(new Trace(2));
   PTrace trace2(new Trace(2));
   TraceList tracelist({trace1, trace2});
+  unsigned xid = property->getVarId("x");
+  unsigned yid = property->getVarId("y");
 
   bool result = false;
   unsigned traceLength = rand() % 20 + 20;
@@ -25,20 +27,20 @@ TEST(PropertyLibTest, ValidTraceOnceOperator) {
   for(; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
-    trace1->updateTermValue(0, cycle, xvalue);
-    trace2->updateTermValue(0, cycle, !xvalue);
+    trace1->updateTermValue(xid, cycle, xvalue);
+    trace2->updateTermValue(xid, cycle, !xvalue);
     // setting 'y' var value
 
     unsigned yvalue = rand() % 100;
-    trace1->updateTermValue(1, cycle, yvalue);
-    trace2->updateTermValue(1, cycle, !yvalue);
+    trace1->updateTermValue(yid, cycle, yvalue);
+    trace2->updateTermValue(yid, cycle, !yvalue);
     result = property->eval(cycle, tracelist);
   }
 
-  trace1->updateTermValue(0, cycle, 10);
-  trace2->updateTermValue(0, cycle, 10);
-  trace1->updateTermValue(1, cycle, 11);
-  trace2->updateTermValue(1, cycle, 11);
+  trace1->updateTermValue(xid, cycle, 10);
+  trace2->updateTermValue(xid, cycle, 10);
+  trace1->updateTermValue(yid, cycle, 11);
+  trace2->updateTermValue(yid, cycle, 11);
   result = property->eval(cycle, tracelist);
   cycle = cycle + 1;
   
@@ -46,13 +48,13 @@ TEST(PropertyLibTest, ValidTraceOnceOperator) {
   for(; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
-    trace1->updateTermValue(0, cycle, xvalue);
-    trace2->updateTermValue(0, cycle, !xvalue);
+    trace1->updateTermValue(xid, cycle, xvalue);
+    trace2->updateTermValue(xid, cycle, !xvalue);
     // setting 'y' var value
 
     unsigned yvalue = rand() % 100;
-    trace1->updateTermValue(1, cycle, yvalue);
-    trace2->updateTermValue(1, cycle, !yvalue);
+    trace1->updateTermValue(yid, cycle, yvalue);
+    trace2->updateTermValue(yid, cycle, !yvalue);
     result = property->eval(cycle, tracelist);
   }
 
@@ -65,6 +67,8 @@ TEST(PropertyLibTest, InvalidTraceOnceOperator) {
   PTrace trace1(new Trace(2));
   PTrace trace2(new Trace(2));
   TraceList tracelist({trace1, trace2});
+  unsigned xid = property->getVarId("x");
+  unsigned yid = property->getVarId("y");
 
   bool result = false;
   unsigned traceLength = rand() % 20 + 20;
@@ -73,13 +77,13 @@ TEST(PropertyLibTest, InvalidTraceOnceOperator) {
   for(; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
-    trace1->updateTermValue(0, cycle, xvalue);
-    trace2->updateTermValue(0, cycle, !xvalue);
+    trace1->updateTermValue(xid, cycle, xvalue);
+    trace2->updateTermValue(xid, cycle, !xvalue);
     // setting 'y' var value
 
     unsigned yvalue = rand() % 100;
-    trace1->updateTermValue(1, cycle, yvalue);
-    trace2->updateTermValue(1, cycle, yvalue);
+    trace1->updateTermValue(yid, cycle, yvalue);
+    trace2->updateTermValue(yid, cycle, yvalue);
     result = property->eval(cycle, tracelist);
   }
   
@@ -87,13 +91,13 @@ TEST(PropertyLibTest, InvalidTraceOnceOperator) {
   for(; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
-    trace1->updateTermValue(0, cycle, xvalue);
-    trace2->updateTermValue(0, cycle, xvalue);
+    trace1->updateTermValue(xid, cycle, xvalue);
+    trace2->updateTermValue(xid, cycle, xvalue);
     // setting 'y' var value
 
     unsigned yvalue = rand() % 100;
-    trace1->updateTermValue(1, cycle, yvalue);
-    trace2->updateTermValue(1, cycle, !yvalue);
+    trace1->updateTermValue(yid, cycle, yvalue);
+    trace2->updateTermValue(yid, cycle, !yvalue);
     result = property->eval(cycle, tracelist);
   }
 

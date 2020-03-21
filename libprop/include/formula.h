@@ -54,6 +54,10 @@ class Formula {
 
   // write this formula to the screen.
   virtual void display(std::ostream& out) const = 0;
+  
+  unsigned getVarId(std::string const& varName) {
+    return var_map->getVarIndex(varName);
+  }
 };
 
 // integer-sorted terms.

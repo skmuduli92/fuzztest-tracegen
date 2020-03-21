@@ -287,19 +287,17 @@ void Since::display(std::ostream& out) const {
 }
 
 bool Since::eval(uint32_t cycle, const TraceList& traces) {
-  // S(f1, f2)
+  // S(f1, f2) : f2 is true at some point in past and f1 is true since then
   auto f1 = std::dynamic_pointer_cast<HyperProp>(args[0]);
   auto f2 = std::dynamic_pointer_cast<HyperProp>(args[1]);
 
   if (validF2 == false) {
     validF2 = f2->eval(cycle, traces);
+    return false;
   } else {
-    // if f2 has become true once, need to check if f1 is true there onwards
-    if(f1->eval(cycle, traces)) return true;
-    else return false;
+    validF1 = validF1 && f1->eval(cycle, traces);
+    return validF1;
   }
-
-  return false;
 }
   
 } // namespace HyperPLTL
