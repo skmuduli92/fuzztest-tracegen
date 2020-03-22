@@ -268,8 +268,8 @@ oc8051_top oc8051_top_1(.wb_rst_i(rst), .wb_clk_i(clk),
 
     always @(posedge done)
     begin
-        $display("time ",$time, "   Read DONE signal on ports 0-3\n");
-        #500 $finish;
+        $display("time ",$time, ": Read DONE signal on ports 0-3");
+        #10 $finish;
     end
 
 wire [15:0] proc0_addr;
