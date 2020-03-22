@@ -1,12 +1,15 @@
 INCLUDES=-I../verilator/include/ -I../fuzzer
-CFLAGS=-O1 -Wall -Wpedantic -Wextra
+CFLAGS=-O2 -Wall -Wextra
+LDFLAGS=-O2
 
-secureboot_sim: secureboot_simulation.cpp coverage.cpp coverage.h Voc8051_tb__ALL.a afl.o verilated.o property_parser.h trace.h formula.cpp
-	g++ -o sim $(CFLAGS) $(INCLUDES) verilated.o afl.o ../verilator/include/verilated_cov.cpp secureboot_simulation.cpp coverage.cpp formula.cpp Voc8051_tb__ALL.a -DVM_COVERAGE=1
+secureboot: secureboot.o coverage.o Voc8051_tb__ALL.a afl.o verilated.o
+	g++ -o secureboot $(LDFLAGS) $^
 
-sim: simulation.cpp coverage.cpp coverage.h Voc8051_tb__ALL.a afl.o verilated.o property_parser.h trace.h
-	g++ -o sim $(CFLAGS) $(INCLUDES) verilated.o afl.o ../verilator/include/verilated_cov.cpp simulation.cpp coverage.cpp Voc8051_tb__ALL.a -DVM_COVERAGE=1
+secureboot.o: secureboot.cpp coverage.h afl.h Voc8051_tb__ALL.a
+	g++ -c $(CFLAGS) $(INCLUDES) $<
 
+coverage.o: coverage.cpp coverage.h
+	g++ -c $(CFLAGS) $(INCLUDES) $<
 
 afl.o : afl.c
 	g++ -c $(CFLAGS) afl.c $(INCLUDES)

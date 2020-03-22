@@ -27,7 +27,7 @@ public:
   void track(uint32_t value);
   void dump(std::ostream& out) const;
   const uint32_t* data() const { return bins.data(); }
-  const size_t size() const { return bins.size() ; }
+  size_t size() const { return bins.size() ; }
 
   container_t::iterator begin() { return bins.begin(); }
   container_t::iterator end() { return bins.end(); }
