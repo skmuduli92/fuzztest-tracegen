@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# setting up google-test framework
-sudo apt-get install googletest libpthread-workqueue0
+# get google-test framework and boost libraries
+sudo apt-get install googletest libpthread-workqueue0 libboost-all-dev
+
+# building and installing google-test library
 cd /usr/src/googletest
 sudo cmake .
 sudo make
 sudo make install
-
-# installing boost libraries for boost::spirit::x3 parser
-sudo apt-get install libboost-all-dev
 
