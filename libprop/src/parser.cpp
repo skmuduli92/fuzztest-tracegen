@@ -335,15 +335,15 @@ namespace HyperPLTL {
 PHyperProp parse_formula(std::string const& str) {
 
   typedef std::string::const_iterator iterator_type;
-  typedef sexpr::ast::VarNode s_expr;
+  typedef sexpr::ast::VarNode SExprAst;
   
   auto& grammar = sexpr::grammar::varexpr;
-  s_expr expr;
+  SExprAst exprAst;
 
   iterator_type iter = str.begin();
   iterator_type end = str.end();
   boost::spirit::x3::ascii::space_type space;
-  bool r = phrase_parse(iter, end, grammar, space, expr);
+  bool r = phrase_parse(iter, end, grammar, space, exprAst);
   
   if (!r || iter != end) {
     std::cerr << "Error : Parsing failed\n";
@@ -351,7 +351,7 @@ PHyperProp parse_formula(std::string const& str) {
   }
 
   sexpr::ast::HPLTLBuilder propbuilder;
-  PHyperProp prop = propbuilder(expr);
+  PHyperProp prop = propbuilder(exprAst);
   return prop;
 }
 
