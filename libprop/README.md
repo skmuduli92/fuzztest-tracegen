@@ -65,22 +65,22 @@ varexpr :=  lparen >>
                 )
             >> rparen
 
-not_expr        := NOT termexpr
-or_expr         := OR termexpr termexpr
-and_expr        := AND termexpr termexpr
-implies_expr    := IMPLIES termexpr termexpr
-gexpr           := G termexpr
-yexpr           := Y termexpr
-oexpr           := O termexpr
-sexpr           := S termexpr
+not_expr        := "NOT" >> termexpr
+or_expr         := "OR" >> termexpr >> termexpr
+and_expr        := "AND" >> termexpr >> termexpr
+implies_expr    := "IMPLIES" >> termexpr >> termexpr
+gexpr           := "G" >> termexpr
+yexpr           := "Y" >> termexpr
+oexpr           := "O" >> termexpr
+sexpr           := "S" >> termexpr
 
 termexpr        := varexpr
                     | (lparen >> eqlexpr >> rparen)
 
 eqlexpr         := EQ identifier
 identifier      := ([a-z A-Z]) >> *([a-z A-Z 0-9])
-lparen          := '('
-rparen          := ')'
+lparen          := "("
+rparen          := ")"
 ```
 
 **Some examples**
