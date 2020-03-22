@@ -25,6 +25,8 @@ namespace sexpr::ast
 //  The AST
 ///////////////////////////////////////////////////////////////////////////
 
+// TODO : modify HyperProp classes to be directly used as a AST node
+
 struct AndNode;
 struct OrNode;
 struct ImpNode;
