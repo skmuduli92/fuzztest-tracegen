@@ -14,6 +14,7 @@
 #include <sstream>
 #include <map>
 
+#include "secureboot.h"
 #include "coverage.h"
 #include "afl.h"
 
@@ -28,6 +29,7 @@ vluint64_t main_time = 0;
 
 // Returns current clock cycle number.
 double sc_time_stamp() { return main_time; }
+void reset_time_stamp() { main_time = 0; }
 
 // Helper to monitor the ports.
 void monitor_ports(Voc8051_tb* top) {
@@ -129,10 +131,23 @@ void load_boot_image(Voc8051_tb* top, const std::string& imgfile){
 }
 
 // run program.
-void run(Voc8051_tb* top, const std::string& romfile, const std::string& imgfile){
+void run(
+    Voc8051_tb* top, ITamperer& tamperer,
+    const std::string& romfile, const std::string& imgfile)
+{
     reset_uc(top);
     load_program(top, romfile);
     load_boot_image(top, imgfile);
+    tamperer.tamper(top);
     simulate(2621440,top);
     std::cout << "finished @ " << std::dec << main_time << std::endl;
+}
+
+// Default tamperer
+ITamperer NoTamper;
+// Default tamper function.
+void ITamperer::tamper(Voc8051_tb* top) 
+{
+    (void) top;
+    // do nothing.
 }

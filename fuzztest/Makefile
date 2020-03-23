@@ -3,13 +3,23 @@ CFLAGS=-O2 -Wall -Wextra
 LDFLAGS=-O2
 SHARED_OBJECTS=secureboot.o coverage.o Voc8051_tb__ALL.a afl.o verilated.o
 
+.PHONY: bootfuzzer bootloader
+
+all: bootloader bootfuzzer
+
+bootfuzzer: bootfuzzer.o $(SHARED_OBJECTS)
+	g++ -o $@ $(LDFLAGS) $^
+
 bootloader: bootloader.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
 
-bootloader.o: bootloader.cpp secureboot.h coverage.h
+bootfuzzer.o: bootfuzzer.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
 	g++ -c $(CFLAGS) $(INCLUDES) $<
 
-secureboot.o: secureboot.cpp coverage.h afl.h
+bootloader.o: bootloader.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
+	g++ -c $(CFLAGS) $(INCLUDES) $<
+
+secureboot.o: secureboot.cpp coverage.h afl.h Voc8051_tb__ALL.a
 	g++ -c $(CFLAGS) $(INCLUDES) $<
 
 coverage.o: coverage.cpp coverage.h
@@ -144,5 +154,5 @@ oc8051: ${RTL_DIR}/*.v
 .PHONY: clean
 
 clean:
-	rm -f sim Voc8051_*
+	rm -f bootloader bootfuzzer Voc8051_*
 	rm -f *.o

@@ -3,3 +3,5 @@ Voc8051_*
 afl-out/fuzz_bitmap
 afl-out/queue/*
 secureboot
+bootloader
+bootfuzzer
