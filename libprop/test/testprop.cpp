@@ -76,7 +76,7 @@ void test1()
     auto traces = createSatTraces1(xIndex, yIndex);
 }
 
-TEST(TestPropLib, TestALWAYSSimple) {
+TEST(PropertyLibTest, TestALWAYSSimple) {
 
     // Formula: G(x.1 = x.2) => G(y.1 = y.2)
     PVarMap varmap(new VarMap());
@@ -110,7 +110,7 @@ TEST(TestPropLib, TestALWAYSSimple) {
     EXPECT_TRUE(result);
 }
 
-TEST(TestPropLib, TestYesterdaySimple) {
+TEST(PropertyLibTest, TestYesterdaySimple) {
 
     PVarMap varmap(new VarMap());
     // x

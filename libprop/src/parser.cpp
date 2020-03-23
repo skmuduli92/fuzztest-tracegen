@@ -268,63 +268,63 @@ struct HPLTLStringBuilder {
   
   using result_t = std::string;
   result_t operator()(EqlNode const& eqlNode) const {
-    return "EQ " +  eqlNode.var ;
+    return "(EQ " +  eqlNode.var + ")";
   }
 
   result_t operator()(AndNode const& andNode) const {
-    return "AND( " +
+    return "(AND " +
         boost::apply_visitor(*this, andNode.leftArg) +
         boost::apply_visitor(*this, andNode.rightArg) +
         ")";
   }
 
   result_t operator()(OrNode const& orNode) const {
-    return "OR( " +
+    return "(OR " +
     boost::apply_visitor(*this, orNode.leftArg) +
     boost::apply_visitor(*this, orNode.rightArg) +
-    ")";
+        ")";
   }
 
   result_t operator()(NotNode const& notNode) const {
-    return "NOT( " +
+    return "(NOT " +
         boost::apply_visitor(*this, notNode.arg) +
         ")";
   }
   
   result_t operator()(ImpNode const& impNode) const {
-    return "IMPLIES( " +
+    return "(IMPLIES" +
         boost::apply_visitor(*this, impNode.leftArg) +
         boost::apply_visitor(*this, impNode.rightArg) +
         ")";
   }
   
   result_t operator()(GNode const& gnode) const {
-    return "G(" +
+    return "(G " +
         boost::apply_visitor(*this, gnode.arg) +
         ")";
   }
   
   result_t operator()(YNode const& ynode) const {
-    return "Y(" +
+    return "(Y " +
         boost::apply_visitor(*this, ynode.arg) +
         ")";
   }
   
   result_t operator()(ONode const& onode) const {
-    return "O(" +
+    return "(O " +
         boost::apply_visitor(*this, onode.arg) +
         ")";
   }
   
   result_t operator()(SNode const& snode) const {
-    return "S(" +
+    return "(S " +
         boost::apply_visitor(*this, snode.leftArg) +
         boost::apply_visitor(*this, snode.rightArg) +
         ")";
   }
   
   result_t operator()(VarNode const& varNode) const {
-    return "(" + boost::apply_visitor(*this, varNode) + ")";
+    return boost::apply_visitor(*this, varNode);
   }
   
 };
@@ -352,7 +352,7 @@ PHyperProp parse_formula(std::string const& str) {
   bool r = phrase_parse(iter, end, grammar, space, exprAst);
   
   if (!r || iter != end) {
-    std::cerr << "Error : Parsing failed\n";
+    std::cerr << PARSE_ERR_MSG << std::endl;
     exit(1);
   }
 
