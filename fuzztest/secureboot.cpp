@@ -20,9 +20,6 @@
 #define DEBUG_REG_ADDR 0xEFFE
 #define DEBUG_REG_DATA 0xEFFF
 
-// required for afl
-static int fid = 0;
-
 // Coverage trackers.
 ValueTracker opcode_tracker(16381 /* closest prime to 16384 */, 8);
 ValueTracker pc_tracker(32771 /* closest prime to 32768 */, 16);
@@ -138,30 +135,4 @@ void run(Voc8051_tb* top, const std::string& romfile, const std::string& imgfile
     load_boot_image(top, imgfile);
     simulate(2621440,top);
     std::cout << "finished @ " << std::dec << main_time << std::endl;
-}
-
-// main function.
-int main(int argc, char *argv[]) {
-    // create top module
-    std::unique_ptr<Voc8051_tb> top = std::make_unique<Voc8051_tb>();
-
-    // afl init
-    std::stringstream oldss;
-    afl_init(&fid, &oldss);
-
-    // filenames
-    std::string romfile("../rom/secureboot.dat");
-    std::string imgfile("../rom/prog.hex");
-    run(top.get(), romfile, imgfile);
-
-    // push coverage
-    std::vector<uint32_t> coverageBins(
-        opcode_tracker.size() + pc_tracker.size());
-    std::copy(opcode_tracker.begin(), opcode_tracker.end(),
-              coverageBins.begin());
-    std::copy(pc_tracker.begin(), pc_tracker.end(),
-              coverageBins.begin() + opcode_tracker.size());
-    afl_copy(coverageBins.data(), coverageBins.size());
-
-    return 0;
 }

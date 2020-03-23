@@ -1,11 +1,15 @@
 INCLUDES=-I../verilator/include/ -I../fuzzer
 CFLAGS=-O2 -Wall -Wextra
 LDFLAGS=-O2
+SHARED_OBJECTS=secureboot.o coverage.o Voc8051_tb__ALL.a afl.o verilated.o
 
-secureboot: secureboot.o coverage.o Voc8051_tb__ALL.a afl.o verilated.o
-	g++ -o secureboot $(LDFLAGS) $^
+bootloader: bootloader.o $(SHARED_OBJECTS)
+	g++ -o $@ $(LDFLAGS) $^
 
-secureboot.o: secureboot.cpp coverage.h afl.h Voc8051_tb__ALL.a
+bootloader.o: bootloader.cpp secureboot.h coverage.h
+	g++ -c $(CFLAGS) $(INCLUDES) $<
+
+secureboot.o: secureboot.cpp coverage.h afl.h
 	g++ -c $(CFLAGS) $(INCLUDES) $<
 
 coverage.o: coverage.cpp coverage.h
