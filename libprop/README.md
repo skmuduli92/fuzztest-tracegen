@@ -39,8 +39,8 @@
 
 ## Property Specification
 
- * Temporal operators
-    + G, Y, O, S
+ + Temporal operators
+    - G, Y, O, S
  + Relational operator
     - EQ
  + Logical operators
