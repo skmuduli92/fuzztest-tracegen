@@ -5,7 +5,7 @@
 using namespace std;
 
 
-TEST(LibPropTest, TestVarTrace)
+TEST(PropertyLibTest, TestVarTrace)
 {
 
   VarTrace<unsigned> vartr;

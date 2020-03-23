@@ -16,6 +16,7 @@
 #include <memory>
 
 #include "formula.h"
+#include "parse_util.h"
 
 namespace x3 = boost::spirit::x3;
 
@@ -182,72 +183,6 @@ namespace sexpr::ast {
 //  AST visitor methods
 ///////////////////////////////////////////////////////////////////////////////
 
-struct HPLTLPrinter {
-
-  void operator()(EqlNode const& eqlNode) const {
-    std::cout << "EQ("
-              << eqlNode.var
-              << ") ";    
-  }
-
-  void operator()(AndNode const& andNode) const {
-    std::cout << "AND( ";
-    boost::apply_visitor(*this, andNode.leftArg);
-    boost::apply_visitor(*this, andNode.rightArg);
-    std::cout << ")";
-  }
-
-  void operator()(OrNode const& orNode) const {
-    std::cout << "OR( ";
-    boost::apply_visitor(*this, orNode.leftArg);
-    boost::apply_visitor(*this, orNode.rightArg);
-    std::cout << ")";
-  }
-
-  void operator()(NotNode const& notNode) const {
-    std::cout << "NOT( ";
-    boost::apply_visitor(*this, notNode.arg);
-    std::cout << ")";    
-  }
-  void operator()(ImpNode const& impNode) const {
-    std::cout << "IMPLIES( ";
-    boost::apply_visitor(*this, impNode.leftArg);
-    boost::apply_visitor(*this, impNode.rightArg);
-    std::cout << ")";
-  }
-  
-  void operator()(GNode const& gnode) const {
-    std::cout << "G(";
-    boost::apply_visitor(*this, gnode.arg);
-    std::cout << ")";
-  }
-  
-  void operator()(YNode const& ynode) const {
-    std::cout << "Y(";
-    boost::apply_visitor(*this, ynode.arg);
-    std::cout << ")";
-  }
-  
-  void operator()(ONode const& onode) const {
-    std::cout << "O(";
-    boost::apply_visitor(*this, onode.arg);
-    std::cout << ")";
-  }
-  
-  void operator()(SNode const& snode) const {
-    std::cout << "S(";
-    boost::apply_visitor(*this, snode.leftArg);
-    boost::apply_visitor(*this, snode.rightArg);
-    std::cout << ")";
-  }
-  
-  void operator()(VarNode const& varNode) const {
-    boost::apply_visitor(*this, varNode);
-    std::cout << std::endl;
-  }
-  
-};
-
 struct HPLTLBuilder {
 
   using result_t = HyperPLTL::PHyperProp;
@@ -325,6 +260,75 @@ struct HPLTLBuilder {
   }
 };
 
+struct HPLTLStringBuilder {
+
+  /////////////////////////////////////////////////////////////////
+  // visitor methods to generate formula string back from an AST //
+  /////////////////////////////////////////////////////////////////
+  
+  using result_t = std::string;
+  result_t operator()(EqlNode const& eqlNode) const {
+    return "(EQ " +  eqlNode.var + ")";
+  }
+
+  result_t operator()(AndNode const& andNode) const {
+    return "(AND " +
+        boost::apply_visitor(*this, andNode.leftArg) +
+        boost::apply_visitor(*this, andNode.rightArg) +
+        ")";
+  }
+
+  result_t operator()(OrNode const& orNode) const {
+    return "(OR " +
+    boost::apply_visitor(*this, orNode.leftArg) +
+    boost::apply_visitor(*this, orNode.rightArg) +
+        ")";
+  }
+
+  result_t operator()(NotNode const& notNode) const {
+    return "(NOT " +
+        boost::apply_visitor(*this, notNode.arg) +
+        ")";
+  }
+  
+  result_t operator()(ImpNode const& impNode) const {
+    return "(IMPLIES" +
+        boost::apply_visitor(*this, impNode.leftArg) +
+        boost::apply_visitor(*this, impNode.rightArg) +
+        ")";
+  }
+  
+  result_t operator()(GNode const& gnode) const {
+    return "(G " +
+        boost::apply_visitor(*this, gnode.arg) +
+        ")";
+  }
+  
+  result_t operator()(YNode const& ynode) const {
+    return "(Y " +
+        boost::apply_visitor(*this, ynode.arg) +
+        ")";
+  }
+  
+  result_t operator()(ONode const& onode) const {
+    return "(O " +
+        boost::apply_visitor(*this, onode.arg) +
+        ")";
+  }
+  
+  result_t operator()(SNode const& snode) const {
+    return "(S " +
+        boost::apply_visitor(*this, snode.leftArg) +
+        boost::apply_visitor(*this, snode.rightArg) +
+        ")";
+  }
+  
+  result_t operator()(VarNode const& varNode) const {
+    return boost::apply_visitor(*this, varNode);
+  }
+  
+};
+
 }
 
 
@@ -348,13 +352,37 @@ PHyperProp parse_formula(std::string const& str) {
   bool r = phrase_parse(iter, end, grammar, space, exprAst);
   
   if (!r || iter != end) {
-    std::cerr << "Error : Parsing failed\n";
+    std::cerr << PARSE_ERR_MSG << std::endl;
     exit(1);
   }
 
   sexpr::ast::HPLTLBuilder propbuilder;
   PHyperProp prop = propbuilder(exprAst);
   return prop;
+}
+
+
+std::string parse_and_regen_string(std::string const& str) {
+
+  typedef std::string::const_iterator iterator_type;
+  typedef sexpr::ast::VarNode SExprAst;
+  
+  auto& grammar = sexpr::grammar::varexpr;
+  SExprAst exprAst;
+
+  iterator_type iter = str.begin();
+  iterator_type end = str.end();
+
+  boost::spirit::x3::ascii::space_type space;
+  bool r = phrase_parse(iter, end, grammar, space, exprAst);
+  
+  if (!r || iter != end) {
+    std::cerr << "Error : Parsing failed\n";
+    exit(1);
+  }
+
+  sexpr::ast::HPLTLStringBuilder strbuilder;
+  return strbuilder(exprAst);
 }
 
 }
