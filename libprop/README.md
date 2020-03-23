@@ -77,7 +77,7 @@ sexpr           := "S" >> termexpr
 termexpr        := varexpr
                     | (lparen >> eqlexpr >> rparen)
 
-eqlexpr         := "EQ" identifier
+eqlexpr         := "EQ" >> identifier
 identifier      := ([a-z A-Z]) >> *([a-z A-Z 0-9])
 lparen          := "("
 rparen          := ")"
