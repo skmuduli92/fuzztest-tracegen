@@ -1,7 +1,9 @@
 
+#include <gtest/gtest.h>
+
 #include "formula.h"
 #include "trace.h"
-#include <gtest/gtest.h>
+#include "parse_util.h"
 
 using namespace HyperPLTL;
 using namespace std;

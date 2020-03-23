@@ -22,8 +22,6 @@ typedef std::shared_ptr<TraceProp> PTraceProp;
 typedef std::shared_ptr<HyperProp> PHyperProp;
 typedef std::shared_ptr<Term> PTerm;
 
-PHyperProp parse_formula(std::string const&);
-
 class VarMap {
   std::vector<std::string> varNames;
   std::map<std::string, unsigned> varIndices;
