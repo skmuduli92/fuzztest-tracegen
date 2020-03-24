@@ -117,6 +117,8 @@ void load_program(Voc8051_tb *top, const std::string& romfile){
 
 // load IMG.
 void load_boot_image(Voc8051_tb* top, const std::string& imgfile){
+  if (imgfile.size() == 0) return;
+
   std::ifstream infile;
   infile.open(imgfile);
   const int XRAM_BASE = 0x3000;

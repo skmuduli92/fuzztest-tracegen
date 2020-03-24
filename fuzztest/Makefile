@@ -3,15 +3,19 @@ CFLAGS=-O2 -Wall -Wextra
 LDFLAGS=-O2
 SHARED_OBJECTS=secureboot.o coverage.o Voc8051_tb__ALL.a afl.o verilated.o
 
-.PHONY: bootfuzzer bootloader
+all: bootloader bootfuzzer aes_test
 
-all: bootloader bootfuzzer
+aes_test: aes_test.o $(SHARED_OBJECTS)
+	g++ -o $@ $(LDFLAGS) $^
 
 bootfuzzer: bootfuzzer.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
 
 bootloader: bootloader.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
+
+aes_test.o: aes_test.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
+	g++ -c $(CFLAGS) $(INCLUDES) $<
 
 bootfuzzer.o: bootfuzzer.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
 	g++ -c $(CFLAGS) $(INCLUDES) $<

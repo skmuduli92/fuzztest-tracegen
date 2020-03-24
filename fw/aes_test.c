@@ -34,8 +34,8 @@ __xdata __at(0xE000) unsigned char data[16];
 __xdata __at(0xFF80) unsigned char pt_wren[32];
 __xdata __at(0xFFA0) unsigned char pt_rden[32];
 
-__xdata __at(0xEFFE) unsigned char debug_reg_addr;
-__xdata __at(0xEFFF) unsigned char debug_reg_data;
+__xdata __at(0xEFFC) unsigned int debug_reg_addr;
+__xdata __at(0xEFFE) unsigned int debug_reg_data;
 
 /*---------------------------------------------------------------------------*/
 
