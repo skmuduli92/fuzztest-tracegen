@@ -15,8 +15,8 @@ std::pair<PTrace, PTrace> createSatTraces1(unsigned xIndex, unsigned yIndex)
 {
     assert (xIndex == 0);
     assert (yIndex == 1);
-    PTrace trace1(new Trace(2));
-    PTrace trace2(new Trace(2));
+    PTrace trace1(new Trace(0, 2));
+    PTrace trace2(new Trace(0, 2));
 
     unsigned traceLen = rand() % 20 + 20;
     unsigned xValue = rand() % 65536;
@@ -135,8 +135,8 @@ TEST(PropertyLibTest, TestYesterdaySimple) {
     // F->display(std::cout); std::cout << std::endl;
     bool result = true;
 
-    PTrace trace1(new Trace(2));
-    PTrace trace2(new Trace(2));
+    PTrace trace1(new Trace(0, 2));
+    PTrace trace2(new Trace(0, 2));
 
 
     TraceList tracelist({trace1, trace2});

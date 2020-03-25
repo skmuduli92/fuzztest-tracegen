@@ -17,8 +17,8 @@ PHyperProp propertyOnceOperator() {
 TEST(PropertyLibTest, ValidTraceOnceOperator) {
   PHyperProp property = propertyOnceOperator();
 
-  PTrace trace1(new Trace(2));
-  PTrace trace2(new Trace(2));
+  PTrace trace1(new Trace(0, 2));
+  PTrace trace2(new Trace(0, 2));
   TraceList tracelist({trace1, trace2});
   unsigned xid = property->getVarId("x");
   unsigned yid = property->getVarId("y");
@@ -67,8 +67,8 @@ TEST(PropertyLibTest, ValidTraceOnceOperator) {
 TEST(PropertyLibTest, InvalidTraceOnceOperator) {
   PHyperProp property = propertyOnceOperator();
 
-  PTrace trace1(new Trace(2));
-  PTrace trace2(new Trace(2));
+  PTrace trace1(new Trace(0, 2));
+  PTrace trace2(new Trace(0, 2));
   TraceList tracelist({trace1, trace2});
   unsigned xid = property->getVarId("x");
   unsigned yid = property->getVarId("y");

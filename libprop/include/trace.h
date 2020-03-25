@@ -84,11 +84,13 @@ class Trace
 
  public:
 
-  /** Create a trace capable of storing numVars variables. */
-  Trace(unsigned numVars) 
-      : variables(numVars)
-      , lastCycle(0)
-  {}
+  /** Create a trace capable of storing numVars variables and
+      numProps propositions. */
+  Trace(unsigned numProps, unsigned numVars)
+      : propositions(numProps)
+      , variables(numVars)
+  {
+  }
 
   /** Update the value of variable i at time cycle. */
   void updateTermValue(unsigned i, uint32_t cycle, ValueType value)

@@ -19,8 +19,8 @@ TEST(PropertyLibTest, ValidTraceSinceOperator) {
 
   auto property = propertySinceOperator();
 
-  PTrace trace1(new Trace(2));
-  PTrace trace2(new Trace(2));
+  PTrace trace1(new Trace(0, 2));
+  PTrace trace2(new Trace(0, 2));
   TraceList tracelist({trace1, trace2});
 
   bool result = false;
@@ -78,8 +78,8 @@ TEST(PropertyLibTest, InvalidTraceSinceOperator_Test1) {
   // eqX never becomes true, hence SINCE(eqY, eqX) should fail.
   PHyperProp property = propertySinceOperator();
 
-  PTrace trace1(new Trace(2));
-  PTrace trace2(new Trace(2));
+  PTrace trace1(new Trace(0, 2));
+  PTrace trace2(new Trace(0, 2));
   TraceList tracelist({trace1, trace2});
 
   bool result = false;
@@ -110,8 +110,8 @@ TEST(PropertyLibTest, InvalidTraceSinceOperator_Test2) {
   // eqX is always true but eqY never becomes true
   PHyperProp property = propertySinceOperator();
 
-  PTrace trace1(new Trace(2));
-  PTrace trace2(new Trace(2));
+  PTrace trace1(new Trace(0, 2));
+  PTrace trace2(new Trace(0, 2));
   TraceList tracelist({trace1, trace2});
 
   bool result = false;

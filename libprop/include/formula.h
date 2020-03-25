@@ -56,6 +56,9 @@ class Formula {
   unsigned getVarId(std::string const& varName) {
     return var_map->getVarIndex(varName);
   }
+  unsigned getPropId(std::string const& propName) {
+    return var_map->getPropIndex(propName);
+  }
 };
 
 // integer-sorted terms.

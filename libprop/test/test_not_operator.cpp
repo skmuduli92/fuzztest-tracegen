@@ -16,8 +16,8 @@ PHyperProp propertyNotOperator() {
 TEST(PropertyLibTest, ValidTraceNotOperator) {
   PHyperProp property = propertyNotOperator();
 
-  PTrace trace1(new Trace(1));
-  PTrace trace2(new Trace(1));
+  PTrace trace1(new Trace(0, 1));
+  PTrace trace2(new Trace(0, 1));
   TraceList tracelist({trace1, trace2});
   unsigned xid = property->getVarId("x");
   bool result = false;
@@ -37,8 +37,8 @@ TEST(PropertyLibTest, ValidTraceNotOperator) {
 TEST(PropertyLibTest, InvalidTraceNotOperator) {
   PHyperProp property = propertyNotOperator();
 
-  PTrace trace1(new Trace(1));
-  PTrace trace2(new Trace(1));
+  PTrace trace1(new Trace(0, 1));
+  PTrace trace2(new Trace(0, 1));
   TraceList tracelist({trace1, trace2});
   unsigned xid = property->getVarId("x");
   bool result = true;

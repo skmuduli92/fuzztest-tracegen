@@ -23,8 +23,8 @@ PHyperProp property2AlwaysOperator() {
 TEST(PropertyLibTest, ValidTraceAlwaysOperator_Test1) {
   PHyperProp property = property1AlwaysOperator();
 
-  PTrace trace1(new Trace(1));
-  PTrace trace2(new Trace(1));
+  PTrace trace1(new Trace(0, 1));
+  PTrace trace2(new Trace(0, 1));
   TraceList tracelist({trace1, trace2});
 
   bool result = false;
@@ -45,8 +45,8 @@ TEST(PropertyLibTest, ValidTraceAlwaysOperator_Test1) {
 TEST(PropertyLibTest, InvalidTraceAlwaysOperator_Test1) {
   PHyperProp property = property1AlwaysOperator();
 
-  PTrace trace1(new Trace(1));
-  PTrace trace2(new Trace(1));
+  PTrace trace1(new Trace(0, 1));
+  PTrace trace2(new Trace(0, 1));
   TraceList tracelist({trace1, trace2});
 
   bool result = false;
@@ -74,8 +74,8 @@ TEST(PropertyLibTest, ValidTraceAlwaysOperator_Test2) {
   // (G (Or (eqX, eqY)))
   PHyperProp property = property2AlwaysOperator();
 
-  PTrace trace1(new Trace(2));
-  PTrace trace2(new Trace(2));
+  PTrace trace1(new Trace(0, 2));
+  PTrace trace2(new Trace(0, 2));
   TraceList tracelist({trace1, trace2});
 
   bool result = false;
@@ -120,8 +120,8 @@ TEST(PropertyLibTest, InvalidTraceAlwaysOperator_Test2) {
   // (G (Or (eqX, eqY)))
   PHyperProp property = property2AlwaysOperator();
 
-  PTrace trace1(new Trace(2));
-  PTrace trace2(new Trace(2));
+  PTrace trace1(new Trace(0, 2));
+  PTrace trace2(new Trace(0, 2));
   TraceList tracelist({trace1, trace2});
   unsigned xid = property->getVarId("x");
   unsigned yid = property->getVarId("y");

@@ -19,8 +19,8 @@ TEST(PropertyLibTest, ValidTraceYOperator) {
 
   PHyperProp property = propertyYOperator();
 
-  PTrace trace1(new Trace(2));
-  PTrace trace2(new Trace(2));
+  PTrace trace1(new Trace(0, 2));
+  PTrace trace2(new Trace(0, 2));
   TraceList tracelist({trace1, trace2});
 
   size_t cycle = 0;
@@ -49,8 +49,8 @@ TEST(PropertyLibTest, ValidTraceYOperator) {
 TEST(PropertyLibTest, InvalidTraceYOperator) {
   PHyperProp property = propertyYOperator();
 
-  PTrace trace1(new Trace(2));
-  PTrace trace2(new Trace(2));
+  PTrace trace1(new Trace(0, 2));
+  PTrace trace2(new Trace(0, 2));
   TraceList tracelist({trace1, trace2});
 
   size_t cycle = 0;
@@ -93,8 +93,8 @@ TEST(PropertyLibTest, InvalidTraceYeqXNeverTrue) {
 
   PHyperProp property = propertyYOperator();
 
-  PTrace trace1(new Trace(2));
-  PTrace trace2(new Trace(2));
+  PTrace trace1(new Trace(0, 2));
+  PTrace trace2(new Trace(0, 2));
   TraceList tracelist({trace1, trace2});
   unsigned xid = property->getVarId("x");
   unsigned yid = property->getVarId("y");
