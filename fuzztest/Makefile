@@ -1,7 +1,7 @@
-INCLUDES=-I../verilator/include/ -I../fuzzer
-CFLAGS=-O2 -Wall -Wextra
+INCLUDES=-I../verilator/include/ -I../fuzzer -I../libprop/include
+CXXFLAGS=-O2 -Wall -Wextra -std=c++17 
 LDFLAGS=-O2
-SHARED_OBJECTS=secureboot.o coverage.o Voc8051_tb__ALL.a afl.o verilated.o
+SHARED_OBJECTS=secureboot.o coverage.o Voc8051_tb__ALL.a afl.o verilated.o ../libprop/build/lib/liblibprop.a
 
 all: bootloader bootfuzzer aes_test
 
@@ -15,25 +15,25 @@ bootloader: bootloader.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
 
 aes_test.o: aes_test.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
-	g++ -c $(CFLAGS) $(INCLUDES) $<
+	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 bootfuzzer.o: bootfuzzer.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
-	g++ -c $(CFLAGS) $(INCLUDES) $<
+	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 bootloader.o: bootloader.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
-	g++ -c $(CFLAGS) $(INCLUDES) $<
+	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 secureboot.o: secureboot.cpp coverage.h afl.h Voc8051_tb__ALL.a
-	g++ -c $(CFLAGS) $(INCLUDES) $<
+	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 coverage.o: coverage.cpp coverage.h
-	g++ -c $(CFLAGS) $(INCLUDES) $<
+	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 afl.o : afl.c
-	g++ -c $(CFLAGS) afl.c $(INCLUDES)
+	g++ -c $(CXXFLAGS) afl.c $(INCLUDES)
 
 verilated.o : ../verilator/include/verilated.cpp
-	g++ -c $(CFLAGS) ../verilator/include/verilated.cpp $(INCLUDES)
+	g++ -c $(CXXFLAGS) ../verilator/include/verilated.cpp $(INCLUDES)
 
 Voc8051_tb__ALL.a: Voc8051_tb.mk
 	make -f Voc8051_tb.mk OPT="-O1"

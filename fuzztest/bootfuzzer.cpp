@@ -38,7 +38,7 @@ void FSMWriteTamperer::tamper(Voc8051_tb* top)
 
 int main() {
     // create top module
-    std::unique_ptr<Voc8051_tb> top = std::make_unique<Voc8051_tb>();
+    Voc8051_Simulator sim(0, 0);
 
     // afl init
     afl_init(&fid, &oldss);
@@ -48,22 +48,16 @@ int main() {
     std::string imgfile("../rom/prog.hex");
 
     // first run.
-    run(top.get(), NoTamper, romfile, imgfile);
+    sim.run(NoTamper, romfile, imgfile);
 
     // second trace.
     FSMWriteTamperer tamper;
     Verilated::reset_verilator();
     reset_time_stamp();
-    run(top.get(), tamper, romfile, imgfile);
+    sim.run(tamper, romfile, imgfile);
 
     // push coverage
-    std::vector<uint32_t> coverageBins(
-        opcode_tracker.size() + pc_tracker.size());
-    std::copy(opcode_tracker.begin(), opcode_tracker.end(),
-              coverageBins.begin());
-    std::copy(pc_tracker.begin(), pc_tracker.end(),
-              coverageBins.begin() + opcode_tracker.size());
-    afl_copy(coverageBins.data(), coverageBins.size());
+    sim.copy_coverage();
 
     return 0;
 }

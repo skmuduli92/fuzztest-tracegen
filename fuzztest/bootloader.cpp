@@ -12,12 +12,12 @@
 
 int main() {
     // create top module
-    std::unique_ptr<Voc8051_tb> top = std::make_unique<Voc8051_tb>();
+    Voc8051_Simulator sim(0, 0);
 
     // filenames
     std::string romfile("../rom/secureboot.dat");
     std::string imgfile("../rom/prog.hex");
-    run(top.get(), NoTamper, romfile, imgfile);
+    sim.run(NoTamper, romfile, imgfile);
 
     return 0;
 }
