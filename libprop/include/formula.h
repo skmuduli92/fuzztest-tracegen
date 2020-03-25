@@ -37,6 +37,12 @@ class VarMap {
   const std::string& getVarName(unsigned i) const;
   int getVarIndex(const std::string& name) const;
 
+  const std::vector<std::string>& getVarNames() const {
+    return varNames;
+  }
+  const std::vector<std::string>& getPropNames() const {
+    return propNames;
+  }
   bool hasVar(const std::string& name) {
     return varIndices.find(name) != varIndices.end();
   }
@@ -53,11 +59,21 @@ class Formula {
   // write this formula to the screen.
   virtual void display(std::ostream& out) const = 0;
   
+  /** Return the id for this term variable. */
   unsigned getVarId(std::string const& varName) {
     return var_map->getVarIndex(varName);
   }
+  /** Return the id for this propositional variable. */
   unsigned getPropId(std::string const& propName) {
     return var_map->getPropIndex(propName);
+  }
+  /** Return the vector of terms. */
+  const std::vector<std::string>& getVarNames() const {
+    return var_map->getVarNames();
+  }
+  /** Return the vector of propositions. */
+  const std::vector<std::string>& getPropNames() const {
+    return var_map->getPropNames();
   }
 };
 

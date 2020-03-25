@@ -92,6 +92,11 @@ class Trace
   {
   }
 
+  /** Return the number of propositional variables in the trace. */
+  unsigned numProps() const { return propositions.size(); }
+  /** Return the number of term (numeric) variables in the trace. */
+  unsigned numVars() const { return variables.size(); }
+
   /** Update the value of variable i at time cycle. */
   void updateTermValue(unsigned i, uint32_t cycle, ValueType value)
   {
