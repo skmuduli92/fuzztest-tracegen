@@ -1,7 +1,7 @@
 ;--------------------------------------------------------
 ; File Created by SDCC : free open source ANSI-C Compiler
 ; Version 3.5.0 #9253 (Apr  3 2018) (Linux)
-; This file was generated Wed Jan 29 11:06:51 2020
+; This file was generated Thu Mar 26 00:41:45 2020
 ;--------------------------------------------------------
 	.module aes_test
 	.optsdcc -mmcs51 --model-small
@@ -321,8 +321,8 @@ _aes_reg_key1	=	0xff30
 _data	=	0xe000
 _pt_wren	=	0xff80
 _pt_rden	=	0xffa0
-_debug_reg_addr	=	0xeffe
-_debug_reg_data	=	0xefff
+_debug_reg_addr	=	0xeffc
+_debug_reg_data	=	0xeffe
 ;--------------------------------------------------------
 ; absolute external ram data
 ;--------------------------------------------------------
@@ -671,9 +671,15 @@ _main:
 	mov	dptr,#_debug_reg_addr
 	mov	a,#0x12
 	movx	@dptr,a
+	clr	a
+	inc	dptr
+	movx	@dptr,a
 ;	aes_test.c:114: debug_reg_data = good;
 	mov	dptr,#_debug_reg_data
 	mov	a,r6
+	movx	@dptr,a
+	mov	a,r7
+	inc	dptr
 	movx	@dptr,a
 ;	aes_test.c:116: quit();
 	ljmp	_quit

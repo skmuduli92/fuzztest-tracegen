@@ -1,7 +1,7 @@
                                       1 ;--------------------------------------------------------
                                       2 ; File Created by SDCC : free open source ANSI-C Compiler
                                       3 ; Version 3.5.0 #9253 (Apr  3 2018) (Linux)
-                                      4 ; This file was generated Wed Jan 29 11:06:51 2020
+                                      4 ; This file was generated Thu Mar 26 00:41:45 2020
                                       5 ;--------------------------------------------------------
                                       6 	.module aes_test
                                       7 	.optsdcc -mmcs51 --model-small
@@ -321,8 +321,8 @@
                            00E000   321 _data	=	0xe000
                            00FF80   322 _pt_wren	=	0xff80
                            00FFA0   323 _pt_rden	=	0xffa0
-                           00EFFE   324 _debug_reg_addr	=	0xeffe
-                           00EFFF   325 _debug_reg_data	=	0xefff
+                           00EFFC   324 _debug_reg_addr	=	0xeffc
+                           00EFFE   325 _debug_reg_data	=	0xeffe
                                     326 ;--------------------------------------------------------
                                     327 ; absolute external ram data
                                     328 ;--------------------------------------------------------
@@ -668,16 +668,22 @@
                                     668 ;	aes_test.c:112: P0 = good;
       0001C3 8E 80            [24]  669 	mov	_P0,r6
                                     670 ;	aes_test.c:113: debug_reg_addr = GOOD_ID;
-      0001C5 90 EF FE         [24]  671 	mov	dptr,#_debug_reg_addr
+      0001C5 90 EF FC         [24]  671 	mov	dptr,#_debug_reg_addr
       0001C8 74 12            [12]  672 	mov	a,#0x12
       0001CA F0               [24]  673 	movx	@dptr,a
-                                    674 ;	aes_test.c:114: debug_reg_data = good;
-      0001CB 90 EF FF         [24]  675 	mov	dptr,#_debug_reg_data
-      0001CE EE               [12]  676 	mov	a,r6
-      0001CF F0               [24]  677 	movx	@dptr,a
-                                    678 ;	aes_test.c:116: quit();
-      0001D0 02 00 62         [24]  679 	ljmp	_quit
-                                    680 	.area CSEG    (CODE)
-                                    681 	.area CONST   (CODE)
-                                    682 	.area XINIT   (CODE)
-                                    683 	.area CABS    (ABS,CODE)
+      0001CB E4               [12]  674 	clr	a
+      0001CC A3               [24]  675 	inc	dptr
+      0001CD F0               [24]  676 	movx	@dptr,a
+                                    677 ;	aes_test.c:114: debug_reg_data = good;
+      0001CE 90 EF FE         [24]  678 	mov	dptr,#_debug_reg_data
+      0001D1 EE               [12]  679 	mov	a,r6
+      0001D2 F0               [24]  680 	movx	@dptr,a
+      0001D3 EF               [12]  681 	mov	a,r7
+      0001D4 A3               [24]  682 	inc	dptr
+      0001D5 F0               [24]  683 	movx	@dptr,a
+                                    684 ;	aes_test.c:116: quit();
+      0001D6 02 00 62         [24]  685 	ljmp	_quit
+                                    686 	.area CSEG    (CODE)
+                                    687 	.area CONST   (CODE)
+                                    688 	.area XINIT   (CODE)
+                                    689 	.area CABS    (ABS,CODE)

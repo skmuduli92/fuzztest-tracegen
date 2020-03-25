@@ -133,9 +133,9 @@ S _INT0 Def0000B2
 S _DPH Def000083
 S _INT1 Def0000B3
 S _CY Def0000D7
-S _debug_reg_data Def00EFFF
+S _debug_reg_data Def00EFFE
 S _TI Def000099
-S _debug_reg_addr Def00EFFE
+S _debug_reg_addr Def00EFFC
 S _DPL Def000082
 S _RCAP2H Def0000CB
 A _CODE size 0 flags 0 addr 0
@@ -163,7 +163,7 @@ A GSINIT4 size 0 flags 20 addr 0
 A GSINIT5 size 0 flags 20 addr 0
 A GSINIT size 0 flags 20 addr 0
 A GSFINAL size 3 flags 20 addr 0
-A CSEG size 171 flags 20 addr 0
+A CSEG size 177 flags 20 addr 0
 S _main Def000026
 S _quit Def000000
 A CONST size 0 flags 20 addr 0
@@ -307,7 +307,7 @@ T 00 01 56 C3 EC 94 20 ED 64 80 94 80 40 D6
 R 00 00 00 17
 T 00 01 61
 R 00 00 00 17
-T 00 01 61 8E 80 90 EF FE 74 12 F0 90 EF FF EE F0
+T 00 01 61 8E 80 90 EF FC 74 12 F0 E4 A3 F0 90
 R 00 00 00 17
-T 00 01 6E 02 00 00
-R 00 00 00 17 00 04 00 17
+T 00 01 6D EF FE EE F0 EF A3 F0 02 00 00
+R 00 00 00 17 00 0B 00 17

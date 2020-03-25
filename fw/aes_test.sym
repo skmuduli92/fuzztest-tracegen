@@ -342,8 +342,8 @@ Symbol Table
     _aes_reg_start                                              =  00FF00 G
     _aes_reg_state                                              =  00FF01 G
     _data                                                       =  00E000 G
-    _debug_reg_addr                                             =  00EFFE G
-    _debug_reg_data                                             =  00EFFF G
+    _debug_reg_addr                                             =  00EFFC G
+    _debug_reg_data                                             =  00EFFE G
  17 _main                                                          000026 GR
     _pt_rden                                                    =  00FFA0 G
     _pt_wren                                                    =  00FF80 G
@@ -581,7 +581,7 @@ Area Table
   14 GSINIT5                                    size      0   flags   20
   15 GSINIT                                     size      0   flags   20
   16 GSFINAL                                    size      3   flags   20
-  17 CSEG                                       size    171   flags   20
+  17 CSEG                                       size    177   flags   20
   18 CONST                                      size      0   flags   20
   19 XINIT                                      size      0   flags   20
   1A CABS                                       size      0   flags   28
