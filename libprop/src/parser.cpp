@@ -161,7 +161,7 @@ auto const sexpr_def = sstr >> termexpr >> termexpr;
 
 auto const termexpr_def = varexpr | ('(' >> eqlexpr >> ')') | selexpr;
 auto const eqlexpr_def = eqstr >> idexpr;
-auto const selexpr_def = idexpr >> ('[' >> x3::uint_ >> ']');
+auto const selexpr_def = idexpr >> '.' >> x3::uint_;
 
 BOOST_SPIRIT_DEFINE(idexpr, varexpr, notexpr, andexpr, orexpr, impexpr);
 BOOST_SPIRIT_DEFINE(gexpr, yexpr, oexpr, sexpr, termexpr);
@@ -267,7 +267,7 @@ struct HPLTLStringBuilder {
   }
 
   result_t operator()(TraceSelNode const& selNode) const {
-    return selNode.varname + "[" + std::to_string(selNode.traceid) + "] ";
+    return selNode.varname + "." + std::to_string(selNode.traceid) + " ";
   }
 
   result_t operator()(AndNode const& andNode) const {
@@ -285,7 +285,7 @@ struct HPLTLStringBuilder {
   }
 
   result_t operator()(ImpNode const& impNode) const {
-    return "(IMPLIES" + boost::apply_visitor(*this, impNode.leftArg) +
+    return "(IMPLIES " + boost::apply_visitor(*this, impNode.leftArg) +
            boost::apply_visitor(*this, impNode.rightArg) + ")";
   }
 

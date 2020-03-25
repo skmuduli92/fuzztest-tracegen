@@ -47,7 +47,7 @@ TEST(PropertyLibTest, Parse_IMPLIES) {
 }
 
 TEST(PropertyLibTest, Parse_TraceSelect) {
-  std::string prop = "(O (IMPLIES good[1] good[2]))";
+  std::string prop = "(O (IMPLIES good.1 good.2))";
   std::string origPropPruned = prune_whitespaces(prop);
   std::string regenStrPruned =
       prune_whitespaces(HyperPLTL::parse_and_regen_string(prop));
