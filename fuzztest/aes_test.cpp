@@ -7,6 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "formula.h"
+#include "trace.h"
+#include "parse_util.h"
+
 // required for afl
 static int fid = 0;
 static std::stringstream oldss;
@@ -29,6 +33,10 @@ void NopTamperer::tamper(Voc8051_tb* top)
 int main() {
   // create top module
   Voc8051_Simulator sim(1, 0);
+  auto f = HyperPLTL::parse_formula(std::string("(IMPLIES (O good.1) (O good.0))"));
+  const int GOOD_DEBUG_ID = 0x12;
+  auto traceIdx = f->getPropId(std::string("good"));
+  sim.addVar(std::string("good"), traceIdx, GOOD_DEBUG_ID, Voc8051_Simulator::VarInfo::PROPOSITION, 0); 
 
   // afl init
   afl_init(&fid, &oldss);

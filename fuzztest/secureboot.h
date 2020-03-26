@@ -38,9 +38,11 @@ class Voc8051_Simulator {
   // run for some number of steps.
   int simulate(long delay);
   void monitor_ports();
+  void monitor_debug_registers();
 
   Trace t0, t1;
 
+ public:
   // Information about a particular variable.
   struct VarInfo {
       std::string name;
@@ -58,6 +60,7 @@ class Voc8051_Simulator {
       {
       }
   };
+ protected:
   typedef std::shared_ptr<VarInfo> PVarInfo;
   // Map from variables to VarInfo objects.
   std::map<std::string, PVarInfo> varNames;

@@ -54,6 +54,29 @@ void Voc8051_Simulator::monitor_ports()
   }
 }
 
+// Helper to monitor writes to the debug registers.
+void Voc8051_Simulator::monitor_debug_registers()
+{
+  auto ackw = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__ackw;
+  uint32_t addr = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__addr_out;
+
+  if (ackw && addr == DEBUG_REG_DATA+1) {
+    uint16_t lo_data = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA];
+    uint16_t hi_data = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA+1];
+    uint16_t this_data = lo_data | (hi_data << 8);
+
+    uint16_t lo_addr = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_ADDR];
+    uint16_t hi_addr = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_ADDR+1];
+    uint16_t this_addr = lo_addr | (hi_addr << 8);
+
+    std::cout << "set @ " << std::dec << main_time << ": " 
+              << std::dec << this_addr << " -> " 
+              << std::dec << this_data << std::endl;
+    setVar(trace, this_addr, main_time, this_data);
+  }
+}
+
+
 // simulates delay number of cycles. Set delay < 0 to simulate
 // indefinetely.
 int Voc8051_Simulator::simulate(long delay) 
@@ -68,6 +91,7 @@ int Voc8051_Simulator::simulate(long delay)
     top->oc8051_tb__DOT__clk = clk;
     top->eval();
     monitor_ports();
+    monitor_debug_registers();
 
     // coverage.
     if (clk == 0) {
