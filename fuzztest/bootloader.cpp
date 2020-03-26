@@ -11,13 +11,13 @@
 // static int fid = 0;
 
 int main() {
-    // create top module
-    Voc8051_Simulator sim(0, 0);
+  // create top module
+  Voc8051_Simulator sim(0, 0);
 
-    // filenames
-    std::string romfile("../rom/secureboot.dat");
-    std::string imgfile("../rom/prog.hex");
-    sim.run(NoTamper, romfile, imgfile);
+  // filenames
+  std::string romfile("../rom/secureboot.dat");
+  std::string imgfile("../rom/prog.hex");
+  sim.run(NoTamper, romfile, imgfile);
 
-    return 0;
+  return 0;
 }
