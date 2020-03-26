@@ -39,19 +39,69 @@ class Voc8051_Simulator {
   int simulate(long delay);
   void monitor_ports();
 
-  Trace t1, t2;
+  Trace t0, t1;
+
+  // Information about a particular variable.
+  struct VarInfo {
+      std::string name;
+      unsigned traceIndex;
+      unsigned debugIndex;
+      enum Type { PROPOSITION, TERM } type;
+      // Constructor.
+      VarInfo(const std::string& n,
+              unsigned trcIdx, unsigned dbgIdx,
+              Type t)
+       : name(n)
+       , traceIndex(trcIdx)
+       , debugIndex(dbgIdx)
+       , type(t)
+      {
+      }
+  };
+  typedef std::shared_ptr<VarInfo> PVarInfo;
+  // Map from variables to VarInfo objects.
+  std::map<std::string, PVarInfo> varNames;
+  // Map from debug indices to  VarInfo objects.
+  std::map<unsigned, PVarInfo> varIndices;
+  // current trace
+  unsigned trace;
  public:
   // constructor.
   Voc8051_Simulator(unsigned numProps, unsigned numVars)
       : top(std::make_unique<Voc8051_tb>())
       , opcode_tracker(16381, 8)
       , pc_tracker(32771, 16)
+      , t0(numProps, numVars)
       , t1(numProps, numVars)
-      , t2(numProps, numVars)
+      , trace(0)
   {
   }
 
-  // public interface.
+  // public interface methods.
+
+  void addVar(const std::string& name, unsigned traceIndex, unsigned debugIndex, VarInfo::Type t, uint64_t init) 
+  {
+    PVarInfo varInfo(
+      new VarInfo(name, traceIndex, debugIndex, t));
+    varNames.insert(std::make_pair(name, varInfo));
+    varIndices.insert(std::make_pair(debugIndex, varInfo));
+    setVar(0, debugIndex, 0, init);
+    setVar(1, debugIndex, 0, init);
+  }
+
+  void setVar(unsigned trace, unsigned dbgIndex, uint32_t time, uint64_t value)
+  {
+    auto pos = varIndices.find(dbgIndex);
+    assert (pos != varIndices.end());
+    PVarInfo inf = pos->second;
+    Trace& t(trace == 0 ? t0 : t1);
+    if (inf->type == VarInfo::PROPOSITION) {
+      t.updatePropValue(inf->traceIndex, time, value != 0);
+    } else {
+      t.updateTermValue(inf->traceIndex, time, value);
+    }
+  }
+
   void reset_uc();
   void load_program(const std::string& romfile);
   void load_boot_image(const std::string& imgfile);
