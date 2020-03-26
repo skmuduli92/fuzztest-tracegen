@@ -26,8 +26,7 @@ int VarMap::getVarIndex(const std::string& name) const {
 unsigned  VarMap::addVar(const std::string& name) {
   unsigned idx = varNames.size();
 
-  if (hasVar(name))
-    return varIndices[name];
+  if (hasVar(name)) return varIndices[name];
   
   varNames.push_back(name);
   varIndices[name] = idx;
@@ -47,6 +46,9 @@ int  VarMap::getPropIndex(const std::string& name) const {
 
 unsigned  VarMap::addProp(const std::string& name) {
   unsigned idx = propNames.size();
+
+  if (hasProp(name)) return propIndices[name];
+
   propNames.push_back(name);
   propIndices[name] = idx;
   return idx;

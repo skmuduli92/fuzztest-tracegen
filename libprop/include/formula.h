@@ -46,6 +46,10 @@ class VarMap {
   bool hasVar(const std::string& name) {
     return varIndices.find(name) != varIndices.end();
   }
+
+  bool hasProp(const std::string& name) {
+    return propIndices.find(name) != propIndices.end();
+  }
 };
 
 class Formula {
