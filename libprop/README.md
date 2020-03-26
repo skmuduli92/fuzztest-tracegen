@@ -79,7 +79,7 @@ termexpr        := varexpr
                     | selexpr
 
 eqlexpr         := "EQ" >> identifier
-selexpr         := identifier >> "[" >> uint >> "]"
+selexpr         := identifier >> "." >> uint
 identifier      := ([a-z A-Z]) >> *([a-z A-Z 0-9])
 lparen          := "("
 rparen          := ")"
