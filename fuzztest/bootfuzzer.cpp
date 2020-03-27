@@ -38,7 +38,7 @@ void FSMWriteTamperer::tamper(Voc8051_tb* top)
 
 int main() {
   // create top module
-  Voc8051_Simulator sim(0, 0);
+  Voc8051_Simulator sim(2, 0, 0);
 
   // afl init
   afl_init(&fid, &oldss);

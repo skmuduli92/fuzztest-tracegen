@@ -185,6 +185,22 @@ void Voc8051_Simulator::copy_coverage()
   afl_copy(coverageBins.data(), coverageBins.size());
 }
 
+bool Voc8051_Simulator::evaluate(HyperPLTL::PHyperProp f)
+{
+  unsigned len = traces[0]->length();
+  for (unsigned i=1; i < traces.size(); i++) {
+    if (len > traces[i]->length()) {
+      len = traces[i]->length();
+    }
+  }
+  assert (len > 0);
+  bool result;
+  for (unsigned i=0; i != len; i++) {
+    result = f->eval(i, traces);
+  }
+  return result;
+}
+
 // Default tamperer
 ITamperer NoTamper;
 // Default tamper function.

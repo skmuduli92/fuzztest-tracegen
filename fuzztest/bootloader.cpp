@@ -12,7 +12,7 @@
 
 int main() {
   // create top module
-  Voc8051_Simulator sim(0, 0);
+  Voc8051_Simulator sim(1, 0, 0);
 
   // filenames
   std::string romfile("../rom/secureboot.dat");

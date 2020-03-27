@@ -32,7 +32,8 @@ void NopTamperer::tamper(Voc8051_tb* top)
 
 int main() {
   // create top module
-  Voc8051_Simulator sim(1, 0);
+  Voc8051_Simulator sim(2, 1, 0);
+  // parse the property
   auto f = HyperPLTL::parse_formula(std::string("(IMPLIES (O good.1) (O good.0))"));
   const int GOOD_DEBUG_ID = 0x12;
   auto traceIdx = f->getPropId(std::string("good"));
@@ -50,9 +51,10 @@ int main() {
 
   // second trace.
   NopTamperer tamper;
-  Verilated::reset_verilator();
-  reset_time_stamp();
+  sim.nextTrace();
   sim.run(tamper, romfile, imgfile);
+
+  assert(sim.evaluate(f));
 
   // push coverage
   sim.copy_coverage();
