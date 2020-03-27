@@ -19,6 +19,6 @@ PHyperProp parse_formula(std::string const&);
 
 std::string parse_and_regen_string(std::string const& str);
 
-}
+}  // namespace HyperPLTL
 
 #endif
