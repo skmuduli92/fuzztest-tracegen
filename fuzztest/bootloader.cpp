@@ -10,6 +10,8 @@
 // required for afl
 // static int fid = 0;
 
+static ITamperer NoTamper;
+
 int main() {
   // create top module
   Voc8051_Simulator sim(1, 0, 0);

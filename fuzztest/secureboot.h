@@ -10,6 +10,7 @@
 
 #include "trace.h"
 #include "formula.h"
+#include "tamper.h"
 
 // addresses of the "fake" register used to update debug values.
 
@@ -18,13 +19,6 @@ extern ValueTracker pc_tracker;
 
 double sc_time_stamp();
 void reset_time_stamp();
-
-// interface for tampering.
-struct ITamperer {
-    virtual void tamper(Voc8051_tb* top);
-};
-// default tamperer.
-extern ITamperer NoTamper;
 
 class Voc8051_Simulator {
   static const int DEBUG_REG_ADDR;

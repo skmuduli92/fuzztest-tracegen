@@ -203,9 +203,3 @@ bool Voc8051_Simulator::evaluate(HyperPLTL::PHyperProp f)
 
 // Default tamperer
 ITamperer NoTamper;
-// Default tamper function.
-void ITamperer::tamper(Voc8051_tb* top) 
-{
-  (void) top;
-  // do nothing.
-}

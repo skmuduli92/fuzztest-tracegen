@@ -4,6 +4,8 @@
 #include "Voc8051_tb.h"
 #include "Voc8051_tb__Syms.h"
 
+#include "tamper.h"
+
 #include <memory>
 #include <string>
 
@@ -35,6 +37,8 @@ void FSMWriteTamperer::tamper(Voc8051_tb* top)
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_delay[i] = delay;
   }
 }
+
+static ITamperer NoTamper;
 
 int main() {
   // create top module

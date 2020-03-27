@@ -1,7 +1,7 @@
 INCLUDES=-I../verilator/include/ -I../fuzzer -I../libprop/include
 CXXFLAGS=-O2 -Wall -Wextra -std=c++17 
 LDFLAGS=-O2
-SHARED_OBJECTS=secureboot.o coverage.o Voc8051_tb__ALL.a afl.o verilated.o ../libprop/build/lib/liblibprop.a
+SHARED_OBJECTS=secureboot.o coverage.o tamper.o Voc8051_tb__ALL.a afl.o verilated.o ../libprop/build/lib/liblibprop.a
 
 all: bootloader bootfuzzer aes_test
 
@@ -27,6 +27,9 @@ secureboot.o: secureboot.cpp coverage.h afl.h Voc8051_tb__ALL.a
 	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 coverage.o: coverage.cpp coverage.h
+	g++ -c $(CXXFLAGS) $(INCLUDES) $<
+
+tamper.o: tamper.cpp tamper.h  Voc8051_tb__ALL.a
 	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 afl.o : afl.c
