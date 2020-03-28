@@ -1,4 +1,0 @@
-for FILE in *.v
-do
-	echo "/* verilator coverage_on */" >> "${FILE}"
-done
