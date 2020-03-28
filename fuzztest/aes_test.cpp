@@ -23,7 +23,9 @@ int main() {
   // create top module
   Voc8051_Simulator sim(2, 1, 0);
   // parse the property
-  auto f = HyperPLTL::parse_formula(std::string("(IMPLIES (O good.1) (O good.0))"));
+  HyperPLTL::PVarMap varmap(new HyperPLTL::VarMap());
+  auto f = HyperPLTL::parse_formula(std::string("(IMPLIES (O good.1) (O good.0))"), varmap);
+
   const int GOOD_DEBUG_ID = 0x12;
   auto traceIdx = f->getPropId(std::string("good"));
   sim.addVar(std::string("good"), traceIdx, GOOD_DEBUG_ID, Voc8051_Simulator::VarInfo::PROPOSITION, 0); 
