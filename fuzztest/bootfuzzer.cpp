@@ -44,15 +44,15 @@ int main() {
   // create top module
   Voc8051_Simulator sim(2, 0, 0);
 
-  // afl init
-  afl_init(&fid, &oldss);
-
   // filenames
   std::string romfile("../rom/secureboot.dat");
   std::string imgfile("../rom/prog.hex");
 
   // first run.
   sim.run(NoTamper, romfile, imgfile);
+
+  // afl init
+  afl_init(&fid, &oldss);
 
   // second trace.
   FSMWriteTamperer tamper;
