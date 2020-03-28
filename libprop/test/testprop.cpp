@@ -1,8 +1,3 @@
-#include <trace.h>
-#include <cstdlib>
-#include <iomanip>
-#include <iostream>
-
 #include <gtest/gtest.h>
 
 int main(int argc, char* argv[]) {

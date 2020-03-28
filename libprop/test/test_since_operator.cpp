@@ -2,12 +2,11 @@
 #include <gtest/gtest.h>
 
 #include "formula.h"
-#include "trace.h"
 #include "parse_util.h"
+#include "trace.h"
 
 using namespace HyperPLTL;
 using namespace std;
-
 
 PHyperProp propertySinceOperator() {
   std::string formula("(S (EQ y) (EQ x))");
@@ -16,7 +15,6 @@ PHyperProp propertySinceOperator() {
 }
 
 TEST(PropertyLibTest, ValidTraceSinceOperator) {
-
   auto property = propertySinceOperator();
 
   PTrace trace1(new Trace(0, 2));
@@ -31,8 +29,8 @@ TEST(PropertyLibTest, ValidTraceSinceOperator) {
   unsigned xvalue = 0;
   unsigned yvalue = 0;
   unsigned traceLength = rand() % 20 + 20;
-  
-  for(; cycle < traceLength; ++cycle) {
+
+  for (; cycle < traceLength; ++cycle) {
     xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(0, cycle, xvalue);
@@ -57,7 +55,7 @@ TEST(PropertyLibTest, ValidTraceSinceOperator) {
   result = property->eval(cycle, tracelist);
   cycle = cycle + 1;
 
-  for(traceLength = rand() % 20 + 20 + cycle; cycle < traceLength; ++cycle) {
+  for (traceLength = rand() % 20 + 20 + cycle; cycle < traceLength; ++cycle) {
     // setting 'x' var value
     trace1->updateTermValue(xid, cycle, rand() % 100);
     trace2->updateTermValue(xid, cycle, rand() % 100);
@@ -69,12 +67,11 @@ TEST(PropertyLibTest, ValidTraceSinceOperator) {
 
     result = property->eval(cycle, tracelist);
   }
- 
+
   EXPECT_TRUE(result);
 }
 
 TEST(PropertyLibTest, InvalidTraceSinceOperator_Test1) {
-
   // eqX never becomes true, hence SINCE(eqY, eqX) should fail.
   PHyperProp property = propertySinceOperator();
 
@@ -89,8 +86,8 @@ TEST(PropertyLibTest, InvalidTraceSinceOperator_Test1) {
   size_t cycle = 0;
   unsigned xvalue = 0;
   unsigned traceLength = rand() % 20 + 20;
-  
-  for(; cycle < traceLength; ++cycle) {
+
+  for (; cycle < traceLength; ++cycle) {
     xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(xid, cycle, xvalue);
@@ -101,12 +98,11 @@ TEST(PropertyLibTest, InvalidTraceSinceOperator_Test1) {
 
     result = property->eval(cycle, tracelist);
   }
- 
-  EXPECT_FALSE(result);  
+
+  EXPECT_FALSE(result);
 }
 
 TEST(PropertyLibTest, InvalidTraceSinceOperator_Test2) {
-
   // eqX is always true but eqY never becomes true
   PHyperProp property = propertySinceOperator();
 
@@ -122,8 +118,8 @@ TEST(PropertyLibTest, InvalidTraceSinceOperator_Test2) {
   unsigned xid = property->getVarId("x");
   unsigned yid = property->getVarId("y");
   unsigned traceLength = rand() % 20 + 20;
-  
-  for(; cycle < traceLength; ++cycle) {
+
+  for (; cycle < traceLength; ++cycle) {
     xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(xid, cycle, xvalue);
@@ -135,6 +131,6 @@ TEST(PropertyLibTest, InvalidTraceSinceOperator_Test2) {
 
     result = property->eval(cycle, tracelist);
   }
- 
-  EXPECT_FALSE(result);  
+
+  EXPECT_FALSE(result);
 }
