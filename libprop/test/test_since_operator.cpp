@@ -10,7 +10,8 @@ using namespace std;
 
 PHyperProp propertySinceOperator() {
   std::string formula("(S (EQ y) (EQ x))");
-  auto property = parse_formula(formula);
+  PVarMap varmap(new VarMap());
+  PHyperProp property = parse_formula(formula, varmap);
   return property;
 }
 

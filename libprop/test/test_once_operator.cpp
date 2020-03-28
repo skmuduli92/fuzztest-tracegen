@@ -2,16 +2,16 @@
 #include <gtest/gtest.h>
 
 #include "formula.h"
-#include "trace.h"
 #include "parse_util.h"
+#include "trace.h"
 
 using namespace HyperPLTL;
 using namespace std;
 
-
 PHyperProp propertyOnceOperator() {
-  PHyperProp prop = parse_formula(std::string("(O (AND (EQ x) (EQ y)))"));
-  return prop;
+  std::string formula = "(O (AND (EQ x) (EQ y)))";
+  PVarMap varmap(new VarMap());
+  return parse_formula(formula, varmap);
 }
 
 TEST(PropertyLibTest, ValidTraceOnceOperator) {
@@ -27,7 +27,7 @@ TEST(PropertyLibTest, ValidTraceOnceOperator) {
   unsigned traceLength = rand() % 20 + 20;
 
   size_t cycle = 0;
-  for(; cycle < traceLength; ++cycle) {
+  for (; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(xid, cycle, xvalue);
@@ -46,9 +46,9 @@ TEST(PropertyLibTest, ValidTraceOnceOperator) {
   trace2->updateTermValue(yid, cycle, 11);
   result = property->eval(cycle, tracelist);
   cycle = cycle + 1;
-  
+
   traceLength = rand() % 20 + 20 + cycle;
-  for(; cycle < traceLength; ++cycle) {
+  for (; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(xid, cycle, xvalue);
@@ -77,7 +77,7 @@ TEST(PropertyLibTest, InvalidTraceOnceOperator) {
   unsigned traceLength = rand() % 20 + 20;
 
   size_t cycle = 0;
-  for(; cycle < traceLength; ++cycle) {
+  for (; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(xid, cycle, xvalue);
@@ -89,9 +89,9 @@ TEST(PropertyLibTest, InvalidTraceOnceOperator) {
     trace2->updateTermValue(yid, cycle, yvalue);
     result = property->eval(cycle, tracelist);
   }
-  
+
   traceLength = rand() % 20 + 20 + cycle;
-  for(; cycle < traceLength; ++cycle) {
+  for (; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(xid, cycle, xvalue);

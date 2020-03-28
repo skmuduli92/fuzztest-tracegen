@@ -8,7 +8,7 @@
 
 namespace HyperPLTL {
 
-PHyperProp parse_formula(std::string const&);
+PHyperProp parse_formula(std::string const&, PVarMap);
 
 /////////////////////////////////////////////////////////////////////////
 // TODO:

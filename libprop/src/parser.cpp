@@ -1,7 +1,4 @@
 
-///////////////////////////////////////////////////////////////////////////////
-// Uncomment this if you want to enable debugging
-// #define BOOST_SPIRIT_X3_DEBUG
 
 #include <fstream>
 #include <iostream>
@@ -32,9 +29,9 @@ namespace sexpr::ast {
 
 struct HPLTLBuilder {
   using result_t = HyperPLTL::PHyperProp;
-  HyperPLTL::PVarMap varmap;
 
-  HPLTLBuilder() { varmap = std::make_shared<HyperPLTL::VarMap>(); }
+  HyperPLTL::PVarMap varmap;
+  HPLTLBuilder(HyperPLTL::PVarMap inputmap) { varmap = inputmap; }
 
   result_t operator()(EqlNode const& eqlNode) const {
     // adding identifier to varmap
@@ -120,7 +117,7 @@ struct HPLTLBuilder {
 
 namespace HyperPLTL {
 
-PHyperProp parse_formula(std::string const& str) {
+PHyperProp parse_formula(std::string const& str, PVarMap varmap) {
   typedef std::string::const_iterator iterator_type;
   typedef sexpr::ast::VarNode SExprAst;
 
@@ -137,7 +134,7 @@ PHyperProp parse_formula(std::string const& str) {
     exit(1);
   }
 
-  sexpr::ast::HPLTLBuilder propbuilder;
+  sexpr::ast::HPLTLBuilder propbuilder(varmap);
   PHyperProp prop = propbuilder(exprAst);
   return prop;
 }

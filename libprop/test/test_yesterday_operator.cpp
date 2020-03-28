@@ -2,21 +2,20 @@
 #include <gtest/gtest.h>
 
 #include "formula.h"
-#include "trace.h"
 #include "parse_util.h"
+#include "trace.h"
 
 using namespace HyperPLTL;
 using namespace std;
 
-
 PHyperProp propertyYOperator() {
   std::string property("(IMPLIES (Y (EQ x)) (EQ y))");
-  auto prop = parse_formula(property);
+  PVarMap varmap(new VarMap());
+  auto prop = parse_formula(property, varmap);
   return prop;
 }
 
 TEST(PropertyLibTest, ValidTraceYOperator) {
-
   PHyperProp property = propertyYOperator();
 
   PTrace trace1(new Trace(0, 2));
@@ -60,7 +59,7 @@ TEST(PropertyLibTest, InvalidTraceYOperator) {
 
   unsigned traceLength = rand() % 20 + 20;
 
-  for ( ; cycle < traceLength; ++cycle) {
+  for (; cycle < traceLength; ++cycle) {
     trace1->updateTermValue(xid, cycle, rand() % 100);
     trace2->updateTermValue(xid, cycle, rand() % 100);
     trace1->updateTermValue(yid, cycle, rand() % 100);
@@ -87,7 +86,6 @@ TEST(PropertyLibTest, InvalidTraceYOperator) {
   EXPECT_FALSE(result);
 }
 
-
 TEST(PropertyLibTest, InvalidTraceYeqXNeverTrue) {
   // check the property evaluation value when (Y (eq x) is never true
 
@@ -102,7 +100,7 @@ TEST(PropertyLibTest, InvalidTraceYeqXNeverTrue) {
   bool result = false;
   unsigned traceLength = rand() % 20 + 20;
 
-  for(size_t cycle = 0; cycle < traceLength; ++cycle) {
+  for (size_t cycle = 0; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(xid, cycle, xvalue);

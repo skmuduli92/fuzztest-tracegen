@@ -2,15 +2,16 @@
 #include <gtest/gtest.h>
 
 #include "formula.h"
-#include "trace.h"
 #include "parse_util.h"
+#include "trace.h"
 
 using namespace HyperPLTL;
 using namespace std;
 
 PHyperProp propertyNotOperator() {
   std::string prop("(G (NOT (EQ x)))");
-  return parse_formula(prop);
+  PVarMap varmap(new VarMap());
+  return parse_formula(prop, varmap);
 }
 
 TEST(PropertyLibTest, ValidTraceNotOperator) {
@@ -23,7 +24,7 @@ TEST(PropertyLibTest, ValidTraceNotOperator) {
   bool result = false;
   unsigned traceLength = rand() % 20 + 20;
 
-  for(size_t cycle = 0; cycle < traceLength; ++cycle) {
+  for (size_t cycle = 0; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % 100;
     // setting 'x' var value
     trace1->updateTermValue(xid, cycle, xvalue);
@@ -44,14 +45,16 @@ TEST(PropertyLibTest, InvalidTraceNotOperator) {
   bool result = true;
   unsigned traceLength = rand() % 20 + 20;
 
-  for(size_t cycle = 0; cycle < traceLength; ++cycle) {
+  for (size_t cycle = 0; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % std::numeric_limits<unsigned>::max();
     // setting 'x' var value
     trace1->updateTermValue(xid, cycle, xvalue);
-    if(rand() % 2)  trace2->updateTermValue(xid, cycle, !xvalue);
-    else  trace2->updateTermValue(xid, cycle, xvalue);  
+    if (rand() % 2)
+      trace2->updateTermValue(xid, cycle, !xvalue);
+    else
+      trace2->updateTermValue(xid, cycle, xvalue);
     result = property->eval(cycle, tracelist);
   }
-  
+
   EXPECT_FALSE(result);
 }
