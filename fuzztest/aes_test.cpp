@@ -41,7 +41,7 @@ int main() {
   sim.run(NoTamper, romfile, imgfile);
 
   // second trace.
-  NopTamperer tamper(379 /* base addr */, 24 /* size */);
+  OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
   sim.nextTrace();
   sim.run(tamper, romfile, imgfile);
 

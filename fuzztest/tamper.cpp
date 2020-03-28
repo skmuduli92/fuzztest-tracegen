@@ -12,12 +12,33 @@ void ITamperer::tamper(Voc8051_tb* top)
   (void) top;
 }
 
-void NopTamperer::tamper(Voc8051_tb* top)
+void OpcodeTamperer::tamper(Voc8051_tb* top)
 {
   for(unsigned i=0; i < BUF_SIZE; i++) {
     int data;
     if (scanf("%u",  &data) != 1)  { break; }
     top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i + BASE_ADDR] = data;
+  }
+}
+
+void FSMWriteTamperer::tamper(Voc8051_tb* top)
+{
+  const int BUF_SIZE = 16;
+  for(unsigned i=0; i < BUF_SIZE; i++) {
+    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_addr[i] = 0;
+    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_data[i] = 0;
+    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_delay[i] = 0;
+  }
+  for(unsigned i=0; i < BUF_SIZE; i++) {
+    uint16_t addr, delay;
+    int data;
+    if (scanf("%hx", &addr) != 1)  { break; }
+    if (scanf("%u",  &data) != 1)  { break; }
+    if (scanf("%hu", &delay) != 1) { break; }
+    printf("%hx -> %u @ %hu\n", addr, data, delay);
+    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_addr[i] = addr;
+    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_data[i] = data;
+    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_delay[i] = delay;
   }
 }
 

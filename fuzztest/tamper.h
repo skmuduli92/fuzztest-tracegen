@@ -9,17 +9,22 @@ struct ITamperer {
     virtual void tamper(Voc8051_tb* top);
 };
 
-// One of the tamperers
-struct NopTamperer : public ITamperer {
+// Opcode Tamperer
+struct OpcodeTamperer : public ITamperer {
   const unsigned BASE_ADDR;
   const unsigned BUF_SIZE;
 
-  NopTamperer(unsigned baseaddr, unsigned bufsz)
+  OpcodeTamperer(unsigned baseaddr, unsigned bufsz)
     : BASE_ADDR(baseaddr)
     , BUF_SIZE(bufsz)
   {
   }
 
+  virtual void tamper(Voc8051_tb* top);
+};
+
+// FSM Write tamperer.
+struct FSMWriteTamperer : public ITamperer {
   virtual void tamper(Voc8051_tb* top);
 };
 
