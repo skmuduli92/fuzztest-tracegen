@@ -55,7 +55,6 @@ TEST(PropertyLibTest, TestYesterdaySimple) {
   trace2->updateTermValue(1, cycle, 0);
   result = F->eval(cycle, tracelist);
   cycle = cycle + 1;
-  std::cout << "result : " << result << std::endl;
 
   trace1->updateTermValue(0, cycle, 21);
   trace2->updateTermValue(0, cycle, 20);
@@ -64,7 +63,6 @@ TEST(PropertyLibTest, TestYesterdaySimple) {
 
   result = F->eval(cycle, tracelist);
   cycle = cycle + 1;
-  std::cout << "result : " << result << std::endl;
 
   trace1->updateTermValue(0, cycle, 20);
   trace2->updateTermValue(0, cycle, 21);
@@ -73,7 +71,6 @@ TEST(PropertyLibTest, TestYesterdaySimple) {
 
   result = F->eval(cycle, tracelist);
   cycle = cycle + 1;
-  std::cout << "result : " << result << std::endl;
 
   trace1->updateTermValue(0, cycle, 10);
   trace2->updateTermValue(0, cycle, 10);
@@ -81,14 +78,12 @@ TEST(PropertyLibTest, TestYesterdaySimple) {
   trace2->updateTermValue(1, cycle, 30);
   result = F->eval(cycle, tracelist);
   cycle = cycle + 1;
-  std::cout << "result : " << result << std::endl;
 
   trace1->updateTermValue(0, cycle, 0);
   trace2->updateTermValue(0, cycle, 0);
   trace1->updateTermValue(1, cycle, 0);
   trace2->updateTermValue(1, cycle, 0);
   result = F->eval(cycle, tracelist);
-  std::cout << "result : " << result << std::endl;
 
   EXPECT_TRUE(result);
 }
