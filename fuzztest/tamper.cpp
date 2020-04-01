@@ -33,7 +33,7 @@ void FSMWriteTamperer::tamper(Voc8051_tb* top)
     uint16_t addr, delay;
     int data;
     if (scanf("%hx", &addr) != 1)  { break; }
-    if (scanf("%u",  &data) != 1)  { break; }
+    if (scanf("%x",  &data) != 1)  { break; }
     if (scanf("%hu", &delay) != 1) { break; }
     printf("%hx -> %u @ %hu\n", addr, data, delay);
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_addr[i] = addr;
