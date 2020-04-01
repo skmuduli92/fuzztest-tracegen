@@ -32,6 +32,11 @@ unsigned VarMap::getArrayVarIndex(const std::string& name) const {
   assert(pos != arrayVarInfo.end());
   return pos->second.first;
 }
+varinfo_t VarMap::getArrayVarInfo(const std::string& name) const {
+  auto pos = arrayVarInfo.find(name);
+  assert(pos != arrayVarInfo.end());
+  return pos->second;
+}
 
 unsigned VarMap::addVar(const std::string& name) {
   if (hasVar(name)) return varIndices[name];
