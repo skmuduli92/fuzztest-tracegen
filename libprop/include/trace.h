@@ -81,7 +81,7 @@ class Trace {
   /** A vector of traces for each term variable. */
   std::vector<VarTrace<ValueType>> variables;
 
-  std::vector<VarTrace<ValueArrayType>> arrayvars;
+  std::vector<VarTrace<ValueArrayType>> arrayVars;
 
   /** The last valid time cycle in this trace. */
   unsigned lastCycle;
@@ -90,7 +90,10 @@ class Trace {
   /** Create a trace capable of storing numVars variables and
       numProps propositions. */
   Trace(unsigned numProps, unsigned numVars)
-      : propositions(numProps), variables(numVars) {}
+      : propositions(numProps), variables(numVars), arrayVars(0), lastCycle(0) {}
+
+  Trace(unsigned numProps, unsigned numVars, unsigned numArrVars)
+      : propositions(numProps), variables(numVars), arrayVars(numArrVars), lastCycle(0) {}
 
   /** Return the number of propositional variables in the trace. */
   unsigned numProps() const { return propositions.size(); }
@@ -108,9 +111,9 @@ class Trace {
   }
 
   void updateTermValueArray(unsigned varid, uint32_t cycle, ValueArrayType value) {
-    assert(varid < arrayvars.size());
+    assert(varid < arrayVars.size());
     if (lastCycle < cycle) lastCycle = cycle;
-    arrayvars[varid].updateValue(cycle, value);
+    arrayVars[varid].updateValue(cycle, value);
   }
 
   /** Update the value of proposition i at time cycle. */
@@ -129,8 +132,8 @@ class Trace {
   }
 
   ValueArrayType termValueArrayAt(unsigned i, uint32_t cycle) {
-    assert(i < variables.size());
-    return arrayvars[i][cycle];
+    assert(i < arrayVars.size());
+    return arrayVars[i][cycle];
   }
 
   /** Return the value of a proposition i at time cycle. */

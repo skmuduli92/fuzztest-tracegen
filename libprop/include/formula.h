@@ -55,6 +55,7 @@ class VarMap {
   unsigned getPropIndex(const std::string& name) const;
   unsigned getVarIndex(const std::string& name) const;
   unsigned getArrayVarIndex(const std::string& name) const;
+  varinfo_t getArrayVarInfo(const std::string& name) const;
 
   const std::vector<std::string>& getVarNames() const { return varNames; }
   const std::vector<std::string>& getPropNames() const { return propNames; }
@@ -85,6 +86,16 @@ class Formula {
 
   /** Return the id for this term variable. */
   unsigned getVarId(std::string const& varName) { return var_map->getVarIndex(varName); }
+
+  /// Return Id for array term variable.
+  unsigned getArrayVarId(std::string const& name) {
+    return var_map->getArrayVarIndex(name);
+  }
+
+  varinfo_t getArrayVarInfo(std::string const& name) {
+    return var_map->getArrayVarInfo(name);
+  }
+
   /** Return the id for this propositional variable. */
   unsigned getPropId(std::string const& propName) {
     return var_map->getPropIndex(propName);
