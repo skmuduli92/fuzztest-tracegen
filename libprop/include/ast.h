@@ -20,9 +20,15 @@ struct YNode;
 struct ONode;
 struct SNode;
 
-struct EqlNode {
+struct EqTermNode {
   std::string opname;
   std::string varname;
+};
+
+struct EqTermArrayNode {
+  std::string opname;
+  std::string arrayVarName;
+  unsigned size;
 };
 
 struct TraceSelNode {
@@ -30,11 +36,11 @@ struct TraceSelNode {
   unsigned traceid;
 };
 
-struct VarNode : x3::variant<EqlNode, TraceSelNode, x3::forward_ast<AndNode>,
-                             x3::forward_ast<OrNode>, x3::forward_ast<ImpNode>,
-                             x3::forward_ast<NotNode>, x3::forward_ast<GNode>,
-                             x3::forward_ast<YNode>, x3::forward_ast<ONode>,
-                             x3::forward_ast<SNode> > {
+struct VarNode : x3::variant<EqTermNode, EqTermArrayNode, TraceSelNode,
+                             x3::forward_ast<AndNode>, x3::forward_ast<OrNode>,
+                             x3::forward_ast<ImpNode>, x3::forward_ast<NotNode>,
+                             x3::forward_ast<GNode>, x3::forward_ast<YNode>,
+                             x3::forward_ast<ONode>, x3::forward_ast<SNode> > {
   using base_type::base_type;
   using base_type::operator=;
 };

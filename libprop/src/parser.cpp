@@ -33,7 +33,7 @@ struct HPLTLBuilder {
   HyperPLTL::PVarMap varmap;
   HPLTLBuilder(HyperPLTL::PVarMap inputmap) { varmap = inputmap; }
 
-  result_t operator()(EqlNode const& eqlNode) const {
+  result_t operator()(EqTermNode const& eqlNode) const {
     // adding identifier to varmap
     unsigned varid = varmap->addVar(eqlNode.varname);
 
@@ -42,6 +42,14 @@ struct HPLTLBuilder {
     // stored w.r.t varid
     HyperPLTL::PTerm newvar(new HyperPLTL::TermVar(varmap, varid));
     result_t eq(new HyperPLTL::Equal(varmap, newvar));
+    return eq;
+  }
+
+  result_t operator()(EqTermArrayNode const& eqTermArrNode) const {
+    auto vi = varmap->addArrayVar(eqTermArrNode.arrayVarName, eqTermArrNode.size);
+
+    HyperPLTL::PTermArray newArrVar(new HyperPLTL::TermArrayVar(varmap, vi));
+    result_t eq(new HyperPLTL::Equal(varmap, newArrVar));
     return eq;
   }
 

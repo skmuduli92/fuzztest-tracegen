@@ -1,9 +1,8 @@
 #include "formula.h"
 
 namespace HyperPLTL {
-    
-std::ostream& operator<<(std::ostream& out, const Formula& t)
-{
+
+std::ostream& operator<<(std::ostream& out, const Formula& t) {
   t.display(out);
   return out;
 }
@@ -17,14 +16,24 @@ const std::string& VarMap::getVarName(unsigned i) const {
   return varNames[i];
 }
 
-int VarMap::getVarIndex(const std::string& name) const {
+const std::string& VarMap::getArrayVarName(unsigned int idx) const {
+  assert(idx < arrayVarNames.size());
+  return arrayVarNames[idx];
+}
+
+unsigned VarMap::getVarIndex(const std::string& name) const {
   auto pos = varIndices.find(name);
-  assert (pos != varIndices.end());
+  assert(pos != varIndices.end());
   return pos->second;
 }
 
-unsigned  VarMap::addVar(const std::string& name) {
+unsigned VarMap::getArrayVarIndex(const std::string& name) const {
+  auto pos = arrayVarInfo.find(name);
+  assert(pos != arrayVarInfo.end());
+  return pos->second.first;
+}
 
+unsigned VarMap::addVar(const std::string& name) {
   if (hasVar(name)) return varIndices[name];
 
   unsigned idx = varNames.size();
@@ -33,19 +42,28 @@ unsigned  VarMap::addVar(const std::string& name) {
   return idx;
 }
 
-const std::string&  VarMap::getPropName(unsigned i) const {
+varinfo_t VarMap::addArrayVar(const std::string& name, size_t size) {
+  if (hasArrayVar(name)) return arrayVarInfo[name];
+
+  unsigned idx = arrayVarNames.size();
+  arrayVarNames.push_back(name);
+  varinfo_t vinfo = std::make_pair(idx, size);
+  arrayVarInfo[name] = vinfo;
+  return vinfo;
+}
+
+const std::string& VarMap::getPropName(unsigned i) const {
   assert(i < propNames.size());
   return propNames[i];
 }
 
-int  VarMap::getPropIndex(const std::string& name) const {
+unsigned VarMap::getPropIndex(const std::string& name) const {
   auto pos = propIndices.find(name);
-  assert (pos != propIndices.end());
+  assert(pos != propIndices.end());
   return pos->second;
 }
 
-unsigned  VarMap::addProp(const std::string& name) {
-
+unsigned VarMap::addProp(const std::string& name) {
   if (hasProp(name)) return propIndices[name];
 
   unsigned idx = propNames.size();
@@ -57,9 +75,7 @@ unsigned  VarMap::addProp(const std::string& name) {
 // ---------------------------------------------------------------------- //
 //                               class True                               //
 // ---------------------------------------------------------------------- //
-void True::display(std::ostream& out) const {
-  out << "true";
-}
+void True::display(std::ostream& out) const { out << "true"; }
 
 bool True::propValue(uint32_t cycle, unsigned trace, const TraceList& traces) {
   return true;
@@ -68,27 +84,33 @@ bool True::propValue(uint32_t cycle, unsigned trace, const TraceList& traces) {
 // ---------------------------------------------------------------------- //
 //                            class TermVar                               //
 // ---------------------------------------------------------------------- //
-void TermVar::display(std::ostream& out) const
-{
-  out << var_map->getVarName(index);
+void TermVar::display(std::ostream& out) const { out << var_map->getVarName(index); }
+
+ValueType TermVar::termValue(uint32_t cycle, unsigned trace, const TraceList& traces) {
+  assert(traces.size() > trace);
+  return traces[trace]->termValueAt(index, cycle);
 }
 
-ValueType TermVar::termValue(uint32_t cycle, unsigned trace, const TraceList& traces)
-{
-  assert (traces.size() > trace);
-  return traces[trace]->termValueAt(index, cycle);
+// ---------------------------------------------------------------------- //
+//                            class TermArrayVar                          //
+// ---------------------------------------------------------------------- //
+
+void TermArrayVar::display(std::ostream& out) const {
+  out << var_map->getArrayVarName(varinfo.first) << "[" << varinfo.second << "]";
+}
+
+ValueArrayType TermArrayVar::termValueArray(uint32_t cycle, unsigned trace,
+                                            const TraceList& traces) {
+  assert(traces.size() > trace);
+  return traces[trace]->termValueArrayAt(varinfo.first, cycle);
 }
 
 // ---------------------------------------------------------------------- //
 //                            class PropVar                               //
 // ---------------------------------------------------------------------- //
-void PropVar::display(std::ostream& out) const
-{
-  out << var_map->getPropName(index);
-}
+void PropVar::display(std::ostream& out) const { out << var_map->getPropName(index); }
 
-bool PropVar::propValue(uint32_t cycle, unsigned trace, const TraceList& traces)
-{
+bool PropVar::propValue(uint32_t cycle, unsigned trace, const TraceList& traces) {
   // eval not well-defined when multiple traces are available.
   assert(trace < traces.size());
   return traces[trace]->propValueAt(index, cycle);
@@ -97,8 +119,7 @@ bool PropVar::propValue(uint32_t cycle, unsigned trace, const TraceList& traces)
 // ---------------------------------------------------------------------- //
 //                             class Equal                                //
 // ---------------------------------------------------------------------- //
-void Equal::display(std::ostream& out) const
-{
+void Equal::display(std::ostream& out) const {
   out << "(eq";
   for (auto arg : args) {
     out << " ";
@@ -107,32 +128,41 @@ void Equal::display(std::ostream& out) const
   out << ")";
 }
 
-bool Equal::eval(uint32_t cycle, const TraceList& traces)
-{
+bool Equal::eval(uint32_t cycle, const TraceList& traces) {
   // eval not well-defined when multiple traces are available.
-  assert (traces.size() > 0);
-  PTerm arg = std::dynamic_pointer_cast<Term>(args[0]);
-  ValueType v0 = arg->termValue(cycle, 0, traces);
-    
-  for (unsigned i = 1; i != traces.size(); i++) {
-    if (arg->termValue(cycle, i, traces) != v0)
-      return false;
+  assert(traces.size() > 0);
+
+  if (PTermArray arg = std::dynamic_pointer_cast<TermArrayVar>(args[0]); arg) {
+    ValueArrayType vec0 = arg->termValueArray(cycle, 0, traces);
+    assert(vec0.size() == arg->getSize());
+    for (unsigned i = 1; i != traces.size(); i++) {
+      if (arg->termValueArray(cycle, i, traces) != vec0) return false;
+    }
+    return true;
   }
-  return true;
+
+  if (PTerm arg = std::dynamic_pointer_cast<Term>(args[0]); arg) {
+    ValueType v0 = arg->termValue(cycle, 0, traces);
+    for (unsigned i = 1; i != traces.size(); i++) {
+      if (arg->termValue(cycle, i, traces) != v0) return false;
+    }
+    return true;
+  }
+
+  std::cerr << "Error : Invalid applicaiton of Equal operator\n";
+  exit(1);
 }
 
 // ---------------------------------------------------------------------- //
 //                          class TraceSelect                             //
 // ---------------------------------------------------------------------- //
-void TraceSelect::display(std::ostream& out) const
-{
+void TraceSelect::display(std::ostream& out) const {
   out << "(trace-select " << trace << " ";
   args[0]->display(out);
   out << ")";
 }
 
-bool TraceSelect::eval(uint32_t cycle, const TraceList& traces)
-{
+bool TraceSelect::eval(uint32_t cycle, const TraceList& traces) {
   auto p = std::dynamic_pointer_cast<TraceProp>(args[0]);
   return p->propValue(cycle, trace, traces);
 }
@@ -140,15 +170,13 @@ bool TraceSelect::eval(uint32_t cycle, const TraceList& traces)
 // ---------------------------------------------------------------------- //
 //                              class Not                                 //
 // ---------------------------------------------------------------------- //
-void Not::display(std::ostream& out) const
-{
+void Not::display(std::ostream& out) const {
   out << "(not ";
   args[0]->display(out);
   out << ")";
 }
 
-bool Not::eval(uint32_t cycle, const TraceList& traces)
-{
+bool Not::eval(uint32_t cycle, const TraceList& traces) {
   using namespace std;
   auto p = dynamic_pointer_cast<HyperProp>(args[0]);
   return !p->eval(cycle, traces);
@@ -157,8 +185,7 @@ bool Not::eval(uint32_t cycle, const TraceList& traces)
 // ---------------------------------------------------------------------- //
 //                              class And                                 //
 // ---------------------------------------------------------------------- //
-void And::display(std::ostream& out) const
-{
+void And::display(std::ostream& out) const {
   out << "(and ";
   for (auto arg : args) {
     out << " ";
@@ -167,8 +194,7 @@ void And::display(std::ostream& out) const
   out << ")";
 }
 
-bool And::eval(uint32_t cycle, const TraceList& traces)
-{
+bool And::eval(uint32_t cycle, const TraceList& traces) {
   using namespace std;
   bool r = true;
   for (auto arg : args) {
@@ -181,8 +207,7 @@ bool And::eval(uint32_t cycle, const TraceList& traces)
 // ---------------------------------------------------------------------- //
 //                              class Or                                  //
 // ---------------------------------------------------------------------- //
-void Or ::display(std::ostream& out) const
-{
+void Or ::display(std::ostream& out) const {
   out << "(or ";
   for (auto arg : args) {
     out << " ";
@@ -191,8 +216,7 @@ void Or ::display(std::ostream& out) const
   out << ")";
 }
 
-bool Or::eval(uint32_t cycle, const TraceList& traces)
-{
+bool Or::eval(uint32_t cycle, const TraceList& traces) {
   bool r = false;
   for (auto arg : args) {
     auto p = std::dynamic_pointer_cast<HyperProp>(arg);
@@ -204,8 +228,7 @@ bool Or::eval(uint32_t cycle, const TraceList& traces)
 // ---------------------------------------------------------------------- //
 //                        class Implies                                   //
 // ---------------------------------------------------------------------- //
-void Implies ::display(std::ostream& out) const
-{
+void Implies ::display(std::ostream& out) const {
   out << "(=> ";
   for (auto arg : args) {
     out << " ";
@@ -214,32 +237,28 @@ void Implies ::display(std::ostream& out) const
   out << ")";
 }
 
-bool Implies ::eval(uint32_t cycle, const TraceList& traces)
-{
+bool Implies ::eval(uint32_t cycle, const TraceList& traces) {
   auto p1 = std::dynamic_pointer_cast<HyperProp>(args[0]);
   auto p2 = std::dynamic_pointer_cast<HyperProp>(args[1]);
   return (!p1->eval(cycle, traces)) || p2->eval(cycle, traces);
 }
 
-  
 // ---------------------------------------------------------------------- //
 //                            class Always                                //
 // ---------------------------------------------------------------------- //
 
-void Always::display(std::ostream& out) const
-{
+void Always::display(std::ostream& out) const {
   out << "(G ";
   args[0]->display(out);
   out << ")";
 }
 
-bool Always::eval(uint32_t cycle, const TraceList& traces)
-{
+bool Always::eval(uint32_t cycle, const TraceList& traces) {
   auto f = std::dynamic_pointer_cast<HyperProp>(args[0]);
   past = past && f->eval(cycle, traces);
   return past;
 }
-  
+
 // ---------------------------------------------------------------------- //
 //                        class Yesterday                                 //
 // ---------------------------------------------------------------------- //
@@ -251,7 +270,6 @@ void Yesterday::display(std::ostream& out) const {
 }
 
 bool Yesterday::eval(uint32_t cycle, const TraceList& traces) {
-
   // FIXME : need to fix yesterday computation logic or trace compression
   // mechanism, the evaluation seems to be returning past values
 
@@ -301,5 +319,5 @@ bool Since::eval(uint32_t cycle, const TraceList& traces) {
     return validF1;
   }
 }
-  
-} // namespace HyperPLTL
+
+}  // namespace HyperPLTL
