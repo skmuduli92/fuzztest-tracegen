@@ -2,10 +2,10 @@
 #define __TRACE_H_DEFINED__
 
 #include <algorithm>
+#include <cassert>
 #include <memory>
+#include <variant>
 #include <vector>
-
-#include <assert.h>
 
 class Trace;
 typedef std::shared_ptr<Trace> PTrace;
@@ -71,8 +71,7 @@ struct VarTrace {
   size_t size() const { return datapoints.size(); }
 };
 
-typedef uint32_t ValueType;
-typedef std::vector<uint32_t> ValueArrayType;
+using ValueType = std::variant<uint32_t, std::vector<uint32_t>>;
 
 class Trace {
   /** A vector of traces for each propositional variable. */
@@ -81,8 +80,6 @@ class Trace {
   /** A vector of traces for each term variable. */
   std::vector<VarTrace<ValueType>> variables;
 
-  std::vector<VarTrace<ValueArrayType>> arrayVars;
-
   /** The last valid time cycle in this trace. */
   unsigned lastCycle;
 
@@ -90,10 +87,7 @@ class Trace {
   /** Create a trace capable of storing numVars variables and
       numProps propositions. */
   Trace(unsigned numProps, unsigned numVars)
-      : propositions(numProps), variables(numVars), arrayVars(0), lastCycle(0) {}
-
-  Trace(unsigned numProps, unsigned numVars, unsigned numArrVars)
-      : propositions(numProps), variables(numVars), arrayVars(numArrVars), lastCycle(0) {}
+      : propositions(numProps), variables(numVars), lastCycle(0) {}
 
   /** Return the number of propositional variables in the trace. */
   unsigned numProps() const { return propositions.size(); }
@@ -110,11 +104,6 @@ class Trace {
     variables[i].updateValue(cycle, value);
   }
 
-  void updateTermValueArray(unsigned varid, uint32_t cycle, ValueArrayType value) {
-    assert(varid < arrayVars.size());
-    if (lastCycle < cycle) lastCycle = cycle;
-    arrayVars[varid].updateValue(cycle, value);
-  }
 
   /** Update the value of proposition i at time cycle. */
   void updatePropValue(unsigned i, uint32_t cycle, bool value) {
@@ -126,15 +115,11 @@ class Trace {
   }
 
   /** Return the value of variable i at time cycle. */
-  uint32_t termValueAt(unsigned i, uint32_t cycle) {
+  ValueType termValueAt(unsigned i, uint32_t cycle) {
     assert(i < variables.size());
     return variables[i][cycle];
   }
 
-  ValueArrayType termValueArrayAt(unsigned i, uint32_t cycle) {
-    assert(i < arrayVars.size());
-    return arrayVars[i][cycle];
-  }
 
   /** Return the value of a proposition i at time cycle. */
   bool propValueAt(unsigned i, uint32_t cycle) {

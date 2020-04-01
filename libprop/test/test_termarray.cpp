@@ -41,8 +41,8 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test1) {
   PVarMap varmap(new VarMap());
   PHyperProp property = parse_formula(propstr, varmap);
 
-  PTrace trace1(new Trace(0, 0, 1));
-  PTrace trace2(new Trace(0, 0, 1));
+  PTrace trace1(new Trace(0, 1));
+  PTrace trace2(new Trace(0, 1));
   TraceList tracelist({trace1, trace2});
   varinfo_t varinfo = property->getArrayVarInfo("bytes");
 
@@ -57,8 +57,8 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test1) {
     } else {
       resetData(arrval);
     }
-    trace1->updateTermValueArray(varinfo.first, cycle, arrval);
-    trace2->updateTermValueArray(varinfo.first, cycle, arrval);
+    trace1->updateTermValue(varinfo.first, cycle, arrval);
+    trace2->updateTermValue(varinfo.first, cycle, arrval);
 
     result = property->eval(cycle, tracelist);
   }
@@ -71,8 +71,8 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test1_Fail) {
   PVarMap varmap(new VarMap());
   PHyperProp property = parse_formula(propstr, varmap);
 
-  PTrace trace1(new Trace(0, 0, 1));
-  PTrace trace2(new Trace(0, 0, 1));
+  PTrace trace1(new Trace(0, 1));
+  PTrace trace2(new Trace(0, 1));
   TraceList tracelist({trace1, trace2});
   varinfo_t varinfo = property->getArrayVarInfo("bytes");
 
@@ -87,13 +87,13 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test1_Fail) {
       randomizeVecData(arrval);
     }
 
-    trace1->updateTermValueArray(varinfo.first, cycle, arrval);
+    trace1->updateTermValue(varinfo.first, cycle, arrval);
 
     if (faultIdx == cycle)
-      trace2->updateTermValueArray(varinfo.first, cycle, arrval);
+      trace2->updateTermValue(varinfo.first, cycle, arrval);
     else {
       newRandomVecData(arrval);
-      trace2->updateTermValueArray(varinfo.first, cycle, arrval);
+      trace2->updateTermValue(varinfo.first, cycle, arrval);
     }
     result = property->eval(cycle, tracelist);
   }
@@ -105,8 +105,8 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test2) {
   PVarMap varmap(new VarMap());
   PHyperProp property = parse_formula(propstr, varmap);
 
-  PTrace trace1(new Trace(0, 1, 1));
-  PTrace trace2(new Trace(0, 1, 1));
+  PTrace trace1(new Trace(0, 2));
+  PTrace trace2(new Trace(0, 2));
   TraceList tracelist({trace1, trace2});
 
   bool result = false;
@@ -123,15 +123,15 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test2) {
       trace1->updateTermValue(xIdx, cycle, xvalue);
       trace2->updateTermValue(xIdx, cycle, xvalue);
       randomizeVecData(arrval);
-      trace1->updateTermValueArray(varinfo.first, cycle, arrval);
-      trace2->updateTermValueArray(varinfo.first, cycle, arrval);
+      trace1->updateTermValue(varinfo.first, cycle, arrval);
+      trace2->updateTermValue(varinfo.first, cycle, arrval);
     } else {
       trace1->updateTermValue(xIdx, cycle, xvalue);
       trace2->updateTermValue(xIdx, cycle, !xvalue);
       randomizeVecData(arrval);
-      trace1->updateTermValueArray(varinfo.first, cycle, arrval);
+      trace1->updateTermValue(varinfo.first, cycle, arrval);
       if (rand() % 2) randomizeVecData(arrval);
-      trace2->updateTermValueArray(varinfo.first, cycle, arrval);
+      trace2->updateTermValue(varinfo.first, cycle, arrval);
     }
 
     result = property->eval(cycle, tracelist);
@@ -145,8 +145,8 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test2_Fail) {
   PVarMap varmap(new VarMap());
   PHyperProp property = parse_formula(propstr, varmap);
 
-  PTrace trace1(new Trace(0, 1, 1));
-  PTrace trace2(new Trace(0, 1, 1));
+  PTrace trace1(new Trace(0, 2));
+  PTrace trace2(new Trace(0, 2));
   TraceList tracelist({trace1, trace2});
 
   bool result = true;
@@ -163,16 +163,16 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test2_Fail) {
       trace1->updateTermValue(xIdx, cycle, xvalue);
       trace2->updateTermValue(xIdx, cycle, xvalue);
       randomizeVecData(arrval);
-      trace1->updateTermValueArray(varinfo.first, cycle, arrval);
+      trace1->updateTermValue(varinfo.first, cycle, arrval);
       newRandomVecData(arrval);
-      trace2->updateTermValueArray(varinfo.first, cycle, arrval);
+      trace2->updateTermValue(varinfo.first, cycle, arrval);
     } else {
       trace1->updateTermValue(xIdx, cycle, xvalue);
       trace2->updateTermValue(xIdx, cycle, !xvalue);
       randomizeVecData(arrval);
-      trace1->updateTermValueArray(varinfo.first, cycle, arrval);
+      trace1->updateTermValue(varinfo.first, cycle, arrval);
       if (rand() % 2) randomizeVecData(arrval);
-      trace2->updateTermValueArray(varinfo.first, cycle, arrval);
+      trace2->updateTermValue(varinfo.first, cycle, arrval);
     }
 
     result = property->eval(cycle, tracelist);

@@ -16,10 +16,6 @@ const std::string& VarMap::getVarName(unsigned i) const {
   return varNames[i];
 }
 
-const std::string& VarMap::getArrayVarName(unsigned int idx) const {
-  assert(idx < arrayVarNames.size());
-  return arrayVarNames[idx];
-}
 
 unsigned VarMap::getVarIndex(const std::string& name) const {
   auto pos = varIndices.find(name);
@@ -27,11 +23,6 @@ unsigned VarMap::getVarIndex(const std::string& name) const {
   return pos->second;
 }
 
-unsigned VarMap::getArrayVarIndex(const std::string& name) const {
-  auto pos = arrayVarInfo.find(name);
-  assert(pos != arrayVarInfo.end());
-  return pos->second.first;
-}
 varinfo_t VarMap::getArrayVarInfo(const std::string& name) const {
   auto pos = arrayVarInfo.find(name);
   assert(pos != arrayVarInfo.end());
@@ -48,12 +39,14 @@ unsigned VarMap::addVar(const std::string& name) {
 }
 
 varinfo_t VarMap::addArrayVar(const std::string& name, size_t size) {
-  if (hasArrayVar(name)) return arrayVarInfo[name];
+  if (hasVar(name)) return arrayVarInfo[name];
 
-  unsigned idx = arrayVarNames.size();
-  arrayVarNames.push_back(name);
+  unsigned idx = varNames.size();
+  varNames.push_back(name);
   varinfo_t vinfo = std::make_pair(idx, size);
+  varIndices[name] = idx;
   arrayVarInfo[name] = vinfo;
+
   return vinfo;
 }
 
@@ -101,13 +94,13 @@ ValueType TermVar::termValue(uint32_t cycle, unsigned trace, const TraceList& tr
 // ---------------------------------------------------------------------- //
 
 void TermArrayVar::display(std::ostream& out) const {
-  out << var_map->getArrayVarName(varinfo.first) << "[" << varinfo.second << "]";
+  out << var_map->getVarName(varinfo.first) << "[" << varinfo.second << "]";
 }
 
-ValueArrayType TermArrayVar::termValueArray(uint32_t cycle, unsigned trace,
-                                            const TraceList& traces) {
+ValueType TermArrayVar::termValue(uint32_t cycle, unsigned trace,
+                                  const TraceList& traces) {
   assert(traces.size() > trace);
-  return traces[trace]->termValueArrayAt(varinfo.first, cycle);
+  return traces[trace]->termValueAt(varinfo.first, cycle);
 }
 
 // ---------------------------------------------------------------------- //
@@ -138,10 +131,10 @@ bool Equal::eval(uint32_t cycle, const TraceList& traces) {
   assert(traces.size() > 0);
 
   if (PTermArray arg = std::dynamic_pointer_cast<TermArrayVar>(args[0]); arg) {
-    ValueArrayType vec0 = arg->termValueArray(cycle, 0, traces);
-    assert(vec0.size() == arg->getSize());
+    ValueType vec0 = arg->termValue(cycle, 0, traces);
+    //    assert(vec0.size() == arg->getSize());
     for (unsigned i = 1; i != traces.size(); i++) {
-      if (arg->termValueArray(cycle, i, traces) != vec0) return false;
+      if (arg->termValue(cycle, i, traces) != vec0) return false;
     }
     return true;
   }

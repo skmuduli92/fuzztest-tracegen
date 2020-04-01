@@ -36,25 +36,21 @@ class VarMap {
 
   std::vector<std::string> varNames;
   std::map<std::string, unsigned> varIndices;
+  std::map<std::string, varinfo_t> arrayVarInfo;
 
   std::vector<std::string> propNames;
   std::map<std::string, unsigned> propIndices;
 
-  std::vector<std::string> arrayVarNames;
-  std::map<std::string, varinfo_t> arrayVarInfo;
-
  public:
   unsigned addProp(const std::string& name);
   unsigned addVar(const std::string& name);
-  varinfo_t addArrayVar(const std::string& name, size_t);
+  varinfo_t addArrayVar(const std::string& name, size_t size);
 
   const std::string& getPropName(unsigned i) const;
   const std::string& getVarName(unsigned i) const;
-  const std::string& getArrayVarName(unsigned idx) const;
 
   unsigned getPropIndex(const std::string& name) const;
   unsigned getVarIndex(const std::string& name) const;
-  unsigned getArrayVarIndex(const std::string& name) const;
   varinfo_t getArrayVarInfo(const std::string& name) const;
 
   const std::vector<std::string>& getVarNames() const { return varNames; }
@@ -86,11 +82,6 @@ class Formula {
 
   /** Return the id for this term variable. */
   unsigned getVarId(std::string const& varName) { return var_map->getVarIndex(varName); }
-
-  /// Return Id for array term variable.
-  unsigned getArrayVarId(std::string const& name) {
-    return var_map->getArrayVarIndex(name);
-  }
 
   varinfo_t getArrayVarInfo(std::string const& name) {
     return var_map->getArrayVarInfo(name);
@@ -147,16 +138,15 @@ class TermVar : public Term {
   virtual ValueType termValue(uint32_t cycle, unsigned trace, const TraceList& traces);
 };
 
-class TermArrayVar : public Formula {
+class TermArrayVar : public Term {
   varinfo_t varinfo;
 
  public:
-  TermArrayVar(PVarMap m, varinfo_t vi) : Formula(m), varinfo(vi) {}
+  TermArrayVar(PVarMap m, varinfo_t vi) : Term(m), varinfo(vi) {}
 
   virtual void display(std::ostream& out) const;
   inline size_t getSize() { return varinfo.second; }
-  virtual ValueArrayType termValueArray(uint32_t cycle, unsigned trace,
-                                        const TraceList& traces);
+  virtual ValueType termValue(uint32_t cycle, unsigned trace, const TraceList& traces);
 };
 
 /** Formula PropVar(name): this is a boolean variable. */
