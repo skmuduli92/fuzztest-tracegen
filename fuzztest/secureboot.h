@@ -12,11 +12,6 @@
 #include "formula.h"
 #include "tamper.h"
 
-// addresses of the "fake" register used to update debug values.
-
-extern ValueTracker opcode_tracker;
-extern ValueTracker pc_tracker;
-
 double sc_time_stamp();
 void reset_time_stamp();
 
@@ -28,6 +23,7 @@ class Voc8051_Simulator {
   std::unique_ptr<Voc8051_tb> top;
   ValueTracker opcode_tracker;
   ValueTracker pc_tracker;
+  ValueTracker memop_tracker;
 
   // run for some number of steps.
   int simulate(long delay);
@@ -66,8 +62,9 @@ class Voc8051_Simulator {
   // constructor.
   Voc8051_Simulator(unsigned numTraces, unsigned numProps, unsigned numVars)
       : top(std::make_unique<Voc8051_tb>())
-      , opcode_tracker(16381, 8)
-      , pc_tracker(32771, 16)
+      , opcode_tracker(24001, 8)
+      , pc_tracker(16381, 16)
+      , memop_tracker(24001, 16)
       , trace(0)
   {
     for (unsigned i=0; i != numTraces; i++) {

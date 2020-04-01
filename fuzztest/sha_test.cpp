@@ -29,6 +29,10 @@ static ITamperer NoTamper;
 int main() {
   // create top module
   Voc8051_Simulator sim(2, 1, 5);
+
+  // afl init
+  afl_init(&fid, &oldss);
+
   // parse the property
   std::string good("good");
   std::string bytes[] = { "byte0", "byte1", "byte2", "byte3", "byte4" };
@@ -52,9 +56,6 @@ int main() {
   sim.addVar(bytes[2], ti4, BYTE2_ID, Voc8051_Simulator::VarInfo::TERM, 0); 
   sim.addVar(bytes[3], ti5, BYTE3_ID, Voc8051_Simulator::VarInfo::TERM, 0); 
   sim.addVar(bytes[4], ti6, BYTE4_ID, Voc8051_Simulator::VarInfo::TERM, 0); 
-
-  // afl init
-  afl_init(&fid, &oldss);
 
   // filenames
   std::string romfile("../rom/sha_test.dat");
