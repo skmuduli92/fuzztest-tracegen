@@ -21,9 +21,7 @@ class Voc8051_Simulator {
  protected:
   // member vars
   std::unique_ptr<Voc8051_tb> top;
-  ValueTracker opcode_tracker;
-  ValueTracker pc_tracker;
-  ValueTracker memop_tracker;
+  ValueTracker tracker;
 
   // run for some number of steps.
   int simulate(long delay);
@@ -62,11 +60,13 @@ class Voc8051_Simulator {
   // constructor.
   Voc8051_Simulator(unsigned numTraces, unsigned numProps, unsigned numVars)
       : top(std::make_unique<Voc8051_tb>())
-      , opcode_tracker(2047, 8)
-      , pc_tracker(2047, 16)
-      , memop_tracker(2047, 32)
+      , tracker(65536)
       , trace(0)
   {
+    tracker.add(8191, 8);
+    tracker.add(8191, 16);
+    tracker.add(8191, 32);
+
     for (unsigned i=0; i != numTraces; i++) {
       traces.push_back(PTrace(new Trace(numProps, numVars)));
     }

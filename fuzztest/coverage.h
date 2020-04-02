@@ -8,27 +8,35 @@
 
 class ValueTracker
 {
-  typedef std::vector<uint32_t> container_t;
+  typedef std::vector<uint8_t> container_t;
 private:
   container_t bins;
-  unsigned signalWidth;
-  uint64_t mask;
-  uint64_t signalValue;
+  std::vector<unsigned> signalWidth;
+  std::vector<uint64_t> masks;
+  std::vector<uint64_t> signalValue;
+  std::vector<unsigned> bases;
+  unsigned currentBase;
 public:
-  ValueTracker(unsigned numBins, unsigned width ) 
+  ValueTracker(unsigned numBins) 
     : bins(numBins, 0)
-    , signalWidth(width)
-    , signalValue(0)
+    , currentBase(0)
   {
-    assert (width <= 32);
-    mask = (1ULL << width) - 1;
   }
 
-  void track(uint32_t value);
+  void add(unsigned size, unsigned width) {
+    assert (width <= 32);
+    bases.push_back(currentBase);
+    signalWidth.push_back(width);
+    masks.push_back((1ULL << width) - 1);
+    signalValue.push_back(0);
+    currentBase += size;
+    assert (size < bins.size());
+  }
+
+  void track(unsigned index, uint32_t value);
   void dump(std::ostream& out) const;
-  const uint32_t* data() const { return bins.data(); }
+  const uint8_t* data() const { return bins.data(); }
   size_t size() const { return bins.size() ; }
-  uint64_t value() const { return signalValue; }
 
   container_t::iterator begin() { return bins.begin(); }
   container_t::iterator end() { return bins.end(); }
