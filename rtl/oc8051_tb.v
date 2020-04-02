@@ -431,14 +431,14 @@ module fsm_writer(clk, rst, stb, wr, addr, data_out, data_in, ack);
     reg [15:0] buf_delay[15:0];
 
     reg [10:0] ptr;
-    reg [15:0] delay;
+    reg [14:0] delay;
     reg        finished;
 
     always @(posedge clk)
     begin
         if (rst) begin
             ptr <= 4'b0;
-            delay <= buf_delay[4'b0];
+            delay <= buf_delay[4'b0][15:1];
             finished <= 1'b0;
         end
         else
@@ -446,11 +446,14 @@ module fsm_writer(clk, rst, stb, wr, addr, data_out, data_in, ack);
             if (finished) begin
                 if (delay == 16'b0) begin
                     ptr <= ptr + 4'b1;
-                    delay <= buf_delay[ptr + 4'b1];
+                    delay <= buf_delay[ptr + 4'b1][15:1];
+                    if (buf_delay[ptr][0] == 1'b1) begin
+                        buf_addr[ptr] <= buf_addr[ptr] + 16'b1;
+                    end
                     finished <= 1'b0;
                 end
                 else begin
-                    delay <= delay - 4'b1;
+                    delay <= delay - 14'b1;
                 end
             end
             else begin

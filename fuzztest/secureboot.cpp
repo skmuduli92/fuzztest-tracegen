@@ -96,13 +96,20 @@ int Voc8051_Simulator::simulate(long delay)
     // coverage.
     if (clk == 0) {
       // track signals on rising clock
-      opcode_tracker.track(top->oc8051_tb__DOT__oc8051_top_1__DOT__op1_d);
-      pc_tracker.track(top->oc8051_tb__DOT__oc8051_top_1__DOT__pc);
+      uint32_t opcode = top->oc8051_tb__DOT__oc8051_top_1__DOT__op1_d;
+      opcode_tracker.track(opcode);
+      auto pc = top->oc8051_tb__DOT__oc8051_top_1__DOT__pc;
+      pc_tracker.track(pc);
       if (top->oc8051_tb__DOT__oc8051_xiommu1__DOT__proc_ack) {
         unsigned addr = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__proc_addr;
+        unsigned data = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__proc_data_in;
+        memop_tracker.track(addr | (opcode << 16) | (data << 8));
+#if 0
         std::cout << "memop @ " << main_time 
-                  << "; addr = " << std::hex << addr << std::dec << std::endl;
-        memop_tracker.track(addr);
+                  << "; addr = " << std::hex << addr << std::dec 
+                  << "; value = " << std::hex << memop_tracker.value()
+                  << std::dec << std::endl;
+#endif
       }
     }
 
@@ -190,6 +197,12 @@ void Voc8051_Simulator::copy_coverage()
   std::copy(memop_tracker.begin(), memop_tracker.end(),
       coverageBins.begin() + opcode_tracker.size() + pc_tracker.size());
   afl_copy(coverageBins.data(), coverageBins.size());
+  
+  std::cout << "coverage: " << std::endl;
+  std::copy(coverageBins.begin(), 
+            coverageBins.end(),
+            std::ostream_iterator<int>(std::cout, "\n"));
+  std::cout << std::endl;
 }
 
 bool Voc8051_Simulator::evaluate(HyperPLTL::PHyperProp f)

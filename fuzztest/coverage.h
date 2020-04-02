@@ -28,6 +28,7 @@ public:
   void dump(std::ostream& out) const;
   const uint32_t* data() const { return bins.data(); }
   size_t size() const { return bins.size() ; }
+  uint64_t value() const { return signalValue; }
 
   container_t::iterator begin() { return bins.begin(); }
   container_t::iterator end() { return bins.end(); }

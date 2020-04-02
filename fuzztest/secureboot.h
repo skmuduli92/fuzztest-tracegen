@@ -62,9 +62,9 @@ class Voc8051_Simulator {
   // constructor.
   Voc8051_Simulator(unsigned numTraces, unsigned numProps, unsigned numVars)
       : top(std::make_unique<Voc8051_tb>())
-      , opcode_tracker(24001, 8)
-      , pc_tracker(16381, 16)
-      , memop_tracker(24001, 16)
+      , opcode_tracker(2047, 8)
+      , pc_tracker(2047, 16)
+      , memop_tracker(2047, 32)
       , trace(0)
   {
     for (unsigned i=0; i != numTraces; i++) {
