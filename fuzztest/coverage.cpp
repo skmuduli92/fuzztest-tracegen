@@ -1,10 +1,11 @@
 #include "coverage.h"
 #include <iomanip>
 
-void ValueTracker::track(uint32_t value)
+void ValueTracker::track(unsigned i, uint32_t value)
 {
-  signalValue = (signalValue << 32) | (value & mask);
-  bins[signalValue % bins.size()] += 1;
+  assert (i < signalValue.size());
+  signalValue[i] = (signalValue[i] << 32) | (value & masks[i]);
+  bins[bases[i] + (signalValue[i] % bins.size())] += 1;
 }
 
 void ValueTracker::dump(std::ostream& out) const
