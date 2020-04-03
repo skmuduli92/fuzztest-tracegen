@@ -56,7 +56,7 @@ struct HPLTLBuilder {
   }
 
   result_t operator()(TraceSelNode const& selNode) const {
-    unsigned varid = varmap->getVarIndex(selNode.varname);
+    unsigned varid = varmap->getPropIndex(selNode.varname);
     HyperPLTL::PTraceProp newvar(new HyperPLTL::PropVar(varmap, varid));
     result_t sel(new HyperPLTL::TraceSelect(varmap, selNode.traceid, newvar));
     return sel;

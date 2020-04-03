@@ -22,6 +22,12 @@ unsigned VarMap::getVarIndex(const std::string& name) const {
   return it - varNames.begin();
 }
 
+unsigned VarMap::getPropIndex(const std::string& name) const {
+  auto it = std::find(propNames.begin(), propNames.end(), name);
+  assert(it != propNames.end());
+  return it - propNames.begin();
+}
+
 VarType VarMap::getVarType(const std::string& name) const {
   auto it = varInfo.find(name);
   assert(it != varInfo.end());
@@ -51,11 +57,21 @@ unsigned VarMap::addArrayVar(const std::string& name) {
 }
 
 unsigned VarMap::addPropVar(const std::string& name) {
-  return addVar(name, VarType::PROP_VAR);
+  std::vector<std::string>::const_iterator it =
+      std::find(propNames.begin(), propNames.end(), name);
+
+  if (it != propNames.end()) {
+    assert(varInfo[name] == VarType::PROP_VAR);
+    return it - propNames.begin();
+  }
+
+  varInfo[name] = VarType::PROP_VAR;
+  propNames.push_back(name);
+  return propNames.size() - 1;
 }
 
 bool VarMap::hasVar(const std::string& name) {
-  return varNames.end() != (std::find(varNames.begin(), varNames.end(), name));
+  return varInfo.find(name) != varInfo.end();
 }
 
 bool VarMap::hasArrayVar(const std::string& name) {
@@ -67,7 +83,7 @@ bool VarMap::hasArrayVar(const std::string& name) {
 bool VarMap::hasIntVar(const std::string& name) {
   auto it = varInfo.find(name);
   if (it == varInfo.end()) return false;
-  return it->second == VarType::PROP_VAR;
+  return it->second == VarType::INT_VAR;
 }
 
 bool VarMap::hasPropVar(const std::string& name) {

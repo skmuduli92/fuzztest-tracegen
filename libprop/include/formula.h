@@ -33,6 +33,7 @@ class VarMap {
   // - keep a single vector for names, else it will allow propvar and termvar
 
   std::vector<std::string> varNames;
+  std::vector<std::string> propNames;
   std::map<std::string, VarType> varInfo;
 
  public:
@@ -42,6 +43,7 @@ class VarMap {
   unsigned addVar(const std::string&, VarType);
 
   unsigned getVarIndex(const std::string& name) const;
+  unsigned getPropIndex(const std::string& name) const;
   VarType getVarType(const std::string& name) const;
   const std::string& getVarName(unsigned i) const;
 
@@ -65,13 +67,9 @@ class Formula {
   /** Return the id for this term variable. */
   unsigned getVarId(std::string const& varName) { return var_map->getVarIndex(varName); }
 
-  // /** Return the vector of terms. */
-  // const std::vector<std::string>& getVarNames() const { return var_map->getVarNames();
-  // }
-
-  // /** Return the vector of propositions. */
-  // const std::vector<std::string>& getPropNames() const { return
-  // var_map->getPropNames(); }
+  unsigned getPropId(std::string const& varName) {
+    return var_map->getPropIndex(varName);
+  }
 };
 
 // integer-sorted terms.

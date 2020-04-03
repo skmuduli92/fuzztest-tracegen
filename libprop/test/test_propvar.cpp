@@ -19,11 +19,13 @@ TEST(PropertyLibTest, ValidTracePropVar) {
   TraceList tracelist({trace1, trace2});
   bool result = false;
 
+  unsigned xid = property->getPropId("x");
+
   for (size_t cycle = 0; cycle < 10; ++cycle) {
     bool bval1 = rand() % 2;
     bool bval2 = bval1 ? 1 : (rand() % 2);
-    trace1->updatePropValue(0, cycle, bval1);
-    trace2->updatePropValue(0, cycle, bval2);
+    trace1->updatePropValue(xid, cycle, bval1);
+    trace2->updatePropValue(xid, cycle, bval2);
     result = property->eval(cycle, tracelist);
   }
 

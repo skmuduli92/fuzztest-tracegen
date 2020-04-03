@@ -165,7 +165,6 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test2_Fail) {
 
   for (size_t cycle = 0; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % std::numeric_limits<unsigned>::max();
-    std::cout << "termval : " << xvalue << std::endl;
 
     if (rand() % 2) {
       trace1->updateTermValue(xIdx, cycle, xvalue);
@@ -214,7 +213,6 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test3) {
 
   for (size_t cycle = 0; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % std::numeric_limits<unsigned>::max();
-    std::cout << "termval : " << xvalue << std::endl;
 
     if (rand() % 2) {
       trace1->updateTermValue(xIdx, cycle, xvalue);
