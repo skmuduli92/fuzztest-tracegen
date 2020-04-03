@@ -37,12 +37,12 @@ int main() {
   std::string good("good");
   std::string bytes[] = { "byte0", "byte1", "byte2", "byte3", "byte4" };
   HyperPLTL::PVarMap varmap(new HyperPLTL::VarMap());
-  auto ti1 = varmap->addProp(good);
-  auto ti2 = varmap->addVar(bytes[0]);
-  auto ti3 = varmap->addVar(bytes[1]);
-  auto ti4 = varmap->addVar(bytes[2]);
-  auto ti5 = varmap->addVar(bytes[3]);
-  auto ti6 = varmap->addVar(bytes[4]);
+  auto ti1 = varmap->addPropVar(good);
+  auto ti2 = varmap->addIntVar(bytes[0]);
+  auto ti3 = varmap->addIntVar(bytes[1]);
+  auto ti4 = varmap->addIntVar(bytes[2]);
+  auto ti5 = varmap->addIntVar(bytes[3]);
+  auto ti6 = varmap->addIntVar(bytes[4]);
   auto f1 = HyperPLTL::parse_formula(std::string("(IMPLIES (O good.1) (O good.0))"), varmap);
   auto f2 = HyperPLTL::parse_formula(std::string("(IMPLIES (O good.1) (EQ byte0))"), varmap);
   auto f3 = HyperPLTL::parse_formula(std::string("(IMPLIES (O good.1) (EQ byte1))"), varmap);
