@@ -12,13 +12,8 @@ struct HPLTLStringBuilder {
   /////////////////////////////////////////////////////////////////
 
   using result_t = std::string;
-  result_t operator()(EqTermNode const& eqlNode) const {
+  result_t operator()(EqlNode const& eqlNode) const {
     return "(EQ " + eqlNode.varname + ")";
-  }
-
-  result_t operator()(EqTermArrayNode const& eqTermArrNode) const {
-    return "(EQ" + eqTermArrNode.arrayVarName + "[" + std::to_string(eqTermArrNode.size) +
-           "])";
   }
 
   result_t operator()(TraceSelNode const& selNode) const {

@@ -106,7 +106,7 @@ TEST(PropertyLibTest, Parse_TestFailure_ComplexProperty) {
 }
 
 TEST(PropertyLibTest, Parse_TermVarArray) {
-  std::string prop = "(IMPLIES (EQ ab) (EQ bytes[4]) )";
+  std::string prop = "(IMPLIES (EQ ab) (EQ bytes) )";
   std::string origPropPruned = prune_whitespaces(prop);
   std::string regenStrPruned = prune_whitespaces(HyperPLTL::parse_and_regen_string(prop));
 

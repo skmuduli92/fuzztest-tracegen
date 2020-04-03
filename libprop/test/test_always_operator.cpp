@@ -9,14 +9,17 @@ using namespace HyperPLTL;
 using namespace std;
 
 PHyperProp property1AlwaysOperator() {
+  PVarMap varmap = std::make_shared<VarMap>();
+  varmap->addIntVar("x");
   std::string formula("(G (EQ x))");
-  PVarMap varmap(new VarMap());
   return parse_formula(formula, varmap);
 }
 
 PHyperProp property2AlwaysOperator() {
+  PVarMap varmap = std::make_shared<VarMap>();
+  varmap->addIntVar("x");
+  varmap->addIntVar("y");
   std::string formula("(G (OR (EQ x) (EQ y)))");
-  PVarMap varmap(new VarMap());
   return parse_formula(formula, varmap);
 }
 

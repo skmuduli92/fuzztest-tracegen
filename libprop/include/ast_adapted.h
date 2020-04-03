@@ -20,9 +20,7 @@ BOOST_FUSION_ADAPT_STRUCT(sexpr::ast::ONode, opname, arg);
 
 BOOST_FUSION_ADAPT_STRUCT(sexpr::ast::SNode, opname, leftArg, rightArg);
 
-BOOST_FUSION_ADAPT_STRUCT(sexpr::ast::EqTermNode, opname, varname);
-
-BOOST_FUSION_ADAPT_STRUCT(sexpr::ast::EqTermArrayNode, opname, arrayVarName, size);
+BOOST_FUSION_ADAPT_STRUCT(sexpr::ast::EqlNode, opname, varname);
 
 BOOST_FUSION_ADAPT_STRUCT(sexpr::ast::TraceSelNode, varname, traceid);
 

@@ -9,8 +9,10 @@ using namespace HyperPLTL;
 using namespace std;
 
 PHyperProp propertyNotOperator() {
+  PVarMap varmap = std::make_shared<VarMap>();
+  varmap->addIntVar("x");
+
   std::string prop("(G (NOT (EQ x)))");
-  PVarMap varmap(new VarMap());
   return parse_formula(prop, varmap);
 }
 

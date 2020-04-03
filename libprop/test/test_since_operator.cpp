@@ -9,8 +9,11 @@ using namespace HyperPLTL;
 using namespace std;
 
 PHyperProp propertySinceOperator() {
+  PVarMap varmap = std::make_shared<VarMap>();
+  varmap->addIntVar("x");
+  varmap->addIntVar("y");
+
   std::string formula("(S (EQ y) (EQ x))");
-  PVarMap varmap(new VarMap());
   PHyperProp property = parse_formula(formula, varmap);
   return property;
 }

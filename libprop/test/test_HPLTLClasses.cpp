@@ -11,10 +11,10 @@ using namespace HyperPLTL;
 TEST(PropertyLibTest, TestYesterdaySimple) {
   PVarMap varmap(new VarMap());
   // x
-  unsigned xIndex = varmap->addVar("x");
+  unsigned xIndex = varmap->addIntVar("x");
   PTerm x(new TermVar(varmap, xIndex));
   // y
-  unsigned yIndex = varmap->addVar("y");
+  unsigned yIndex = varmap->addIntVar("y");
   PTerm y(new TermVar(varmap, yIndex));
   // (eq x)
   PHyperProp eqX(new Equal(varmap, x));
@@ -121,10 +121,10 @@ TEST(PropertyLibTest, TestALWAYSSimple) {
   // Formula: G(x.1 = x.2) => G(y.1 = y.2)
   PVarMap varmap(new VarMap());
   // x
-  unsigned xIndex = varmap->addVar("x");
+  unsigned xIndex = varmap->addIntVar("x");
   PTerm x(new TermVar(varmap, xIndex));
   // y
-  unsigned yIndex = varmap->addVar("y");
+  unsigned yIndex = varmap->addIntVar("y");
   PTerm y(new TermVar(varmap, yIndex));
   // (eq x)
   PHyperProp eqX(new Equal(varmap, x));

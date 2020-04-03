@@ -37,16 +37,18 @@ void newRandomVecData(std::vector<uint32_t>& vec) {
 }
 
 TEST(PropertyLibTest, ValidTracePropTermArray_Test1) {
-  std::string propstr = "(G (EQ bytes[4]))";
+  std::string propstr = "(G (EQ bytes))";
   PVarMap varmap(new VarMap());
+  varmap->addArrayVar("bytes");
+
   PHyperProp property = parse_formula(propstr, varmap);
 
   PTrace trace1(new Trace(0, 1));
   PTrace trace2(new Trace(0, 1));
   TraceList tracelist({trace1, trace2});
-  varinfo_t varinfo = property->getArrayVarInfo("bytes");
+  unsigned varid = property->getVarId("bytes");
 
-  std::vector<uint32_t> arrval(varinfo.second);
+  std::vector<uint32_t> arrval(4);
 
   bool result = false;
   unsigned traceLength = rand() % 20 + 20;
@@ -57,8 +59,8 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test1) {
     } else {
       resetData(arrval);
     }
-    trace1->updateTermValue(varinfo.first, cycle, arrval);
-    trace2->updateTermValue(varinfo.first, cycle, arrval);
+    trace1->updateTermValue(varid, cycle, arrval);
+    trace2->updateTermValue(varid, cycle, arrval);
 
     result = property->eval(cycle, tracelist);
   }
@@ -67,16 +69,17 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test1) {
 }
 
 TEST(PropertyLibTest, ValidTracePropTermArray_Test1_Fail) {
-  std::string propstr = "(G (EQ bytes[4]))";
+  std::string propstr = "(G (EQ bytes))";
   PVarMap varmap(new VarMap());
+  varmap->addArrayVar("bytes");
   PHyperProp property = parse_formula(propstr, varmap);
 
   PTrace trace1(new Trace(0, 1));
   PTrace trace2(new Trace(0, 1));
   TraceList tracelist({trace1, trace2});
-  varinfo_t varinfo = property->getArrayVarInfo("bytes");
+  unsigned vi = property->getVarId("bytes");
 
-  std::vector<uint32_t> arrval(varinfo.second);
+  std::vector<uint32_t> arrval(5);
 
   bool result = true;
   unsigned traceLength = rand() % 20 + 20;
@@ -87,13 +90,13 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test1_Fail) {
       randomizeVecData(arrval);
     }
 
-    trace1->updateTermValue(varinfo.first, cycle, arrval);
+    trace1->updateTermValue(vi, cycle, arrval);
 
     if (faultIdx == cycle)
-      trace2->updateTermValue(varinfo.first, cycle, arrval);
+      trace2->updateTermValue(vi, cycle, arrval);
     else {
       newRandomVecData(arrval);
-      trace2->updateTermValue(varinfo.first, cycle, arrval);
+      trace2->updateTermValue(vi, cycle, arrval);
     }
     result = property->eval(cycle, tracelist);
   }
@@ -101,8 +104,10 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test1_Fail) {
 }
 
 TEST(PropertyLibTest, ValidTracePropTermArray_Test2) {
-  std::string propstr = "(IMPLIES (EQ x) (EQ bytes[4]))";
+  std::string propstr = "(G(IMPLIES (EQ x) (EQ bytes)))";
   PVarMap varmap(new VarMap());
+  varmap->addIntVar("x");
+  varmap->addArrayVar("bytes");
   PHyperProp property = parse_formula(propstr, varmap);
 
   PTrace trace1(new Trace(0, 2));
@@ -113,8 +118,8 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test2) {
   unsigned traceLength = rand() % 20 + 20;
 
   unsigned xIdx = property->getVarId("x");
-  varinfo_t varinfo = property->getArrayVarInfo("bytes");
-  std::vector<uint32_t> arrval(varinfo.second);
+  unsigned vi = property->getVarId("bytes");
+  std::vector<uint32_t> arrval(5);
 
   for (size_t cycle = 0; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % std::numeric_limits<unsigned>::max();
@@ -123,15 +128,15 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test2) {
       trace1->updateTermValue(xIdx, cycle, xvalue);
       trace2->updateTermValue(xIdx, cycle, xvalue);
       randomizeVecData(arrval);
-      trace1->updateTermValue(varinfo.first, cycle, arrval);
-      trace2->updateTermValue(varinfo.first, cycle, arrval);
+      trace1->updateTermValue(vi, cycle, arrval);
+      trace2->updateTermValue(vi, cycle, arrval);
     } else {
       trace1->updateTermValue(xIdx, cycle, xvalue);
       trace2->updateTermValue(xIdx, cycle, !xvalue);
       randomizeVecData(arrval);
-      trace1->updateTermValue(varinfo.first, cycle, arrval);
+      trace1->updateTermValue(vi, cycle, arrval);
       if (rand() % 2) randomizeVecData(arrval);
-      trace2->updateTermValue(varinfo.first, cycle, arrval);
+      trace2->updateTermValue(vi, cycle, arrval);
     }
 
     result = property->eval(cycle, tracelist);
@@ -141,8 +146,10 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test2) {
 }
 
 TEST(PropertyLibTest, ValidTracePropTermArray_Test2_Fail) {
-  std::string propstr = "(IMPLIES (EQ x) (EQ bytes[4]))";
+  std::string propstr = "(G (IMPLIES (EQ x) (EQ bytes)))";
   PVarMap varmap(new VarMap());
+  varmap->addIntVar("x");
+  varmap->addArrayVar("bytes");
   PHyperProp property = parse_formula(propstr, varmap);
 
   PTrace trace1(new Trace(0, 2));
@@ -153,28 +160,80 @@ TEST(PropertyLibTest, ValidTracePropTermArray_Test2_Fail) {
   unsigned traceLength = rand() % 20 + 20;
 
   unsigned xIdx = property->getVarId("x");
-  varinfo_t varinfo = property->getArrayVarInfo("bytes");
-  std::vector<uint32_t> arrval(varinfo.second);
+  unsigned vi = property->getVarId("bytes");
+  std::vector<uint32_t> arrval(5);
 
   for (size_t cycle = 0; cycle < traceLength; ++cycle) {
     unsigned xvalue = rand() % std::numeric_limits<unsigned>::max();
+    std::cout << "termval : " << xvalue << std::endl;
 
     if (rand() % 2) {
       trace1->updateTermValue(xIdx, cycle, xvalue);
       trace2->updateTermValue(xIdx, cycle, xvalue);
       randomizeVecData(arrval);
-      trace1->updateTermValue(varinfo.first, cycle, arrval);
+
+      trace1->updateTermValue(vi, cycle, arrval);
       newRandomVecData(arrval);
-      trace2->updateTermValue(varinfo.first, cycle, arrval);
-    } else {
+      trace2->updateTermValue(vi, cycle, arrval);
+    }
+
+    else {
       trace1->updateTermValue(xIdx, cycle, xvalue);
       trace2->updateTermValue(xIdx, cycle, !xvalue);
       randomizeVecData(arrval);
-      trace1->updateTermValue(varinfo.first, cycle, arrval);
+
+      trace1->updateTermValue(vi, cycle, arrval);
       if (rand() % 2) randomizeVecData(arrval);
-      trace2->updateTermValue(varinfo.first, cycle, arrval);
+      trace2->updateTermValue(vi, cycle, arrval);
+    }
+    result = property->eval(cycle, tracelist);
+  }
+
+  EXPECT_FALSE(result);
+}
+
+TEST(PropertyLibTest, ValidTracePropTermArray_Test3) {
+  // unequal size of bytes
+  std::string propstr = "(G(IMPLIES (EQ x) (EQ bytes)))";
+  PVarMap varmap(new VarMap());
+  varmap->addIntVar("x");
+  varmap->addArrayVar("bytes");
+  PHyperProp property = parse_formula(propstr, varmap);
+
+  PTrace trace1(new Trace(0, 2));
+  PTrace trace2(new Trace(0, 2));
+  TraceList tracelist({trace1, trace2});
+
+  bool result = false;
+  unsigned traceLength = rand() % 20 + 20;
+  unsigned xIdx = property->getVarId("x");
+  unsigned vi = property->getVarId("bytes");
+
+  std::vector<uint32_t> arrval1(4);
+  std::vector<uint32_t> arrval2(5);
+
+  for (size_t cycle = 0; cycle < traceLength; ++cycle) {
+    unsigned xvalue = rand() % std::numeric_limits<unsigned>::max();
+    std::cout << "termval : " << xvalue << std::endl;
+
+    if (rand() % 2) {
+      trace1->updateTermValue(xIdx, cycle, xvalue);
+      trace2->updateTermValue(xIdx, cycle, xvalue);
+
+      randomizeVecData(arrval1);
+      trace1->updateTermValue(vi, cycle, arrval1);
+      trace2->updateTermValue(vi, cycle, arrval1);
     }
 
+    else {
+      trace1->updateTermValue(xIdx, cycle, xvalue);
+      trace2->updateTermValue(xIdx, cycle, xvalue);
+
+      randomizeVecData(arrval1);
+      randomizeVecData(arrval2);
+      trace1->updateTermValue(vi, cycle, arrval1);
+      trace2->updateTermValue(vi, cycle, arrval2);
+    }
     result = property->eval(cycle, tracelist);
   }
 

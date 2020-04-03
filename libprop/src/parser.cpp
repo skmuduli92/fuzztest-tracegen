@@ -33,28 +33,30 @@ struct HPLTLBuilder {
   HyperPLTL::PVarMap varmap;
   HPLTLBuilder(HyperPLTL::PVarMap inputmap) { varmap = inputmap; }
 
-  result_t operator()(EqTermNode const& eqlNode) const {
+  result_t operator()(EqlNode const& eqlNode) const {
     // adding identifier to varmap
-    unsigned varid = varmap->addVar(eqlNode.varname);
+    unsigned varid = varmap->getVarIndex(eqlNode.varname);
 
-    // TODO : [may consider] re-using the same TermVar object instead creating
-    // new one everytime. This method will also work fine as trace values are
-    // stored w.r.t varid
-    HyperPLTL::PTerm newvar(new HyperPLTL::TermVar(varmap, varid));
+    HyperPLTL::PTerm newvar;
+    switch (varmap->getVarType(eqlNode.varname)) {
+      using namespace HyperPLTL;
+      case VarType::INT_VAR:
+        newvar = std::make_shared<TermVar>(varmap, varid);
+        break;
+      case VarType::ARRAY_VAR:
+        newvar = std::make_shared<TermArrayVar>(varmap, varid);
+        break;
+      default:
+        assert(0);
+        break;
+    }
+
     result_t eq(new HyperPLTL::Equal(varmap, newvar));
     return eq;
   }
 
-  result_t operator()(EqTermArrayNode const& eqTermArrNode) const {
-    auto vi = varmap->addArrayVar(eqTermArrNode.arrayVarName, eqTermArrNode.size);
-
-    HyperPLTL::PTermArray newArrVar(new HyperPLTL::TermArrayVar(varmap, vi));
-    result_t eq(new HyperPLTL::Equal(varmap, newArrVar));
-    return eq;
-  }
-
   result_t operator()(TraceSelNode const& selNode) const {
-    unsigned varid = varmap->addProp(selNode.varname);
+    unsigned varid = varmap->getVarIndex(selNode.varname);
     HyperPLTL::PTraceProp newvar(new HyperPLTL::PropVar(varmap, varid));
     result_t sel(new HyperPLTL::TraceSelect(varmap, selNode.traceid, newvar));
     return sel;

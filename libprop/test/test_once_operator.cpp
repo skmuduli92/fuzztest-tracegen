@@ -9,8 +9,10 @@ using namespace HyperPLTL;
 using namespace std;
 
 PHyperProp propertyOnceOperator() {
+  PVarMap varmap = std::make_shared<VarMap>();
+  varmap->addIntVar("x");
+  varmap->addIntVar("y");
   std::string formula = "(O (AND (EQ x) (EQ y)))";
-  PVarMap varmap(new VarMap());
   return parse_formula(formula, varmap);
 }
 

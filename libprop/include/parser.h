@@ -19,19 +19,13 @@ using orexpr_t = x3::rule<class OrExpr, ast::OrNode>;
 using andexpr_t = x3::rule<class AndExpr, ast::AndNode>;
 using impexpr_t = x3::rule<class ImpExpr, ast::ImpNode>;
 using notexpr_t = x3::rule<class NotExpr, ast::NotNode>;
+using eqlexpr_t = x3::rule<class EqlExpr, ast::EqlNode>;
 using selexpr_t = x3::rule<class TraceSelExpr, ast::TraceSelNode>;
 
 using gexpr_t = x3::rule<class GExpr, ast::GNode>;
 using yexpr_t = x3::rule<class YExpr, ast::YNode>;
 using oexpr_t = x3::rule<class OExpr, ast::ONode>;
 using sexpr_t = x3::rule<class SExpr, ast::SNode>;
-
-using eqlexpr_t = x3::rule<class EqlExpr, ast::EqTermNode>;
-using eqlarrexpr_t = x3::rule<class EqlArrayExpr, ast::EqTermArrayNode>;
-
-using eqtermexpr_t = x3::rule<class EqlTermExpr, ast::VarNode>;
-using eqvarexpr_t = x3::rule<class EqVarExpr, ast::EqTermNode>;
-using eqlarrexpr_t = x3::rule<class EqlArrayExpr, ast::EqTermArrayNode>;
 
 using termexpr_t = x3::rule<class TermExpr, ast::VarNode>;
 
@@ -42,16 +36,13 @@ BOOST_SPIRIT_DECLARE(orexpr_t);
 BOOST_SPIRIT_DECLARE(andexpr_t);
 BOOST_SPIRIT_DECLARE(impexpr_t);
 BOOST_SPIRIT_DECLARE(notexpr_t);
+BOOST_SPIRIT_DECLARE(eqlexpr_t);
 BOOST_SPIRIT_DECLARE(selexpr_t);
 
 BOOST_SPIRIT_DECLARE(gexpr_t);
 BOOST_SPIRIT_DECLARE(yexpr_t);
 BOOST_SPIRIT_DECLARE(oexpr_t);
 BOOST_SPIRIT_DECLARE(sexpr_t);
-
-BOOST_SPIRIT_DECLARE(eqtermexpr_t);
-BOOST_SPIRIT_DECLARE(eqvarexpr_t);
-BOOST_SPIRIT_DECLARE(eqlarrexpr_t);
 
 BOOST_SPIRIT_DECLARE(termexpr_t);
 

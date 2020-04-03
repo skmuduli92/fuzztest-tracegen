@@ -16,58 +16,64 @@ const std::string& VarMap::getVarName(unsigned i) const {
   return varNames[i];
 }
 
-
 unsigned VarMap::getVarIndex(const std::string& name) const {
-  auto pos = varIndices.find(name);
-  assert(pos != varIndices.end());
-  return pos->second;
+  auto it = std::find(varNames.begin(), varNames.end(), name);
+  assert(it != varNames.end());
+  return it - varNames.begin();
 }
 
-varinfo_t VarMap::getArrayVarInfo(const std::string& name) const {
-  auto pos = arrayVarInfo.find(name);
-  assert(pos != arrayVarInfo.end());
-  return pos->second;
+VarType VarMap::getVarType(const std::string& name) const {
+  auto it = varInfo.find(name);
+  assert(it != varInfo.end());
+  return it->second;
 }
 
-unsigned VarMap::addVar(const std::string& name) {
-  if (hasVar(name)) return varIndices[name];
+unsigned VarMap::addVar(const std::string& name, VarType type) {
+  std::vector<std::string>::const_iterator it =
+      std::find(varNames.begin(), varNames.end(), name);
 
-  unsigned idx = varNames.size();
+  if (it != varNames.end()) {
+    assert(varInfo[name] == type);
+    return it - varNames.begin();
+  }
+
+  varInfo[name] = type;
   varNames.push_back(name);
-  varIndices[name] = idx;
-  return idx;
+  return varNames.size() - 1;
 }
 
-varinfo_t VarMap::addArrayVar(const std::string& name, size_t size) {
-  if (hasVar(name)) return arrayVarInfo[name];
-
-  unsigned idx = varNames.size();
-  varNames.push_back(name);
-  varinfo_t vinfo = std::make_pair(idx, size);
-  varIndices[name] = idx;
-  arrayVarInfo[name] = vinfo;
-
-  return vinfo;
+unsigned VarMap::addIntVar(const std::string& name) {
+  return addVar(name, VarType::INT_VAR);
 }
 
-const std::string& VarMap::getPropName(unsigned i) const {
-  assert(i < propNames.size());
-  return propNames[i];
+unsigned VarMap::addArrayVar(const std::string& name) {
+  return addVar(name, VarType::ARRAY_VAR);
 }
 
-unsigned VarMap::getPropIndex(const std::string& name) const {
-  auto pos = propIndices.find(name);
-  assert(pos != propIndices.end());
-  return pos->second;
+unsigned VarMap::addPropVar(const std::string& name) {
+  return addVar(name, VarType::PROP_VAR);
 }
 
-unsigned VarMap::addProp(const std::string& name) {
-  if (hasProp(name)) return propIndices[name];
+bool VarMap::hasVar(const std::string& name) {
+  return varNames.end() != (std::find(varNames.begin(), varNames.end(), name));
+}
 
-  unsigned idx = propNames.size();
-  propNames.push_back(name);
-  propIndices[name] = idx;
-  return idx;
+bool VarMap::hasArrayVar(const std::string& name) {
+  auto it = varInfo.find(name);
+  if (it == varInfo.end()) return false;
+  return it->second == VarType::ARRAY_VAR;
+}
+
+bool VarMap::hasIntVar(const std::string& name) {
+  auto it = varInfo.find(name);
+  if (it == varInfo.end()) return false;
+  return it->second == VarType::PROP_VAR;
+}
+
+bool VarMap::hasPropVar(const std::string& name) {
+  auto it = varInfo.find(name);
+  if (it == varInfo.end()) return false;
+  return it->second == VarType::PROP_VAR;
 }
 
 // ---------------------------------------------------------------------- //
@@ -93,20 +99,18 @@ ValueType TermVar::termValue(uint32_t cycle, unsigned trace, const TraceList& tr
 //                            class TermArrayVar                          //
 // ---------------------------------------------------------------------- //
 
-void TermArrayVar::display(std::ostream& out) const {
-  out << var_map->getVarName(varinfo.first) << "[" << varinfo.second << "]";
-}
+void TermArrayVar::display(std::ostream& out) const { out << var_map->getVarName(index); }
 
 ValueType TermArrayVar::termValue(uint32_t cycle, unsigned trace,
                                   const TraceList& traces) {
   assert(traces.size() > trace);
-  return traces[trace]->termValueAt(varinfo.first, cycle);
+  return traces[trace]->termValueAt(index, cycle);
 }
 
 // ---------------------------------------------------------------------- //
 //                            class PropVar                               //
 // ---------------------------------------------------------------------- //
-void PropVar::display(std::ostream& out) const { out << var_map->getPropName(index); }
+void PropVar::display(std::ostream& out) const { out << var_map->getVarName(index); }
 
 bool PropVar::propValue(uint32_t cycle, unsigned trace, const TraceList& traces) {
   // eval not well-defined when multiple traces are available.

@@ -20,11 +20,7 @@ x3::rule<class OrExpr, ast::OrNode> orexpr("orexpr");
 x3::rule<class AndExpr, ast::AndNode> andexpr("andexpr");
 x3::rule<class ImpExpr, ast::ImpNode> impexpr("impexpr");
 x3::rule<class NotExpr, ast::NotNode> notexpr("notexpr");
-
-x3::rule<class EqlTermExpr, ast::VarNode> eqlTermExpr("eqlTermExpr");
-x3::rule<class EqVarExpr, ast::EqTermNode> eqlVarExpr("eqVarExpr");
-x3::rule<class EqlArrayExpr, ast::EqTermArrayNode> eqlArrExpr("eqlArrExpr");
-
+x3::rule<class EqlExpr, ast::EqlNode> eqlexpr("eqlexpr");
 x3::rule<class TraceSelExpr, ast::TraceSelNode> selexpr("selexpr");
 
 x3::rule<class GExpr, ast::GNode> gexpr("gexpr");
@@ -51,8 +47,8 @@ auto const keywords =
 
 auto const idexpr_def = (x3::lexeme[x3::alpha >> *(x3::alnum)] - keywords);
 
-auto const varexpr_def = '(' >> (notexpr | andexpr | orexpr | impexpr | gexpr | yexpr |
-                                 oexpr | sexpr) >>
+auto const varexpr_def = '(' >> (notexpr | andexpr | orexpr | impexpr | gexpr |
+                                 yexpr | oexpr | sexpr) >>
                          ')';
 
 auto const orexpr_def = orstr >> termexpr >> termexpr;
@@ -65,16 +61,13 @@ auto const yexpr_def = ystr >> termexpr;
 auto const oexpr_def = ostr >> termexpr;
 auto const sexpr_def = sstr >> termexpr >> termexpr;
 
-auto const termexpr_def = varexpr | ('(' >> eqlTermExpr >> ')') | selexpr;
-auto const eqlTermExpr_def = eqlArrExpr | eqlVarExpr;
-auto const eqlVarExpr_def = eqstr >> idexpr;
-auto const eqlArrExpr_def = eqstr >> idexpr >> '[' >> x3::uint_ >> ']';
-
+auto const termexpr_def = varexpr | ('(' >> eqlexpr >> ')') | selexpr;
+auto const eqlexpr_def = eqstr >> idexpr;
 auto const selexpr_def = idexpr >> '.' >> x3::uint_;
 
 BOOST_SPIRIT_DEFINE(idexpr, varexpr, notexpr, andexpr, orexpr, impexpr);
 BOOST_SPIRIT_DEFINE(gexpr, yexpr, oexpr, sexpr, termexpr);
-BOOST_SPIRIT_DEFINE(eqlTermExpr, eqlVarExpr, eqlArrExpr, selexpr);
+BOOST_SPIRIT_DEFINE(eqlexpr, selexpr);
 }  // namespace grammar
 
 grammar::varexpr_t parser() { return grammar::varexpr; }

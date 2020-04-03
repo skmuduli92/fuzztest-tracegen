@@ -8,7 +8,9 @@ using namespace HyperPLTL;
 
 TEST(PropertyLibTest, ValidTracePropVar) {
   std::string propstr = "(G (IMPLIES x.0 x.1))";
-  PVarMap varmap(new VarMap());
+  PVarMap varmap = std::make_shared<VarMap>();
+  varmap->addPropVar("x");
+
   PHyperProp property = parse_formula(propstr, varmap);
 
   PTrace trace1(new Trace(1, 0));
@@ -30,7 +32,9 @@ TEST(PropertyLibTest, ValidTracePropVar) {
 
 TEST(PropertyLibTest, InvalidTracePropVar) {
   std::string propstr = "(G (IMPLIES x.0 x.1))";
-  PVarMap varmap(new VarMap());
+  PVarMap varmap = std::make_shared<VarMap>();
+  varmap->addPropVar("x");
+
   PHyperProp property = parse_formula(propstr, varmap);
 
   PTrace trace1(new Trace(1, 0));
@@ -70,7 +74,11 @@ TEST(PropertyLibTest, InvalidTracePropVar) {
 TEST(PropertyLibTest, ParserVarMap) {
   std::string prop1 = "(G (IMPLIES (EQ idTwo) (EQ idOne)))";
 
-  PVarMap varmap(new VarMap());
+  PVarMap varmap = std::make_shared<VarMap>();
+  varmap->addIntVar("idOne");
+  varmap->addIntVar("idTwo");
+  varmap->addIntVar("idThree");
+
   auto hpltl1 = parse_formula(prop1, varmap);
 
   std::string prop2 = "(IMPLIES (G (AND (EQ idThree) (EQ idOne))) (EQ idTwo))";

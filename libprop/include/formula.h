@@ -26,47 +26,29 @@ typedef std::shared_ptr<TermArrayVar> PTermArray;
 // varinfo_t tuple (varIndex, arraySize)
 using varinfo_t = std::pair<unsigned, unsigned>;
 
+enum class VarType { INT_VAR, ARRAY_VAR, PROP_VAR };
+
 class VarMap {
   // TODO :
   // - keep a single vector for names, else it will allow propvar and termvar
-  // to have same.
-  //
-  // - could use std::variant to store different var types in a single node?
-  //
 
   std::vector<std::string> varNames;
-  std::map<std::string, unsigned> varIndices;
-  std::map<std::string, varinfo_t> arrayVarInfo;
-
-  std::vector<std::string> propNames;
-  std::map<std::string, unsigned> propIndices;
+  std::map<std::string, VarType> varInfo;
 
  public:
-  unsigned addProp(const std::string& name);
-  unsigned addVar(const std::string& name);
-  varinfo_t addArrayVar(const std::string& name, size_t size);
+  unsigned addArrayVar(const std::string&);
+  unsigned addIntVar(const std::string&);
+  unsigned addPropVar(const std::string&);
+  unsigned addVar(const std::string&, VarType);
 
-  const std::string& getPropName(unsigned i) const;
+  unsigned getVarIndex(const std::string& name) const;
+  VarType getVarType(const std::string& name) const;
   const std::string& getVarName(unsigned i) const;
 
-  unsigned getPropIndex(const std::string& name) const;
-  unsigned getVarIndex(const std::string& name) const;
-  varinfo_t getArrayVarInfo(const std::string& name) const;
-
-  const std::vector<std::string>& getVarNames() const { return varNames; }
-  const std::vector<std::string>& getPropNames() const { return propNames; }
-
-  bool hasVar(const std::string& name) {
-    return varIndices.find(name) != varIndices.end();
-  }
-
-  bool hasArrayVar(const std::string& name) {
-    return arrayVarInfo.find(name) != arrayVarInfo.end();
-  }
-
-  bool hasProp(const std::string& name) {
-    return propIndices.find(name) != propIndices.end();
-  }
+  bool hasVar(const std::string& name);
+  bool hasArrayVar(const std::string& name);
+  bool hasIntVar(const std::string& name);
+  bool hasPropVar(const std::string& name);
 };
 
 class Formula {
@@ -83,18 +65,13 @@ class Formula {
   /** Return the id for this term variable. */
   unsigned getVarId(std::string const& varName) { return var_map->getVarIndex(varName); }
 
-  varinfo_t getArrayVarInfo(std::string const& name) {
-    return var_map->getArrayVarInfo(name);
-  }
+  // /** Return the vector of terms. */
+  // const std::vector<std::string>& getVarNames() const { return var_map->getVarNames();
+  // }
 
-  /** Return the id for this propositional variable. */
-  unsigned getPropId(std::string const& propName) {
-    return var_map->getPropIndex(propName);
-  }
-  /** Return the vector of terms. */
-  const std::vector<std::string>& getVarNames() const { return var_map->getVarNames(); }
-  /** Return the vector of propositions. */
-  const std::vector<std::string>& getPropNames() const { return var_map->getPropNames(); }
+  // /** Return the vector of propositions. */
+  // const std::vector<std::string>& getPropNames() const { return
+  // var_map->getPropNames(); }
 };
 
 // integer-sorted terms.
@@ -139,13 +116,12 @@ class TermVar : public Term {
 };
 
 class TermArrayVar : public Term {
-  varinfo_t varinfo;
+  unsigned index;
 
  public:
-  TermArrayVar(PVarMap m, varinfo_t vi) : Term(m), varinfo(vi) {}
+  TermArrayVar(PVarMap m, unsigned vi) : Term(m), index(vi) {}
 
   virtual void display(std::ostream& out) const;
-  inline size_t getSize() { return varinfo.second; }
   virtual ValueType termValue(uint32_t cycle, unsigned trace, const TraceList& traces);
 };
 
