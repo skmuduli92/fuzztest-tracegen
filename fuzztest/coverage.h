@@ -15,6 +15,7 @@ private:
   std::vector<uint64_t> masks;
   std::vector<uint64_t> signalValue;
   std::vector<unsigned> bases;
+  std::vector<unsigned> sizes;
   unsigned currentBase;
 public:
   ValueTracker(unsigned numBins) 
@@ -30,6 +31,7 @@ public:
     masks.push_back((1ULL << width) - 1);
     signalValue.push_back(0);
     currentBase += size;
+    sizes.push_back(size);
     assert (size < bins.size());
   }
 

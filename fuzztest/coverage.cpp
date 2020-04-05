@@ -5,7 +5,7 @@ void ValueTracker::track(unsigned i, uint32_t value)
 {
   assert (i < signalValue.size());
   signalValue[i] = (signalValue[i] << 32) | (value & masks[i]);
-  bins[bases[i] + (signalValue[i] % bins.size())] += 1;
+  bins[bases[i] + (signalValue[i] % sizes[i])] += 1;
 }
 
 void ValueTracker::dump(std::ostream& out) const
