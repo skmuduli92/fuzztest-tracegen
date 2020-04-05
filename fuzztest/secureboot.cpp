@@ -109,7 +109,8 @@ int Voc8051_Simulator::simulate(long delay)
 #if 0
         std::cout << "memop @ " << main_time 
                   << "; addr = " << std::hex << addr << std::dec 
-                  << "; value = " << std::hex << memop_tracker.value()
+                  << "; value@bus = " << std::hex << data
+                  << "; value@mem = " << std::hex << (int) top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[addr]
                   << std::dec << std::endl;
 #endif
       }
