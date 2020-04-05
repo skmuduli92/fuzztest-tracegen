@@ -73,6 +73,8 @@ void Voc8051_Simulator::monitor_debug_registers()
               << std::dec << this_addr << " -> " 
               << std::dec << this_data << std::endl;
     setVar(trace, this_addr, main_time, this_data);
+  } else {
+    traces[trace]->extendToCycle(main_time);
   }
 }
 

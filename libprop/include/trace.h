@@ -47,6 +47,12 @@ struct VarTrace {
     lastCycle = time;
   }
 
+  /** Extends the trace to the specified number of cycles. */
+  void extendToCycle(uint32_t cycle) {
+    assert (cycle >= lastCycle);
+    lastCycle = cycle;
+  }
+
   /// Return the element at a particular index.
   const T operator[](uint32_t cycle) {
     assert(datapoints.size() > 0);
@@ -125,6 +131,13 @@ class Trace {
   bool propValueAt(unsigned i, uint32_t cycle) {
     assert(i < propositions.size());
     return propositions[i][cycle];
+  }
+
+  void extendToCycle(uint32_t cycle) {
+    assert (cycle >= lastCycle);
+    lastCycle = cycle;
+    for (auto p : propositions) { p.extendToCycle(cycle); }
+    for (auto v : variables) { v.extendToCycle(cycle); }
   }
 
   /// get trace length (un-compressed)

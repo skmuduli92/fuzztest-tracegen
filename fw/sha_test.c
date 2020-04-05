@@ -91,12 +91,13 @@ void main() {
     }
 
     P0 = good;
-    record_dbg(GOOD_ID,  good);
     record_dbg(BYTE0_ID, d1[0]);
     record_dbg(BYTE1_ID, d1[1]);
     record_dbg(BYTE2_ID, d1[2]);
     record_dbg(BYTE3_ID, d1[3]);
     record_dbg(BYTE4_ID, d1[4]);
+    // setting good later is important!
+    record_dbg(GOOD_ID,  good);
 
     // finish.
     quit();

@@ -24,12 +24,13 @@ void OpcodeTamperer::tamper(Voc8051_tb* top)
 void FSMWriteTamperer::tamper(Voc8051_tb* top)
 {
   const int BUF_SIZE = 16;
-  for(unsigned i=0; i < BUF_SIZE; i++) {
+  unsigned i;
+  for(i=0; i < BUF_SIZE; i++) {
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_addr[i] = 0;
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_data[i] = 0;
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_delay[i] = 0;
   }
-  for(unsigned i=0; i < BUF_SIZE; i++) {
+  for(i=0; i < BUF_SIZE; i++) {
     uint16_t addr, delay;
     int data;
     if (scanf("%hx", &addr) != 1)  { break; }
@@ -40,5 +41,6 @@ void FSMWriteTamperer::tamper(Voc8051_tb* top)
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_data[i] = data;
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_delay[i] = delay;
   }
+  printf("read %d entries from tamper.\n", i);
 }
 
