@@ -6,3 +6,4 @@ secureboot
 bootloader
 bootfuzzer
 aes_test
+sha_test
