@@ -15,8 +15,10 @@ void ITamperer::tamper(Voc8051_tb* top)
 void OpcodeTamperer::tamper(Voc8051_tb* top)
 {
   for(unsigned i=0; i < BUF_SIZE; i++) {
-    int data;
-    if (scanf("%u",  &data) != 1)  { break; }
+    uint8_t data = 0;
+    if(fread(&data, sizeof(data), 1, stdin) != 1) {
+        break;
+    }
     top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i + BASE_ADDR] = data;
   }
 }
@@ -32,10 +34,10 @@ void FSMWriteTamperer::tamper(Voc8051_tb* top)
   }
   for(i=0; i < BUF_SIZE; i++) {
     uint16_t addr, delay;
-    int data;
-    if (scanf("%hx", &addr) != 1)  { break; }
-    if (scanf("%x",  &data) != 1)  { break; }
-    if (scanf("%hu", &delay) != 1) { break; }
+    uint8_t data;
+    if (fread(&addr, sizeof(addr), 1, stdin) != 1)  { break; }
+    if (fread(&data, sizeof(data), 1, stdin) != 1)  { break; }
+    if (fread(&delay, sizeof(delay), 1, stdin) != 1) { break; }
     printf("%hx -> %u @ %hu\n", addr, data, delay);
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_addr[i] = addr;
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_data[i] = data;
