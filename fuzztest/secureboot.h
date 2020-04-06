@@ -63,9 +63,9 @@ class Voc8051_Simulator {
       , tracker(65536)
       , trace(0)
   {
-    tracker.add(8191, 8);
-    tracker.add(8191, 16);
-    tracker.add(8191, 32);
+    tracker.add(21841, 8);
+    tracker.add(21841, 16);
+    tracker.add(21841, 32);
 
     for (unsigned i=0; i != numTraces; i++) {
       traces.push_back(PTrace(new Trace(numProps, numVars)));

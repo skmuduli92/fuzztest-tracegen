@@ -32,7 +32,11 @@ public:
     signalValue.push_back(0);
     currentBase += size;
     sizes.push_back(size);
-    assert (size < bins.size());
+#ifdef DEBUG_COVERAGE
+    std::cout << "size=" << size << "; bins=" 
+              << bins.size() << std::endl;
+#endif
+    assert (currentBase < bins.size());
   }
 
   void track(unsigned index, uint32_t value);

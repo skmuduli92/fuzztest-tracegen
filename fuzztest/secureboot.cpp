@@ -102,11 +102,15 @@ int Voc8051_Simulator::simulate(long delay)
       tracker.track(0, opcode);
       auto pc = top->oc8051_tb__DOT__oc8051_top_1__DOT__pc;
       tracker.track(1, pc);
-      if (top->oc8051_tb__DOT__oc8051_xiommu1__DOT__proc_ack) {
+      if (top->oc8051_tb__DOT__oc8051_xiommu1__DOT__stb_out &&
+          top->oc8051_tb__DOT__oc8051_xiommu1__DOT__ack_in) {
         unsigned addr = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__proc_addr;
-        unsigned data = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__proc_data_in;
-        tracker.track(2, addr | (opcode << 16) | (data << 8));
-#if 0
+        unsigned data = 0;
+        if (top->oc8051_tb__DOT__oc8051_xiommu1__DOT__wr_out) {
+            data = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__proc_data_in;
+        }
+        tracker.track(2, addr | (opcode << 16) | (data << 24));
+#ifdef DEBUG_COVERAGE
         std::cout << "memop @ " << main_time 
                   << "; addr = " << std::hex << addr << std::dec 
                   << "; value@bus = " << std::hex << data
@@ -191,6 +195,11 @@ void Voc8051_Simulator::run(
 
 void Voc8051_Simulator::copy_coverage()
 {
+#ifdef DEBUG_COVERAGE
+  for(auto p = tracker.begin(); p != tracker.end(); p++) {
+      std::cout << "bin: " << (int) *p << std::endl;
+  }
+#endif
   afl_copy(tracker.data(), tracker.size());
 }
 

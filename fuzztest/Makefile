@@ -1,12 +1,19 @@
 DEBUG?=0
 INCLUDES=-I../verilator/include/ -I../fuzzer -I../libprop/include
 SHARED_OBJECTS=secureboot.o coverage.o tamper.o Voc8051_tb__ALL.a afl.o verilated.o ../libprop/build/lib/liblibprop.a
+DEBUG_COVERAGE?=0
+
+ifeq ($(DEBUG_COVERAGE), 1)
+    DEFINES:=-DDEBUG_COVERAGE
+else
+    DEFINES:=
+endif
 
 ifeq ($(DEBUG), 1)
-    CXXFLAGS:=-g -O0 -std=c++17
+    CXXFLAGS:=-g -O0 -std=c++17 $(DEFINES)
     LDFLAGS=-O0 -g
 else
-    CXXFLAGS:=-O3 -std=c++17
+    CXXFLAGS:=-O3 -std=c++17 $(DEFINES)
     LDFLAGS=-O2
 endif
 
