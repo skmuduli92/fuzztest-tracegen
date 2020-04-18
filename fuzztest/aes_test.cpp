@@ -52,8 +52,6 @@ int main() {
   // first run.
   //  int callres = std::system("sh genfw.sh");
 
-fork();
-
   sim.run(NoTamper, romfile, imgfile, tg);
 
   // second trace.

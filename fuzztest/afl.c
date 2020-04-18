@@ -101,6 +101,8 @@ static void __afl_start_forkserver() {
       _exit(1);
     }
 
+    if (TraceGenerator::trid == TraceGenerator::MAX_TRACES) _exit(0);
+
     // increament the trace count for next child process
     TraceGenerator::trid += 1;
   }

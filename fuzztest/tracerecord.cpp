@@ -6,16 +6,11 @@
 
 const int TraceGenerator::DEBUG_REG_ADDR = 0xEFFC;
 const int TraceGenerator::DEBUG_REG_DATA = 0xEFFE;
-
+const int TraceGenerator::MAX_TRACES = 100;
 uint32_t TraceGenerator::trid = 0;
 
 void TraceGenerator::tracegen_aes(std::shared_ptr<Voc8051_tb> top,
                                   std::shared_ptr<TraceGen> tg) {
-
-
-  tg->recordIntSignal(
-      std::string("aes_reg_start"), trid, sc_time_stamp(),
-      (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__start_op);
 
   // substracting 20 for reset time
 
@@ -76,7 +71,6 @@ void TraceGenerator::tracegen_aes(std::shared_ptr<Voc8051_tb> top,
           top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__block_counter_next);
 
   tg->recordIntSignal(
-      "bytes_read", trid, sc_time_stamp(),
-      (uint32_t)
-          top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__operated_bytes_count);
+      "aes_reg_start", trid, sc_time_stamp(),
+      (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__start_op);
 }
