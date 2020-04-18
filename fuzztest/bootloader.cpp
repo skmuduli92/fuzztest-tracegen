@@ -1,8 +1,8 @@
-#include <iostream>
 #include <verilated.h>
-#include "secureboot.h"
+#include <iostream>
 #include "Voc8051_tb.h"
 #include "Voc8051_tb__Syms.h"
+#include "secureboot.h"
 
 #include <memory>
 #include <string>
@@ -19,7 +19,7 @@ int main() {
   // filenames
   std::string romfile("../rom/secureboot.dat");
   std::string imgfile("../rom/prog.hex");
-  sim.run(NoTamper, romfile, imgfile);
+  // sim.run(NoTamper, romfile, imgfile);
 
   return 0;
 }

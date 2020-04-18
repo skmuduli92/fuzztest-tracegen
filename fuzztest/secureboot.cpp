@@ -75,10 +75,9 @@ void Voc8051_Simulator::monitor_debug_registers() {
 
 // simulates delay number of cycles. Set delay < 0 to simulate
 // indefinetely.
-int Voc8051_Simulator::simulate(std::shared_ptr<TraceGen> tg, long delay) {
+int Voc8051_Simulator::simulate(std::shared_ptr<TraceGen>& tg, long delay) {
   long cnt = 0;
   int clk = 0;
-  std::ofstream fout(std::string("trace.txt"));
 
   for (cnt = 0; cnt < delay || delay < 0; cnt++, main_time++) {
     // check if verilog code is finished
@@ -87,7 +86,6 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGen> tg, long delay) {
     }
 
     TraceGenerator::tracegen_aes(top, tg);
-
     // set clock and simulate.
     top->oc8051_tb__DOT__clk = clk;
     top->eval();
@@ -118,12 +116,11 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGen> tg, long delay) {
       clk = 1;
     }
   }
-  fout.close();
   return cnt;
 }
 
 // reset uc
-void Voc8051_Simulator::reset_uc(std::shared_ptr<TraceGen> tg) {
+void Voc8051_Simulator::reset_uc(std::shared_ptr<TraceGen>& tg) {
   top->oc8051_tb__DOT__rst = 1;
   top->oc8051_tb__DOT__p0_in = 0x00;
   top->oc8051_tb__DOT__p1_in = 0x00;
@@ -134,6 +131,8 @@ void Voc8051_Simulator::reset_uc(std::shared_ptr<TraceGen> tg) {
   }
 
   const int dataloc = 0xE000;
+
+  std::cout << "trace id : " << TraceGenerator::trid << std::endl;
 
   for (size_t idx = 0; idx < 16; ++idx) {
     top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[dataloc + idx] =
@@ -216,7 +215,7 @@ void Voc8051_Simulator::randomizeData() {
 
 // run program.
 void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile,
-                            const std::string& imgfile, std::shared_ptr<TraceGen> tg) {
+                            const std::string& imgfile, std::shared_ptr<TraceGen>& tg) {
 
   srand(time(NULL));
   reset_uc(tg);

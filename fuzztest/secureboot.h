@@ -31,7 +31,7 @@ class Voc8051_Simulator {
   ValueTracker tracker;
 
   // run for some number of steps.
-  int simulate(std::shared_ptr<TraceGen> tg, long delay);
+  int simulate(std::shared_ptr<TraceGen>& tg, long delay);
   void monitor_ports();
   void monitor_debug_registers();
 
@@ -102,13 +102,13 @@ class Voc8051_Simulator {
     assert(trace < traces.size());
   }
 
-  void reset_uc(std::shared_ptr<TraceGen> tg);
+  void reset_uc(std::shared_ptr<TraceGen>& tg);
   void load_program(const std::string& romfile);
   void load_boot_image(const std::string& imgfile);
   void print_aes_metadata();
   void randomizeData();
   void run(ITamperer& tamper, const std::string& romfile, const std::string& imgfile,
-           std::shared_ptr<TraceGen> tg);
+           std::shared_ptr<TraceGen>& tg);
 
   void copy_coverage();
 

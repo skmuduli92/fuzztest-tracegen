@@ -47,10 +47,13 @@ int main() {
   tg->addIntVars(signals);
 
   // afl init
-  // afl_init(&fid, &oldss);
+  afl_init(&fid, &oldss);
 
   // first run.
   //  int callres = std::system("sh genfw.sh");
+
+fork();
+
   sim.run(NoTamper, romfile, imgfile, tg);
 
   // second trace.
