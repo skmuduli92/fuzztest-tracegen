@@ -1,6 +1,6 @@
 DEBUG?=0
-INCLUDES=-I../verilator/include/ -I../fuzzer -I../libprop/include
-SHARED_OBJECTS=secureboot.o coverage.o tamper.o Voc8051_tb__ALL.a afl.o verilated.o ../libprop/build/lib/liblibprop.a
+INCLUDES=-I../verilator/include/ -I../fuzzer -I../libprop/include -I../tracegen
+SHARED_OBJECTS=secureboot.o coverage.o tamper.o Voc8051_tb__ALL.a afl.o verilated.o tracerecord.o ../libprop/build/lib/liblibprop.a ../tracegen/lib/libprobmodel.a
 DEBUG_COVERAGE?=0
 
 ifeq ($(DEBUG_COVERAGE), 1)
@@ -50,6 +50,9 @@ coverage.o: coverage.cpp coverage.h
 	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 tamper.o: tamper.cpp tamper.h  Voc8051_tb__ALL.a
+	g++ -c $(CXXFLAGS) $(INCLUDES) $<
+
+tracerecord.o : tracerecord.cpp tracerecord.h
 	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 afl.o : afl.c
