@@ -39,7 +39,33 @@ oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_key1
 
 More tests :
 aes_test
-sha
+
+=====================
+	SHA
+=====================
+
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_state
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_state_next
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__byte_counter
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__byte_counter_next
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__byte_counter_next_rw
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha1_core_i__DOT__ready_flag
+
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__reg_bytes_read
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__bytes_read_next
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__block_counter
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__block_counter_next
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_rd_addr
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_wr_addr
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_len
+
+
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_more_blocks
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_core_init
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_core_next
+oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_core_ready_r
+
+=====================
 rsa test
 microprocessor
 page table model
