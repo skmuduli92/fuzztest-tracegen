@@ -29,6 +29,8 @@ __xdata __at(0xE000) unsigned char d1[64];
 __xdata __at(0xE100) unsigned char d2[128];
 __xdata __at(0xE200) unsigned char hash[20];
 __xdata __at(0xE300) unsigned char pyhash[20];
+__xdata __at(0xEFFC) unsigned int debug_reg_addr;
+__xdata __at(0xEFFE) unsigned int debug_reg_data;
 
 /*---------------------------------------------------------------------------*/
 
@@ -78,6 +80,8 @@ void main() {
     }
 
     P0 = good;
+    debug_reg_addr = 0x1;
+    debug_reg_data = (unsigned int) good;
 
     // finish.
     quit();

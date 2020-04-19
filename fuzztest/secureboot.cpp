@@ -88,13 +88,14 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGen>& tg, long delay) {
       break;
     }
 
-    // TraceGenerator::tracegen_aes(top, tg);
+    TraceGenerator::tracegen_sha(top, tg);
 
     // set clock and simulate.
     top->oc8051_tb__DOT__clk = clk;
     top->eval();
-    monitor_ports();
+    // monitor_ports();
     // monitor_debug_registers();
+    print_metadata();
     // coverage.
     if (clk == 0) {
       // track signals on rising clock
@@ -188,16 +189,24 @@ void Voc8051_Simulator::load_boot_image(const std::string& imgfile) {
 void Voc8051_Simulator::print_metadata() {
 
     std::cout << "\n\n";
-    std::cout << "reglen : " << std::dec << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_len
-    << std::endl;
+    // std::cout << "reglen : " << std::dec
+    // << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_len
+    // << std::endl;
 
-    std::cout << "byte counter : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__byte_counter
-    << std::endl;
+    // std::cout << "byte counter : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__byte_counter
+    // << std::endl << "byte counter next : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__byte_counter_next
+    // << std::endl;
+
+    std::cout << "bytes read : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__reg_bytes_read << std::endl;
+
+    // std::cout << "regstate : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_state << std::endl;
+    // std::cout << "sha_stae_next : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_state_next << std::endl;
+    //
+    // std::cout << "good value : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA] << std::endl;
 
 }
 
 void Voc8051_Simulator::genRandomDataAndHash() {
-
 
 }
 
@@ -243,24 +252,10 @@ void Voc8051_Simulator::randomizeData() {
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_len = mlen;
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + datalen] = 0x80;
 
-    // unsigned bitsize = datalen * 8;
-    // uint8_t dl0 = bitsize & 0xff;
-    // uint8_t dl1 = (bitsize >> 8) & 0xff;
-
-    // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 1] = dl0;
-    // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 2] = dl1;
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 1] = (datalen << 3) & 0xFF;
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 2] = (datalen >> 5) & 0xFF;
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 3] = (datalen >> 13) & 0xFF;
 
-
-    // put message size (in bits) in last 8 bytes of the block
-    // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + 126] = dl1;
-    // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + 127] = dl0;
-
-    // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[0xFE00] = 1;
-
-    // std::cout << "\ndata length to append : " << std::hex << (uint32_t)dl1 << " " << (uint32_t)dl0<< std::endl;
  }
 
 // run program.
@@ -275,8 +270,6 @@ void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile,
 
   // tamperer.tamper(top.get());
   simulate(tg, 2621440);
-  print_metadata();
-
   std::cout << "finished @ " << std::dec << main_time << std::endl;
 }
 
