@@ -20,6 +20,9 @@
 #include "formula.h"
 #include "trace.h"
 
+#include <openssl/sha.h>
+
+
 // Clock cycle counter.
 vluint64_t main_time = 0;
 
@@ -85,12 +88,13 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGen>& tg, long delay) {
       break;
     }
 
-    TraceGenerator::tracegen_aes(top, tg);
+    // TraceGenerator::tracegen_aes(top, tg);
+
     // set clock and simulate.
     top->oc8051_tb__DOT__clk = clk;
     top->eval();
     monitor_ports();
-    monitor_debug_registers();
+    // monitor_debug_registers();
     // coverage.
     if (clk == 0) {
       // track signals on rising clock
@@ -131,8 +135,6 @@ void Voc8051_Simulator::reset_uc(std::shared_ptr<TraceGen>& tg) {
   }
 
   const int dataloc = 0xE000;
-
-  std::cout << "trace id : " << TraceGenerator::trid << std::endl;
 
   for (size_t idx = 0; idx < 16; ++idx) {
     top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[dataloc + idx] =
@@ -183,35 +185,83 @@ void Voc8051_Simulator::load_boot_image(const std::string& imgfile) {
   return;
 }
 
-void Voc8051_Simulator::print_aes_metadata() {
+void Voc8051_Simulator::print_metadata() {
 
-  std::cout << "aes_reg_oplen : " << std::dec
-            << (uint32_t)
-                   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen
-            << std::hex << std::endl;
+    std::cout << "\n\n";
+    std::cout << "reglen : " << std::dec << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_len
+    << std::endl;
 
-  // printing keyvalue
-  std::cout << "printing keyvalues : " << std::endl;
-  for (size_t idx = 0; idx < 4; ++idx) {
-    std::cout
-        << (uint32_t)
-               top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_key0[idx]
-        << std::endl;
-  }
+    std::cout << "byte counter : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__byte_counter
+    << std::endl;
+
+}
+
+void Voc8051_Simulator::genRandomDataAndHash() {
+
+
 }
 
 void Voc8051_Simulator::randomizeData() {
+    const int dataloc = 0xE100;
+    unsigned datalen;
 
-  // randomize aes data length
-  unsigned aes_reg_len = rand() % 128;
-  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen = aes_reg_len;
+    if (rand() % 2)
+        datalen = rand() % 56;
+    else
+        datalen = rand() % 100;
 
-  // randomly generate keys
-  for (size_t idx = 0; idx < 4; ++idx) {
-    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_key0[idx] =
-        rand() % std::numeric_limits<unsigned>::max();
-  }
-}
+    std::cout << "data length : " << std::dec << datalen << std::endl;
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[0xFE06] = 128;
+
+    unsigned char ibuf[128];
+
+    for (size_t id = 0; id < 128; ++id) {
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + id] = 0;
+        ibuf[id] = 0;
+    }
+
+    for (size_t id = 0; id < datalen; ++id) {
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + id] = id;
+        ibuf[id] = id;
+    }
+
+    const int pyhash = 0xE300;
+    unsigned char obuf[20];
+    SHA1(ibuf, datalen, obuf);
+    for (size_t i = 0; i < 20; i++) {
+      printf("%02x ", obuf[i]);
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[pyhash + i] =  obuf[i];
+    }
+
+
+    unsigned padding = 64 - datalen % 64;
+    unsigned mlen = datalen + padding;
+    std::cout << "\npadding : " << std::dec << padding << ", mlen : " << mlen << std::endl;
+    std::cout << std::dec << ((datalen << 3) & 0xFF) << std::endl;
+    std::cout << std::dec << ((datalen >> 5) & 0xFF) << std::endl;
+    std::cout << std::dec << ((datalen >> 13) & 0xFF) << std::endl;
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_len = mlen;
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + datalen] = 0x80;
+
+    // unsigned bitsize = datalen * 8;
+    // uint8_t dl0 = bitsize & 0xff;
+    // uint8_t dl1 = (bitsize >> 8) & 0xff;
+
+    // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 1] = dl0;
+    // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 2] = dl1;
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 1] = (datalen << 3) & 0xFF;
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 2] = (datalen >> 5) & 0xFF;
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 3] = (datalen >> 13) & 0xFF;
+
+
+    // put message size (in bits) in last 8 bytes of the block
+    // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + 126] = dl1;
+    // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + 127] = dl0;
+
+    // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[0xFE00] = 1;
+
+    // std::cout << "\ndata length to append : " << std::hex << (uint32_t)dl1 << " " << (uint32_t)dl0<< std::endl;
+ }
 
 // run program.
 void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile,
@@ -220,12 +270,13 @@ void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile,
   srand(time(NULL));
   reset_uc(tg);
   load_program(romfile);
-
+  load_boot_image(imgfile);
   randomizeData();
 
-  load_boot_image(imgfile);
-  tamperer.tamper(top.get());
+  // tamperer.tamper(top.get());
   simulate(tg, 2621440);
+  print_metadata();
+
   std::cout << "finished @ " << std::dec << main_time << std::endl;
 }
 

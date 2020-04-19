@@ -105,8 +105,9 @@ class Voc8051_Simulator {
   void reset_uc(std::shared_ptr<TraceGen>& tg);
   void load_program(const std::string& romfile);
   void load_boot_image(const std::string& imgfile);
-  void print_aes_metadata();
+  void print_metadata();
   void randomizeData();
+  void genRandomDataAndHash();
   void run(ITamperer& tamper, const std::string& romfile, const std::string& imgfile,
            std::shared_ptr<TraceGen>& tg);
 
