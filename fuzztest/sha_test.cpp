@@ -31,7 +31,6 @@ int main() {
   Voc8051_Simulator sim(2, 1, 5);
 
   // afl init
-  afl_init(&fid, &oldss);
 
   // parse the property
   std::string good("good");
@@ -76,6 +75,8 @@ int main() {
 
   std::shared_ptr<TraceGen> tg = std::make_shared<TraceGen>();
   tg->addIntVars(signals);
+
+  afl_init(&fid, &oldss);
 
   // first run.
   sim.run(NoTamper, romfile, imgfile, tg);
