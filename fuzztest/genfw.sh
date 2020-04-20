@@ -1,6 +1,6 @@
 #!/bin/bash
 
 cd ../fw
-sdcc sha_pycomp.c
+sdcc page_table_test.c
 cd ..
-python3 scripts/gen_text.py fw/sha_pycomp.ihx rom/sha_pycomp.dat
+python3 scripts/gen_text.py fw/page_table_test.ihx rom/page_table_test.dat

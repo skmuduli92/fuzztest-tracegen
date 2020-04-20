@@ -63,20 +63,15 @@ int main() {
   sim.addVar(bytes[4], ti6, BYTE4_ID, Voc8051_Simulator::VarInfo::TERM, 0);
 
   // filenames
-  std::string romfile("../rom/sha_pycomp.dat");
+  std::string romfile("../rom/page_table_test.dat");
   std::string imgfile;
 
-  std::vector<std::string> signals(
-      {"sha_reg_len", "byte_counter", "byte_counter_next", "sha_reg_state",
-       "sha_state_next", "byte_counter_next_rw", "ready_flag", "reg_bytes_read",
-       "bytes_read_next", "block_counter", "block_counter_next", "sha_reg_rd_addr",
-       "sha_reg_wr_addr", "sha_more_blocks", "sha_core_init", "sha_core_next",
-       "sha_core_ready_r", "good_value"});
+  std::vector<std::string> signals;
 
   std::shared_ptr<TraceGen> tg = std::make_shared<TraceGen>();
   tg->addIntVars(signals);
 
-  afl_init(&fid, &oldss);
+  // afl_init(&fid, &oldss);
 
   // first run.
   sim.run(NoTamper, romfile, imgfile, tg);

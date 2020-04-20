@@ -22,7 +22,6 @@
 
 #include <openssl/sha.h>
 
-
 // Clock cycle counter.
 vluint64_t main_time = 0;
 
@@ -30,7 +29,7 @@ vluint64_t main_time = 0;
 double sc_time_stamp() { return main_time; }
 void reset_time_stamp() { main_time = 0; }
 
-const int Voc8051_Simulator::DEBUG_REG_ADDR = 0xEFFC;
+const int Voc8051_Simulator::DEBUG_REG_ADDR = 0xEFFA;
 const int Voc8051_Simulator::DEBUG_REG_DATA = 0xEFFE;
 
 // Helper to monitor the ports.
@@ -55,24 +54,8 @@ void Voc8051_Simulator::monitor_debug_registers() {
   auto ackw = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__ackw;
   uint32_t addr = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__addr_out;
 
-  if (ackw && addr == DEBUG_REG_DATA + 1) {
-    uint16_t lo_data = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff
-                           [DEBUG_REG_DATA];
-    uint16_t hi_data = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff
-                           [DEBUG_REG_DATA + 1];
-    uint16_t this_data = lo_data | (hi_data << 8);
-
-    uint16_t lo_addr = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff
-                           [DEBUG_REG_ADDR];
-    uint16_t hi_addr = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff
-                           [DEBUG_REG_ADDR + 1];
-    uint16_t this_addr = lo_addr | (hi_addr << 8);
-
-    // std::cout << "set @ " << std::dec << main_time << ": " << std::dec << this_addr
-    //           << " -> " << std::dec << this_data << std::endl;
-    setVar(trace, this_addr, main_time, this_data);
-  } else {
-    traces[trace]->extendToCycle(main_time);
+  if (ackw && addr == 0x0000) {
+    std::cout << "P0 : " << (uint32_t)top->oc8051_tb__DOT__p0_out << std::endl;
   }
 }
 
@@ -88,7 +71,7 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGen>& tg, long delay) {
       break;
     }
 
-    TraceGenerator::tracegen_sha(top, tg);
+    // TraceGenerator::tracegen_sha(top, gtg);
 
     // set clock and simulate.
     top->oc8051_tb__DOT__clk = clk;
@@ -130,6 +113,7 @@ void Voc8051_Simulator::reset_uc(std::shared_ptr<TraceGen>& tg) {
   top->oc8051_tb__DOT__p0_in = 0x00;
   top->oc8051_tb__DOT__p1_in = 0x00;
   top->oc8051_tb__DOT__p2_in = 0xff;
+
   if (simulate(tg, 20) != 20) {
     fprintf(stderr, "ERROR: Reset failed.\n");
     exit(1);
@@ -142,6 +126,11 @@ void Voc8051_Simulator::reset_uc(std::shared_ptr<TraceGen>& tg) {
         (unsigned int)(rand() % 256);
   }
   top->oc8051_tb__DOT__rst = 0;
+
+  top->oc8051_tb__DOT__p0_out = 0x00;
+  top->oc8051_tb__DOT__p1_out = 0x00;
+  top->oc8051_tb__DOT__p2_out = 0x00;
+  top->oc8051_tb__DOT__p3_out = 0xff;
 }
 
 // load into ROM
@@ -188,75 +177,96 @@ void Voc8051_Simulator::load_boot_image(const std::string& imgfile) {
 
 void Voc8051_Simulator::print_metadata() {
 
-    std::cout << "\n\n";
-    // std::cout << "reglen : " << std::dec
-    // << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_len
-    // << std::endl;
+  unsigned p0 = top->oc8051_tb__DOT__p0_out;
+  unsigned p1 = top->oc8051_tb__DOT__p1_out;
+  unsigned p2 = top->oc8051_tb__DOT__p2_out;
+  unsigned p3 = top->oc8051_tb__DOT__p3_out;
 
-    // std::cout << "byte counter : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__byte_counter
-    // << std::endl << "byte counter next : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__byte_counter_next
-    // << std::endl;
+  // if (p0==p1 && p1 == p2 && p2 == p3)
+  //     return;
 
-    std::cout << "bytes read : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__reg_bytes_read << std::endl;
+  if (p0 == 0xDE || p0 == 0xAD) return;
 
-    // std::cout << "regstate : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_state << std::endl;
-    // std::cout << "sha_stae_next : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_state_next << std::endl;
-    //
-    // std::cout << "good value : " << (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA] << std::endl;
-
+  std::cout << "\n\n time step : " << sc_time_stamp() << std::endl;
+  std::cout << "P0 : " << (uint32_t)p0 << std::endl;
+  std::cout << "P1 : " << (uint32_t)p1 << std::endl;
 }
 
-void Voc8051_Simulator::genRandomDataAndHash() {
-
-}
+void Voc8051_Simulator::genRandomDataAndHash() {}
 
 void Voc8051_Simulator::randomizeData() {
-    const int dataloc = 0xE100;
-    unsigned datalen;
 
-    if (rand() % 2)
-        datalen = rand() % 56;
-    else
-        datalen = rand() % 100;
+  // create a map with data region and corresponding page table entry location
+  std::vector<std::pair<unsigned, unsigned> > addr_range(3);
+  addr_range[0] = std::make_pair(0x00, 0x0000);
+  addr_range[1] = std::make_pair(0x01, 0x0800);
+  addr_range[2] = std::make_pair(0x02, 0x1000);
 
-    std::cout << "data length : " << std::dec << datalen << std::endl;
-    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[0xFE06] = 128;
+  const unsigned read_mode = 0xEFF2;
+  const unsigned write_mode = 0xEFF6;
+  const unsigned xram_segment = 0XEFEE;
 
-    unsigned char ibuf[128];
+  const unsigned mem_addr = 0xEFFA;
+  const unsigned mem_data = 0XEFFE;
 
-    for (size_t id = 0; id < 128; ++id) {
-        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + id] = 0;
-        ibuf[id] = 0;
-    }
+  unsigned segid = rand() % 3;
+  unsigned segment = addr_range[segid].first;
+  unsigned offset = (rand() % 128);
+  unsigned abs_addr =
+      addr_range[segid].second + offset;  // addr_range[segid].second + offset;
 
-    for (size_t id = 0; id < datalen; ++id) {
-        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + id] = id;
-        ibuf[id] = id;
-    }
+  unsigned action = rand() % 4;
+  std::cout << "action : " << action << std::endl;
+  std::cout << "segment : " << segment << std::endl;
+  std::cout << "abs addrss : " << abs_addr << std::endl;
+  switch (action) {
+    case 0:
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled
+          [segment] = 0x00;
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled
+          [segment] = 0x00;
+      break;
 
-    const int pyhash = 0xE300;
-    unsigned char obuf[20];
-    SHA1(ibuf, datalen, obuf);
-    for (size_t i = 0; i < 20; i++) {
-      printf("%02x ", obuf[i]);
-      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[pyhash + i] =  obuf[i];
-    }
+    case 1:
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled
+          [segment] = 0x00;
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled
+          [segment] = 0x01;
 
+      break;
 
-    unsigned padding = 64 - datalen % 64;
-    unsigned mlen = datalen + padding;
-    std::cout << "\npadding : " << std::dec << padding << ", mlen : " << mlen << std::endl;
-    std::cout << std::dec << ((datalen << 3) & 0xFF) << std::endl;
-    std::cout << std::dec << ((datalen >> 5) & 0xFF) << std::endl;
-    std::cout << std::dec << ((datalen >> 13) & 0xFF) << std::endl;
-    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_len = mlen;
-    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + datalen] = 0x80;
+    case 2:
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled
+          [segment] = 0x01;
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled
+          [segment] = 0x00;
 
-    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 1] = (datalen << 3) & 0xFF;
-    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 2] = (datalen >> 5) & 0xFF;
-    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 3] = (datalen >> 13) & 0xFF;
+      break;
 
- }
+    case 3:
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled[0] =
+          0x01;
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled[0] =
+          0x01;
+
+      break;
+
+    default:
+      assert(0);
+      break;
+  }
+
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[xram_segment] =
+      segment;
+
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[mem_addr] = offset;
+
+  // initializing memory location with some data
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[abs_addr] = 0x01;
+
+  // data to write to memory location
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[mem_data] = 0x02;
+}
 
 // run program.
 void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile,
@@ -270,6 +280,7 @@ void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile,
 
   // tamperer.tamper(top.get());
   simulate(tg, 2621440);
+
   std::cout << "finished @ " << std::dec << main_time << std::endl;
 }
 
