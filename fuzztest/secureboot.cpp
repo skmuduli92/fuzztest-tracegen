@@ -71,14 +71,18 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGen>& tg, long delay) {
       break;
     }
 
-    // TraceGenerator::tracegen_sha(top, gtg);
 
     // set clock and simulate.
     top->oc8051_tb__DOT__clk = clk;
     top->eval();
     // monitor_ports();
     // monitor_debug_registers();
-    print_metadata();
+    TraceGenerator::tracegen_page_table(top, tg);
+    
+
+    // print_metadata();
+    // check if the write succeeded here,
+
     // coverage.
     if (clk == 0) {
       // track signals on rising clock
@@ -182,14 +186,33 @@ void Voc8051_Simulator::print_metadata() {
   unsigned p2 = top->oc8051_tb__DOT__p2_out;
   unsigned p3 = top->oc8051_tb__DOT__p3_out;
 
-  // if (p0==p1 && p1 == p2 && p2 == p3)
-  //     return;
+  std::cout << "\n\ntime step : " << sc_time_stamp() << std::endl;
 
-  if (p0 == 0xDE || p0 == 0xAD) return;
+  const unsigned read_succeed = (0xEFE6);
+  const unsigned write_succeed = (0xEFEA);
 
-  std::cout << "\n\n time step : " << sc_time_stamp() << std::endl;
-  std::cout << "P0 : " << (uint32_t)p0 << std::endl;
-  std::cout << "P1 : " << (uint32_t)p1 << std::endl;
+  std::cout
+      << "read_succeed : "
+      << (unsigned)
+             top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[read_succeed]
+      << std::endl;
+
+  unsigned value =
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[addr_store];
+
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[write_succeed] =
+      (uint32_t)(value == 0x02 ? 1 : 0);
+
+  std::cout
+      << "write_succeed : "
+      << (uint32_t)
+             top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[write_succeed]
+      << std::endl;
+
+  std::cout << "wr_addr : " << (uint32_t)top->oc8051_tb__DOT__oc8051_top_1__DOT__wr_addr
+            << std::endl;
+  std::cout << "rd_addr : " << (uint32_t)top->oc8051_tb__DOT__oc8051_top_1__DOT__rd_addr
+            << std::endl;
 }
 
 void Voc8051_Simulator::genRandomDataAndHash() {}
@@ -209,11 +232,16 @@ void Voc8051_Simulator::randomizeData() {
   const unsigned mem_addr = 0xEFFA;
   const unsigned mem_data = 0XEFFE;
 
+  const unsigned read_succeed = (0xEFE6);
+  const unsigned write_succeed = (0xEFEA);
+
   unsigned segid = rand() % 3;
   unsigned segment = addr_range[segid].first;
   unsigned offset = (rand() % 128);
-  unsigned abs_addr =
-      addr_range[segid].second + offset;  // addr_range[segid].second + offset;
+  unsigned abs_addr = addr_range[segid].second + offset;
+  addr_store = abs_addr;
+
+  std::cout << "absolute address : " << (uint32_t)abs_addr << std::endl;
 
   unsigned action = rand() % 4;
   std::cout << "action : " << action << std::endl;
@@ -244,10 +272,10 @@ void Voc8051_Simulator::randomizeData() {
       break;
 
     case 3:
-      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled[0] =
-          0x01;
-      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled[0] =
-          0x01;
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled
+          [segment] = 0x01;
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled
+          [segment] = 0x01;
 
       break;
 
@@ -256,8 +284,7 @@ void Voc8051_Simulator::randomizeData() {
       break;
   }
 
-  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[xram_segment] =
-      segment;
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[xram_segment] = segment;
 
   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[mem_addr] = offset;
 
@@ -266,6 +293,10 @@ void Voc8051_Simulator::randomizeData() {
 
   // data to write to memory location
   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[mem_data] = 0x02;
+
+  // storing absolute address to be used later for monitoring
+  // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[addr_store] =
+  //   abs_addr;
 }
 
 // run program.

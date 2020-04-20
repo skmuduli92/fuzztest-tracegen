@@ -12,6 +12,8 @@ class TraceGenerator {
   static uint32_t trid;
   static void tracegen_aes(std::shared_ptr<Voc8051_tb> top, std::shared_ptr<TraceGen> tg);
   static void tracegen_sha(std::shared_ptr<Voc8051_tb> top, std::shared_ptr<TraceGen> tg);
+  static void tracegen_page_table(std::shared_ptr<Voc8051_tb> top,
+                                  std::shared_ptr<TraceGen> tg);
 };
 
 #endif

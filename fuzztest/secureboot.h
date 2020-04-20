@@ -25,6 +25,8 @@ class Voc8051_Simulator {
   static const int DEBUG_REG_ADDR;
   static const int DEBUG_REG_DATA;
 
+  uint32_t addr_store;
+
  protected:
   // member vars
   std::shared_ptr<Voc8051_tb> top;
@@ -69,6 +71,8 @@ class Voc8051_Simulator {
     for (unsigned i = 0; i != numTraces; i++) {
       traces.push_back(PTrace(new Trace(numProps, numVars)));
     }
+
+    addr_store = 0x00;
   }
 
   // public interface methods.
