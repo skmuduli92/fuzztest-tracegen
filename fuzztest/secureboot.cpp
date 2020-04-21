@@ -77,7 +77,7 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay)
     top->eval();
     // monitor_ports();
     // monitor_debug_registers();
-    tg->tracegen_page_table(top, tg);
+    tg->tracegen_page_table(top);
 
     // print_metadata();
     // check if the write succeeded here,
@@ -213,8 +213,6 @@ void Voc8051_Simulator::print_metadata() {
   std::cout << "rd_addr : " << (uint32_t)top->oc8051_tb__DOT__oc8051_top_1__DOT__rd_addr
             << std::endl;
 }
-
-void Voc8051_Simulator::genRandomDataAndHash() {}
 
 void Voc8051_Simulator::randomizeData() {
 

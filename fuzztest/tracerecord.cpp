@@ -44,8 +44,7 @@ void TraceGenerator::recordSignal(std::string const& sname, uint32_t traceId, ui
   }
 }
 
-void TraceGenerator::tracegen_sha(std::shared_ptr<Voc8051_tb> top,
-                                  std::shared_ptr<TraceGenerator> tg) {
+void TraceGenerator::tracegen_sha(std::shared_ptr<Voc8051_tb> top) {
 
   recordSignal(
       "sha_reg_len", trid, sc_time_stamp(),
@@ -123,9 +122,7 @@ void TraceGenerator::tracegen_sha(std::shared_ptr<Voc8051_tb> top,
           top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA]);
 }
 
-void TraceGenerator::tracegen_aes(std::shared_ptr<Voc8051_tb> top,
-                                  std::shared_ptr<TraceGenerator> tg) {
-
+void TraceGenerator::tracegen_aes(std::shared_ptr<Voc8051_tb> top) {
   // substracting 20 for reset time
 
   recordSignal("ack_aes", trid, sc_time_stamp(),
@@ -186,8 +183,7 @@ void TraceGenerator::tracegen_aes(std::shared_ptr<Voc8051_tb> top,
                (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__start_op);
 }
 
-void TraceGenerator::tracegen_page_table(std::shared_ptr<Voc8051_tb> top,
-                                         std::shared_ptr<TraceGenerator> tg) {
+void TraceGenerator::tracegen_page_table(std::shared_ptr<Voc8051_tb> top) {
 
   const unsigned read_succeed = (0xEFE6);
   const unsigned write_succeed = (0xEFEA);

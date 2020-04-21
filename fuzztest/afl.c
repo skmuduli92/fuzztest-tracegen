@@ -69,7 +69,7 @@ static void __afl_start_forkserver() {
   unsigned tracecount = 0;
 
   pid_t child_pid;
-  while (trid < 100) {
+  while (trid < 10) {
 
     uint32_t was_killed;
     int status;

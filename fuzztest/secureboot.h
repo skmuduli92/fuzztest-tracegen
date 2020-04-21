@@ -113,7 +113,7 @@ class Voc8051_Simulator {
   void load_boot_image(const std::string& imgfile);
   void print_metadata();
   void randomizeData();
-  void genRandomDataAndHash();
+
   void run(ITamperer& tamper, const std::string& romfile, const std::string& imgfile,
            std::shared_ptr<TraceGenerator>& tg);
 
@@ -136,10 +136,9 @@ class TraceGenerator {
   static const uint32_t RESET_TIME;
   //  static uint32_t trid;
 
-  void tracegen_aes(std::shared_ptr<Voc8051_tb> top, std::shared_ptr<TraceGenerator> tg);
-  void tracegen_sha(std::shared_ptr<Voc8051_tb> top, std::shared_ptr<TraceGenerator> tg);
-  void tracegen_page_table(std::shared_ptr<Voc8051_tb> top,
-                           std::shared_ptr<TraceGenerator> tg);
+  void tracegen_aes(std::shared_ptr<Voc8051_tb> top);
+  void tracegen_sha(std::shared_ptr<Voc8051_tb> top);
+  void tracegen_page_table(std::shared_ptr<Voc8051_tb> top);
 
   void recordSignal(std::string const& sname, uint32_t traceId, uint64_t time, int64_t value);
 
