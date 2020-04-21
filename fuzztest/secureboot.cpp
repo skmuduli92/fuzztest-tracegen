@@ -24,6 +24,7 @@
 
 // Clock cycle counter.
 vluint64_t main_time = 0;
+unsigned trid = 0;
 
 // Returns current clock cycle number.
 double sc_time_stamp() { return main_time; }
@@ -61,7 +62,7 @@ void Voc8051_Simulator::monitor_debug_registers() {
 
 // simulates delay number of cycles. Set delay < 0 to simulate
 // indefinetely.
-int Voc8051_Simulator::simulate(std::shared_ptr<TraceGen>& tg, long delay) {
+int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay) {
   long cnt = 0;
   int clk = 0;
 
@@ -71,14 +72,12 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGen>& tg, long delay) {
       break;
     }
 
-
     // set clock and simulate.
     top->oc8051_tb__DOT__clk = clk;
     top->eval();
     // monitor_ports();
     // monitor_debug_registers();
-    TraceGenerator::tracegen_page_table(top, tg);
-    
+    tg->tracegen_page_table(top, tg);
 
     // print_metadata();
     // check if the write succeeded here,
@@ -112,7 +111,7 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGen>& tg, long delay) {
 }
 
 // reset uc
-void Voc8051_Simulator::reset_uc(std::shared_ptr<TraceGen>& tg) {
+void Voc8051_Simulator::reset_uc(std::shared_ptr<TraceGenerator>& tg) {
   top->oc8051_tb__DOT__rst = 1;
   top->oc8051_tb__DOT__p0_in = 0x00;
   top->oc8051_tb__DOT__p1_in = 0x00;
@@ -301,7 +300,7 @@ void Voc8051_Simulator::randomizeData() {
 
 // run program.
 void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile,
-                            const std::string& imgfile, std::shared_ptr<TraceGen>& tg) {
+                            const std::string& imgfile, std::shared_ptr<TraceGenerator>& tg) {
 
   srand(time(NULL));
   reset_uc(tg);

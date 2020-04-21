@@ -18,7 +18,7 @@
 #include <sys/wait.h>
 #include <sstream>
 
-#include "tracerecord.h"
+#include "secureboot.h"
 
 // from `config.h` in AFL
 #define MAP_SIZE_POW2 16
@@ -26,6 +26,7 @@
 #define SHM_ENV_VAR "__AFL_SHM_ID"
 #define FORKSRV_FD 198
 static int* fid;
+
 /* Globals needed by the injected instrumentation. The __afl_area_initial region
    is used for instrumentation output before __afl_map_shm() has a chance to run.
    It will end up as .comm, so it shouldn't be too wasteful. */
@@ -65,9 +66,10 @@ static void __afl_start_forkserver() {
     return;
   }
 
+  unsigned tracecount = 0;
+
   pid_t child_pid;
-  while (1) {
-    *(fid) += 1;
+  while (trid < 100) {
 
     uint32_t was_killed;
     int status;
@@ -101,10 +103,7 @@ static void __afl_start_forkserver() {
       _exit(1);
     }
 
-    if (TraceGenerator::trid == TraceGenerator::MAX_TRACES) _exit(0);
-
-    // increament the trace count for next child process
-    TraceGenerator::trid += 1;
+    trid += 1;
   }
 }
 static std::stringstream* ss;

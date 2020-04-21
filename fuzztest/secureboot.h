@@ -13,8 +13,10 @@
 #include "formula.h"
 #include "tamper.h"
 #include "trace.h"
-#include "tracegen.h"
-#include "tracerecord.h"
+
+extern unsigned trid;
+
+class TraceGenerator;
 
 extern vluint64_t main_time;
 
@@ -33,7 +35,7 @@ class Voc8051_Simulator {
   ValueTracker tracker;
 
   // run for some number of steps.
-  int simulate(std::shared_ptr<TraceGen>& tg, long delay);
+  int simulate(std::shared_ptr<TraceGenerator>& tg, long delay);
   void monitor_ports();
   void monitor_debug_registers();
 
@@ -106,14 +108,14 @@ class Voc8051_Simulator {
     assert(trace < traces.size());
   }
 
-  void reset_uc(std::shared_ptr<TraceGen>& tg);
+  void reset_uc(std::shared_ptr<TraceGenerator>& tg);
   void load_program(const std::string& romfile);
   void load_boot_image(const std::string& imgfile);
   void print_metadata();
   void randomizeData();
   void genRandomDataAndHash();
   void run(ITamperer& tamper, const std::string& romfile, const std::string& imgfile,
-           std::shared_ptr<TraceGen>& tg);
+           std::shared_ptr<TraceGenerator>& tg);
 
   void copy_coverage();
 
@@ -121,6 +123,35 @@ class Voc8051_Simulator {
   bool evaluate(HyperPLTL::PHyperProp f);
 };
 
-// run function.
+class TraceGenerator {
+
+  std::vector<std::ofstream> int_facts;
+  std::map<std::string, unsigned> intvar2id;
+  std::vector<std::string> filenames;
+
+ public:
+  static const int DEBUG_REG_ADDR;
+  static const int DEBUG_REG_DATA;
+  static const int MAX_TRACES;
+  static const uint32_t RESET_TIME;
+  //  static uint32_t trid;
+
+  void tracegen_aes(std::shared_ptr<Voc8051_tb> top, std::shared_ptr<TraceGenerator> tg);
+  void tracegen_sha(std::shared_ptr<Voc8051_tb> top, std::shared_ptr<TraceGenerator> tg);
+  void tracegen_page_table(std::shared_ptr<Voc8051_tb> top,
+                           std::shared_ptr<TraceGenerator> tg);
+
+  void recordSignal(std::string const& sname, uint32_t traceId, uint64_t time, int64_t value);
+
+  void addVars(std::vector<std::string> const& intvars);
+
+  std::string genFileName(std::string const& varname);
+
+  std::string genFileName(std::string const& varname, bool fact);
+
+  void closeall() {
+    for (std::ofstream& fs : int_facts) fs.close();
+  }
+};
 
 #endif

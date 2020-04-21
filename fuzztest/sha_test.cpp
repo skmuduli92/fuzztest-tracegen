@@ -67,9 +67,9 @@ int main() {
        "illegal_wr",     "illegal_rd",    "accesser",      "ia_src_next",  "wr_enabled_0",
        "wr_enabled_1",   "wr_enabled_2",  "rd_enabled_0",  "rd_enabled_1", "rd_enabled_2"});
 
-  std::shared_ptr<TraceGen> tg = std::make_shared<TraceGen>();
-  tg->addIntVars(signals);
+  std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>();
 
+  tg->addVars(signals);
   afl_init(&fid, &oldss);
 
   // first run.
