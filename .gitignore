@@ -10,6 +10,7 @@
 *.lk
 *.mem
 
+*.dat
 
 # Created by https://www.gitignore.io/api/c,c++,cmake,clion,emacs
 # Edit at https://www.gitignore.io/?templates=c,c++,cmake,clion,emacs

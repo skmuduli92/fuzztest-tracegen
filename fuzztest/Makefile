@@ -17,12 +17,15 @@ else
     LDFLAGS=-O2
 endif
 
-all: bootloader bootfuzzer aes_test sha_test
+all: bootloader bootfuzzer aes_test sha_test page_table_test
 
 sha_test: sha_test.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
 
 aes_test: aes_test.o $(SHARED_OBJECTS)
+	g++ -o $@ $(LDFLAGS) $^
+
+page_table_test: page_table_test.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
 
 bootfuzzer: bootfuzzer.o $(SHARED_OBJECTS)
@@ -31,7 +34,10 @@ bootfuzzer: bootfuzzer.o $(SHARED_OBJECTS)
 bootloader: bootloader.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
 
-tracerecord.o : tracerecord.cpp
+page_table_test.o: page_table_test.cpp secureboot.h
+	g++ -c $(CXXFLAGS) $(INCLUDES) $<
+
+tracerecord.o : tracerecord.cpp secureboot.h
 	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 sha_test.o: sha_test.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
@@ -66,7 +72,7 @@ Voc8051_tb__ALL.a: Voc8051_tb.mk
 
 RTL_DIR:=../rtl
 Voc8051_tb.mk: ../rtl/*.v
-	../verilator/bin/verilator --cc -Mdir . -O1 --x-assign fast --x-initial fast --noassert -Monitor mon_signals.txt \
+	../verilator/bin/verilator --cc -Mdir . -O1 --x-assign fast --x-initial fast --noassert \
 	-I${RTL_DIR}			\
 	-Wno-UNOPTFLAT -Wno-CASEINCOMPLETE -Wno-CASEX -Wno-WIDTH -Wno-PINMISSING   -Wno-STMTDLY -Wno-IMPLICIT -Wno-LITENDIAN -Wno-INITIALDLY -Wno-MODDUP \
 	${RTL_DIR}/oc8051_tb.v                     \

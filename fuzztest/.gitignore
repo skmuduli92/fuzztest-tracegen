@@ -1,3 +1,5 @@
+*.facts
+page_table_test
 sim
 Voc8051_*
 afl-out/fuzz_bitmap
