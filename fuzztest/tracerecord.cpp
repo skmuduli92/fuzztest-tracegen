@@ -128,6 +128,8 @@ void TraceGenerator::randomizeData_sha(std::shared_ptr<Voc8051_tb> top) {
   const int pyhash = 0xE300;
   unsigned char obuf[20];
   SHA1(ibuf, datalen, obuf);
+
+  // to verify against
   for (size_t i = 0; i < 20; i++) {
     printf("%02x ", obuf[i]);
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[pyhash + i] = obuf[i];

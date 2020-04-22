@@ -26,7 +26,7 @@ int main() {
   Voc8051_Simulator sim(2, 1, 5);
 
   // filenames
-  std::string romfile("../rom/page_table_test.dat");
+  std::string romfile("../rom/sha_pycomp.dat");
   std::string imgfile;
 
   std::vector<std::string> signals({"sha_reg_len", "byte_counter", "byte_counter_next",
