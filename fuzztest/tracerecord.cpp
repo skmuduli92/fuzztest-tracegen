@@ -87,7 +87,17 @@ void TraceGenerator::randomizeData(std::shared_ptr<Voc8051_tb> top) {
   }
 }
 
-void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {}
+void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
+  // randomize aes data length
+  unsigned aes_reg_len = rand() % 128;
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen = aes_reg_len;
+
+  // randomly generate keys
+  for (size_t idx = 0; idx < 4; ++idx) {
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_key0[idx] =
+        rand() % std::numeric_limits<unsigned>::max();
+  }
+}
 
 void TraceGenerator::randomizeData_sha(std::shared_ptr<Voc8051_tb> top) {
   const int dataloc = 0xE100;

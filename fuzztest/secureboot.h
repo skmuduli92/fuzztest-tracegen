@@ -14,6 +14,8 @@
 #include "tamper.h"
 #include "trace.h"
 
+#define NUM_TRACES 20
+
 extern unsigned trid;
 
 class TraceGenerator;

@@ -19,7 +19,7 @@ static std::stringstream oldss;
 
 static ITamperer NoTamper;
 
-unsigned trid = 20;
+unsigned trid = 0;
 
 int main() {
   // create top module
