@@ -129,6 +129,12 @@ class TraceGenerator {
   std::map<std::string, unsigned> intvar2id;
   std::vector<std::string> filenames;
 
+  // based on this ID one of the functions will be called
+  unsigned tracegenID;
+  void tracegen_aes(std::shared_ptr<Voc8051_tb> top);         // id = 0
+  void tracegen_sha(std::shared_ptr<Voc8051_tb> top);         // id = 1
+  void tracegen_page_table(std::shared_ptr<Voc8051_tb> top);  // id = 2
+
  public:
   static const int DEBUG_REG_ADDR;
   static const int DEBUG_REG_DATA;
@@ -136,9 +142,9 @@ class TraceGenerator {
   static const uint32_t RESET_TIME;
   //  static uint32_t trid;
 
-  void tracegen_aes(std::shared_ptr<Voc8051_tb> top);
-  void tracegen_sha(std::shared_ptr<Voc8051_tb> top);
-  void tracegen_page_table(std::shared_ptr<Voc8051_tb> top);
+  TraceGenerator(unsigned id) : tracegenID(id) {}
+
+  void tracegen_main(std::shared_ptr<Voc8051_tb> top);
 
   void recordSignal(std::string const& sname, uint32_t traceId, uint64_t time, int64_t value);
 

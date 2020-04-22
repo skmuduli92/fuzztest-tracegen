@@ -19,6 +19,8 @@ static std::stringstream oldss;
 
 static ITamperer NoTamper;
 
+unsigned trid = 20;
+
 int main() {
   // create top module
   Voc8051_Simulator sim(2, 1, 5);
@@ -27,14 +29,15 @@ int main() {
   std::string romfile("../rom/page_table_test.dat");
   std::string imgfile;
 
-  std::vector<std::string> signals(
-      {"read_succeed",   "write_succeed", "wr_addr",       "rd_addr",      "ack_w",
-       "ack_r",          "ia_addr_reg",   "pc_ia_reg",     "ia_reg_next",  "pt_in_wr_range",
-       "pt_in_rd_range", "pt_wr_reg_use", "pt_rd_reg_use", "ia_rwn_reg",   "illegal_src",
-       "illegal_wr",     "illegal_rd",    "accesser",      "ia_src_next",  "wr_enabled_0",
-       "wr_enabled_1",   "wr_enabled_2",  "rd_enabled_0",  "rd_enabled_1", "rd_enabled_2"});
+  std::vector<std::string> signals({"sha_reg_len", "byte_counter", "byte_counter_next",
+                                    "sha_reg_state", "sha_state_next", "byte_counter_next_rw",
+                                    "ready_flag", "reg_bytes_read", "bytes_read_next",
+                                    "block_counter", "block_counter_next", "sha_reg_rd_addr",
+                                    "sha_reg_wr_addr", "sha_more_blocks", "sha_core_init",
+                                    "sha_core_next", "sha_core_ready_r", "good_value"});
 
-  std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>();
+  const unsigned int sha_tg = 1;
+  std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(sha_tg);
   tg->addVars(signals);
 
   afl_init(&fid, &oldss);

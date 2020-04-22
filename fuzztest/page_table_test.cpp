@@ -19,6 +19,8 @@ static std::stringstream oldss;
 
 static ITamperer NoTamper;
 
+unsigned trid = 20;
+
 int main() {
   // create top module
   Voc8051_Simulator sim(2, 1, 5);
@@ -34,7 +36,8 @@ int main() {
        "illegal_wr",     "illegal_rd",    "accesser",      "ia_src_next",  "wr_enabled_0",
        "wr_enabled_1",   "wr_enabled_2",  "rd_enabled_0",  "rd_enabled_1", "rd_enabled_2"});
 
-  std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>();
+  const unsigned int page_table_tg = 2;
+  std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(page_table_tg);
   tg->addVars(signals);
 
   afl_init(&fid, &oldss);

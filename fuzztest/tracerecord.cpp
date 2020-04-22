@@ -44,6 +44,27 @@ void TraceGenerator::recordSignal(std::string const& sname, uint32_t traceId, ui
   }
 }
 
+void TraceGenerator::tracegen_main(std::shared_ptr<Voc8051_tb> top) {
+
+  switch (tracegenID) {
+    case 0:
+      tracegen_aes(top);
+      break;
+
+    case 1:
+      tracegen_sha(top);
+      break;
+
+    case 2:
+      tracegen_page_table(top);
+      break;
+
+    default:
+      assert(0);
+      break;
+  }
+}
+
 void TraceGenerator::tracegen_sha(std::shared_ptr<Voc8051_tb> top) {
 
   recordSignal(
