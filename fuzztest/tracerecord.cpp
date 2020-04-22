@@ -65,6 +65,107 @@ void TraceGenerator::tracegen_main(std::shared_ptr<Voc8051_tb> top) {
   }
 }
 
+void TraceGenerator::randomizeData(std::shared_ptr<Voc8051_tb> top) {
+  switch (tracegenID) {
+    case 0:
+      randomizeData_aes(top);
+      break;
+
+    case 1:
+      randomizeData_sha(top);
+      break;
+
+    case 2:
+      randomizeData_page_table(top);
+      break;
+
+    default:
+      assert(0);
+      break;
+  }
+}
+
+void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {}
+
+void TraceGenerator::randomizeData_sha(std::shared_ptr<Voc8051_tb> top) {}
+
+void TraceGenerator::randomizeData_page_table(std::shared_ptr<Voc8051_tb> top) {
+  // create a map with data region and corresponding page table entry location
+  std::vector<std::pair<unsigned, unsigned> > addr_range(3);
+  addr_range[0] = std::make_pair(0x00, 0x0000);
+  addr_range[1] = std::make_pair(0x01, 0x0800);
+  addr_range[2] = std::make_pair(0x02, 0x1000);
+
+  const unsigned read_mode = 0xEFF2;
+  const unsigned write_mode = 0xEFF6;
+  const unsigned xram_segment = 0XEFEE;
+
+  const unsigned mem_addr = 0xEFFA;
+  const unsigned mem_data = 0XEFFE;
+
+  const unsigned read_succeed = (0xEFE6);
+  const unsigned write_succeed = (0xEFEA);
+
+  unsigned segid = rand() % 3;
+  unsigned segment = addr_range[segid].first;
+  unsigned offset = (rand() % 128);
+  unsigned abs_addr = addr_range[segid].second + offset;
+  addr_store = abs_addr;
+
+  std::cout << "absolute address : " << (uint32_t)abs_addr << std::endl;
+
+  unsigned action = rand() % 4;
+  std::cout << "action : " << action << std::endl;
+  std::cout << "segment : " << segment << std::endl;
+  std::cout << "abs addrss : " << abs_addr << std::endl;
+  switch (action) {
+    case 0:
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled
+          [segment] = 0x00;
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled
+          [segment] = 0x00;
+      break;
+
+    case 1:
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled
+          [segment] = 0x00;
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled
+          [segment] = 0x01;
+
+      break;
+
+    case 2:
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled
+          [segment] = 0x01;
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled
+          [segment] = 0x00;
+
+      break;
+
+    case 3:
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled
+          [segment] = 0x01;
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled
+          [segment] = 0x01;
+
+      break;
+
+    default:
+      assert(0);
+      break;
+  }
+
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[xram_segment] = segment;
+
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[mem_addr] = offset;
+
+  // initializing memory location with some data
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[abs_addr] = 0x01;
+
+  // data to write to memory location
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[mem_data] = 0x02;
+}
+
 void TraceGenerator::tracegen_sha(std::shared_ptr<Voc8051_tb> top) {
 
   recordSignal(

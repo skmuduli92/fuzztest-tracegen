@@ -27,8 +27,6 @@ class Voc8051_Simulator {
   static const int DEBUG_REG_ADDR;
   static const int DEBUG_REG_DATA;
 
-  uint32_t addr_store;
-
  protected:
   // member vars
   std::shared_ptr<Voc8051_tb> top;
@@ -73,8 +71,6 @@ class Voc8051_Simulator {
     for (unsigned i = 0; i != numTraces; i++) {
       traces.push_back(PTrace(new Trace(numProps, numVars)));
     }
-
-    addr_store = 0x00;
   }
 
   // public interface methods.
@@ -111,8 +107,6 @@ class Voc8051_Simulator {
   void reset_uc(std::shared_ptr<TraceGenerator>& tg);
   void load_program(const std::string& romfile);
   void load_boot_image(const std::string& imgfile);
-  void print_metadata();
-  void randomizeData();
 
   void run(ITamperer& tamper, const std::string& romfile, const std::string& imgfile,
            std::shared_ptr<TraceGenerator>& tg);
@@ -129,6 +123,8 @@ class TraceGenerator {
   std::map<std::string, unsigned> intvar2id;
   std::vector<std::string> filenames;
 
+  uint32_t addr_store;
+
   // based on this ID one of the functions will be called
   unsigned tracegenID;
   void tracegen_aes(std::shared_ptr<Voc8051_tb> top);         // id = 0
@@ -142,11 +138,16 @@ class TraceGenerator {
   static const uint32_t RESET_TIME;
   //  static uint32_t trid;
 
-  TraceGenerator(unsigned id) : tracegenID(id) {}
+  TraceGenerator(unsigned id) : tracegenID(id), addr_store(0) {}
 
   void tracegen_main(std::shared_ptr<Voc8051_tb> top);
 
   void recordSignal(std::string const& sname, uint32_t traceId, uint64_t time, int64_t value);
+
+  void randomizeData(std::shared_ptr<Voc8051_tb> top);
+  void randomizeData_page_table(std::shared_ptr<Voc8051_tb> top);
+  void randomizeData_aes(std::shared_ptr<Voc8051_tb> top);
+  void randomizeData_sha(std::shared_ptr<Voc8051_tb> top);
 
   void addVars(std::vector<std::string> const& intvars);
 
