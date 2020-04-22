@@ -20,8 +20,6 @@
 #include "formula.h"
 #include "trace.h"
 
-#include <openssl/sha.h>
-
 // Clock cycle counter.
 vluint64_t main_time = 0;
 

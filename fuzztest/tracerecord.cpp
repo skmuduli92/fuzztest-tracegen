@@ -3,6 +3,8 @@
 #include <vector>
 #include "secureboot.h"
 
+#include <openssl/sha.h>
+
 const int TraceGenerator::DEBUG_REG_ADDR = 0xEFFC;
 const int TraceGenerator::DEBUG_REG_DATA = 0xEFFE;
 const int TraceGenerator::MAX_TRACES = 100;
@@ -87,7 +89,59 @@ void TraceGenerator::randomizeData(std::shared_ptr<Voc8051_tb> top) {
 
 void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {}
 
-void TraceGenerator::randomizeData_sha(std::shared_ptr<Voc8051_tb> top) {}
+void TraceGenerator::randomizeData_sha(std::shared_ptr<Voc8051_tb> top) {
+  const int dataloc = 0xE100;
+  unsigned datalen;
+
+  // TODO : fix the computation of padding for corner cases ??
+  // this is to avoid those cases
+  if (rand() % 2)
+    datalen = rand() % 56;
+  else
+    datalen = rand() % 100;
+
+  std::cout << "data length : " << std::dec << datalen << std::endl;
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[0xFE06] = 128;
+
+  unsigned char ibuf[128];
+
+  for (size_t id = 0; id < 128; ++id) {
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + id] = 0;
+    ibuf[id] = 0;
+  }
+
+  for (size_t id = 0; id < datalen; ++id) {
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + id] = id;
+    ibuf[id] = id;
+  }
+
+  const int pyhash = 0xE300;
+  unsigned char obuf[20];
+  SHA1(ibuf, datalen, obuf);
+  for (size_t i = 0; i < 20; i++) {
+    printf("%02x ", obuf[i]);
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[pyhash + i] = obuf[i];
+  }
+
+  unsigned padding = 64 - datalen % 64;
+  unsigned mlen = datalen + padding;
+  std::cout << "\npadding : " << std::dec << padding << ", mlen : " << mlen << std::endl;
+  std::cout << std::dec << ((datalen << 3) & 0xFF) << std::endl;
+  std::cout << std::dec << ((datalen >> 5) & 0xFF) << std::endl;
+  std::cout << std::dec << ((datalen >> 13) & 0xFF) << std::endl;
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_len = mlen;
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + datalen] =
+      0x80;
+
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 1] =
+      (datalen << 3) & 0xFF;
+
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 2] =
+      (datalen >> 5) & 0xFF;
+
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 3] =
+      (datalen >> 13) & 0xFF;
+}
 
 void TraceGenerator::randomizeData_page_table(std::shared_ptr<Voc8051_tb> top) {
   // create a map with data region and corresponding page table entry location
