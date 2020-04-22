@@ -61,6 +61,10 @@ void TraceGenerator::tracegen_main(std::shared_ptr<Voc8051_tb> top) {
       tracegen_page_table(top);
       break;
 
+    case 3:
+      // do nothing
+      break;
+
     default:
       assert(0);
       break;
@@ -79,6 +83,10 @@ void TraceGenerator::randomizeData(std::shared_ptr<Voc8051_tb> top) {
 
     case 2:
       randomizeData_page_table(top);
+      break;
+
+    case 3:
+      // do nothing
       break;
 
     default:

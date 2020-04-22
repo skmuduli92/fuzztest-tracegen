@@ -1,6 +1,8 @@
 #!/bin/bash
 
 cd ../fw
-sdcc page_table_test.c
+sdcc rsa_test.c
+# sdcc rsa_test.c rsa.rel
+
 cd ..
-python3 scripts/gen_text.py fw/page_table_test.ihx rom/page_table_test.dat
+python3 scripts/gen_text.py fw/rsa_test.ihx rom/rsa_test.dat
