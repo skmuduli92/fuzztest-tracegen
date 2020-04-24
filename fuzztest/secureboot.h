@@ -14,7 +14,7 @@
 #include "tamper.h"
 #include "trace.h"
 
-#define NUM_TRACES 20
+#define NUM_TRACES 1
 
 extern unsigned trid;
 
@@ -154,6 +154,8 @@ class TraceGenerator {
   void randomizeData_sha(std::shared_ptr<Voc8051_tb> top);
   void randomizeData_rsa(std::shared_ptr<Voc8051_tb> top);
   void randomizeData_exp(std::shared_ptr<Voc8051_tb> top);
+  void randomizeData_wr(std::shared_ptr<Voc8051_tb> top);
+  void tracegen_wr(std::shared_ptr<Voc8051_tb> top);
 
   void addVars(std::vector<std::string> const& intvars);
 

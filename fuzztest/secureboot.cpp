@@ -73,7 +73,7 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay)
     // set clock and simulate.
     top->oc8051_tb__DOT__clk = clk;
     top->eval();
-    monitor_ports();
+    // monitor_ports();
     // monitor_debug_registers();
     tg->tracegen_main(top);
 
@@ -144,7 +144,7 @@ void Voc8051_Simulator::load_program(const std::string& romfile) {
 
   // read in value_cnt entries.
 
-  std::cout << "loading AES program into memory : " << romfile << std::endl;
+  std::cout << "loading program into memory : " << romfile << std::endl;
   for (int i = 0; i < value_cnt; i++) {
     infile >> b >> a;
     top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[b] = (unsigned int)a;

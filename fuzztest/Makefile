@@ -17,13 +17,17 @@ else
     LDFLAGS=-O2
 endif
 
-all: bootloader bootfuzzer aes_test sha_test page_table_test rsa_test
+all: bootloader bootfuzzer aes_test sha_test page_table_test rsa_test wr_test
 
 rsa_test: rsa_test.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
 
 sha_test: sha_test.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
+
+wr_test: wr_test.o $(SHARED_OBJECTS)
+	g++ -o $@ $(LDFLAGS) $^
+
 
 aes_test: aes_test.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
@@ -44,6 +48,9 @@ tracerecord.o : tracerecord.cpp secureboot.h
 	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 rsa_test.o: rsa_test.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
+	g++ -c $(CXXFLAGS) $(INCLUDES) $<
+
+wr_test.o: wr_test.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
 	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 sha_test.o: sha_test.cpp secureboot.h coverage.h Voc8051_tb__ALL.a

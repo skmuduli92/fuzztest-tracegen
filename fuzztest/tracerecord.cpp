@@ -73,7 +73,12 @@ void TraceGenerator::tracegen_main(std::shared_ptr<Voc8051_tb> top) {
       break;
 
     case 3:
+      // for rsa
+      break;
 
+    case 4:
+      // for wr trgen
+      tracegen_wr(top);
       break;
 
     default:
@@ -98,6 +103,11 @@ void TraceGenerator::randomizeData(std::shared_ptr<Voc8051_tb> top) {
 
     case 3:
       randomizeData_rsa(top);
+      break;
+
+    case 4:
+      // for wr trgen
+      randomizeData_wr(top);
       break;
 
     default:
@@ -360,9 +370,49 @@ void TraceGenerator::randomizeData_sha(std::shared_ptr<Voc8051_tb> top) {
       (datalen >> 13) & 0xFF;
 }
 
+void TraceGenerator::randomizeData_wr(std::shared_ptr<Voc8051_tb> top) {
+  for (size_t id = 0; id < 32; ++id) {
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled[id] = 0xFF;
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled[id] = 0xFF;
+  }
+
+  // print the memwr_reg_state status to check if it is actually set during the process
+  // check the memwr reg len as well
+
+  // this will enable tampering using FSM_writer in SoC
+  const int BUF_SIZE = 16;
+
+  const unsigned int start_addr = 0x0000;
+  const unsigned int end_addr = 0x0800;
+  const unsigned int dest_addr = 0x1000;
+
+  const unsigned int datasrc = 0x0000;
+  const unsigned int datadst = 0x1000;
+
+  for (size_t i = 0; i < BUF_SIZE; i++) {
+
+    uint8_t data = rand() % std::numeric_limits<uint8_t>::max();
+    uint16_t addr = start_addr + (rand() % (end_addr - start_addr));
+
+    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_addr[i] = addr;
+    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_data[i] = data;
+    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_delay[i] = rand() % 2;
+  }
+
+  // initialising source address with some data and dest address with all 0s
+  // for (size_t id = 0; id < 64; ++id) {
+  //   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[start_addr] = i;
+  //   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dest_addr] = 0x00;
+  // }
+
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__start_op = 0x01;
+  // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__memwr_reg_rd_addr = datasrc;
+  // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__memwr_reg_wr_addr = datadst;
+}
+
 void TraceGenerator::randomizeData_page_table(std::shared_ptr<Voc8051_tb> top) {
   // create a map with data region and corresponding page table entry location
-  std::vector<std::pair<unsigned, unsigned> > addr_range(3);
+  std::vector<std::pair<unsigned, unsigned>> addr_range(3);
   addr_range[0] = std::make_pair(0x00, 0x0000);
   addr_range[1] = std::make_pair(0x01, 0x0800);
   addr_range[2] = std::make_pair(0x02, 0x1000);
@@ -576,8 +626,66 @@ void TraceGenerator::tracegen_aes(std::shared_ptr<Voc8051_tb> top) {
                (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__start_op);
 }
 
-void TraceGenerator::tracegen_page_table(std::shared_ptr<Voc8051_tb> top) {
+void TraceGenerator::tracegen_wr(std::shared_ptr<Voc8051_tb> top) {
 
+  std::vector<std::pair<std::string, uint32_t>> signalvals(
+      {{"memwr_start_op", top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__start_op},
+       {"memwr_reg_state",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__memwr_reg_state},
+       {"mem_reg_rd_addr",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__memwr_reg_rd_addr},
+       {"mem_reg_wr_addr",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__memwr_reg_wr_addr},
+       {"memwr_reg_bytes_written",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__reg_bytes_written},
+       {"memwr_reg_bytes_read",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__reg_bytes_read},
+       {"memwr_reg_bytes_read_next",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__bytes_read_next},
+       {"memwr_reg_bytes_written_next",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__bytes_written_next},
+       {"memwr_reg_len",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__memwr_reg_len},
+       {"memwr_wren", top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__wren},
+       {"memwr_state_next",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__state_next},
+       {"memwr_xram_ack", top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_xram_ack},
+       {"memwr_xram_stb", top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_xram_stb},
+       {"ack_memwr", top->oc8051_tb__DOT__oc8051_xiommu1__DOT__ack_memwr},
+       {"stb_memwr", top->oc8051_tb__DOT__oc8051_xiommu1__DOT__stb_memwr},
+       {"fsm_writer_finished", top->oc8051_tb__DOT__fsm_writer_i__DOT__finished},
+       {"fsm_writer_ptr", top->oc8051_tb__DOT__fsm_writer_i__DOT__ptr},
+       {"fsm_writer_delay", top->oc8051_tb__DOT__fsm_writer_i__DOT__delay},
+       {"procarbiter_arbiter_state",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_procarbiter_i__DOT__arbiter_state},
+       {"procarbiter_arbit_hold",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_procarbiter_i__DOT__arbit_holder},
+       {"procarbiter_arbiter_state_next",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_procarbiter_i__DOT__arbiter_state_next},
+       {"procarbiter_arbit_winner",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_procarbiter_i__DOT__arbit_winner},
+       {"procarbiter_arbit_holder_next",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_procarbiter_i__DOT__arbit_holder_next},
+       {"memarbiter_arbiter_state",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_memarbiter_i__DOT__arbiter_state},
+       {"memarbiter_arbit_holder",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_memarbiter_i__DOT__arbit_holder},
+       {"memarbiter_arbiter_state_next",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_memarbiter_i__DOT__arbiter_state_next},
+       {"memarbiter_arbit_winner",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_memarbiter_i__DOT__arbit_winner},
+       {"memarbiter_arbit_holder_next",
+        top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_memarbiter_i__DOT__arbit_holder_next},
+       {"xram_ackw", top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__ackw},
+       {"xram_ackr", top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__ackr},
+       {"xram_cnt", top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__cnt}});
+
+  for (std::pair<std::string, uint32_t> sp : signalvals)
+    recordSignal(sp.first, trid, sc_time_stamp(), sp.second);
+
+}
+
+void TraceGenerator::tracegen_page_table(std::shared_ptr<Voc8051_tb> top) {
   const unsigned read_succeed = (0xEFE6);
   const unsigned write_succeed = (0xEFEA);
 
