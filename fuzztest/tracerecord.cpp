@@ -3,21 +3,32 @@
 #include <vector>
 #include "secureboot.h"
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <random>
+
+#include <openssl/err.h>
+#include <openssl/pem.h>
+#include <openssl/rsa.h>
 #include <openssl/sha.h>
+
+#define KEY_LENGTH 2048
+#define PUB_EXP 3
 
 const int TraceGenerator::DEBUG_REG_ADDR = 0xEFFC;
 const int TraceGenerator::DEBUG_REG_DATA = 0xEFFE;
 const int TraceGenerator::MAX_TRACES = 100;
 const uint32_t TraceGenerator::RESET_TIME = 20;
 
-void TraceGenerator::addVars(std::vector<std::string> const& intvars) {
-  for (std::string const& var : intvars) {
+void TraceGenerator::addVars(std::vector<std::string> const &intvars) {
+  for (std::string const &var : intvars) {
     intvar2id[var] = int_facts.size();
     int_facts.push_back(std::ofstream(genFileName(var)));
   }
 }
 
-std::string TraceGenerator::genFileName(std::string const& varname, bool fact) {
+std::string TraceGenerator::genFileName(std::string const &varname, bool fact) {
   std::string fname = varname + "_";
 
   if (fact)
@@ -29,13 +40,13 @@ std::string TraceGenerator::genFileName(std::string const& varname, bool fact) {
   return fname;
 }
 
-std::string TraceGenerator::genFileName(std::string const& varname) {
+std::string TraceGenerator::genFileName(std::string const &varname) {
   std::string fname = varname + ".facts";
   filenames.push_back(fname);
   return fname;
 }
 
-void TraceGenerator::recordSignal(std::string const& sname, uint32_t traceId, uint64_t time,
+void TraceGenerator::recordSignal(std::string const &sname, uint32_t traceId, uint64_t time,
                                   int64_t value) {
 
   if (time >= RESET_TIME) {
@@ -62,7 +73,7 @@ void TraceGenerator::tracegen_main(std::shared_ptr<Voc8051_tb> top) {
       break;
 
     case 3:
-      // do nothing
+
       break;
 
     default:
@@ -86,13 +97,199 @@ void TraceGenerator::randomizeData(std::shared_ptr<Voc8051_tb> top) {
       break;
 
     case 3:
-      // do nothing
+      randomizeData_rsa(top);
       break;
 
     default:
       assert(0);
       break;
   }
+}
+
+void TraceGenerator::randomizeData_exp(std::shared_ptr<Voc8051_tb> top) {
+
+  const unsigned dataloc = 0x5000;
+
+  const unsigned exp_reg_n = 0xFC00;    // n value
+  const unsigned exp_reg_exp = 0xFB00;  // e value
+  const unsigned exp_reg_m = 0xFA00;    // expected message value
+
+  size_t pri_len;  // Length of private key
+  size_t pub_len;  // Length of public key
+  char *pri_key;   // Private key
+  char *pub_key;   // Public key
+  //  char msg[KEY_LENGTH / 8];       // Message to encrypt
+  unsigned char *encrypt = NULL;  // Encrypted message
+  unsigned char *decrypt = NULL;  // Decrypted message
+  char *err;                      // Buffer for any error messages
+
+  // Generate key pair
+  printf("Generating RSA (%d bits) keypair...", KEY_LENGTH);
+  fflush(stdout);
+
+  RSA *keypair = RSA_generate_key(KEY_LENGTH, PUB_EXP, NULL, NULL);
+
+  // std::cout << BN_num_bits(keypair->n) << std::endl;
+  // std::cout << BN_num_bits(keypair->d) << std::endl;
+
+  unsigned char *mod = new unsigned char[256]();
+  unsigned char *exp = new unsigned char[256]();
+
+  BN_bn2bin(keypair->n, mod);
+  BN_bn2bin(keypair->e, exp);
+
+  // input byte generation
+  unsigned char *ibuf = new unsigned char[256]();
+  srand(time(NULL));
+  for (size_t t = 0; t < 256; ++t) {
+    ibuf[t] = (unsigned char)rand() % 128;
+  }
+
+  std::memcpy(top->oc8051_tb__DOT__oc8051_xiommu1__DOT__modexp_top_i__DOT__exp_reg_n, mod,
+              256);
+
+  std::memcpy(top->oc8051_tb__DOT__oc8051_xiommu1__DOT__modexp_top_i__DOT__exp_reg_exp, exp,
+              256);
+
+  std::memcpy(top->oc8051_tb__DOT__oc8051_xiommu1__DOT__modexp_top_i__DOT__exp_reg_m, ibuf,
+              256);
+
+  // std::cout << "SHA1 value: " << std::endl;
+  // for (size_t i = 0; i < 20; i++) {
+  //   printf("%02x", ibuf[i]);
+  // }
+  // printf("\n");
+
+  // Encrypt the message
+  std::cout << "RSA key pair -> size() : " << std::dec << RSA_size(keypair) << std::endl;
+  encrypt = (unsigned char *)malloc(256);
+  int encrypt_len;
+  err = (char *)malloc(130);
+  if ((encrypt_len = RSA_public_encrypt(RSA_size(keypair), ibuf, encrypt, keypair,
+                                        RSA_NO_PADDING)) == -1) {
+    // ERR_load_crypto_strings();
+    ERR_error_string(ERR_get_error(), err);
+    fprintf(stderr, "Error encrypting message: %s\n", err);
+  }
+
+  std::cout << "encryption length: " << encrypt_len << std::endl;
+
+  // Decrypt it
+  decrypt = (unsigned char *)malloc(encrypt_len);
+  if (RSA_private_decrypt(encrypt_len, encrypt, decrypt, keypair, RSA_NO_PADDING) == -1) {
+    // ERR_load_crypto_strings();
+    ERR_error_string(ERR_get_error(), err);
+    fprintf(stderr, "Error decrypting message: %s\n", err);
+  }
+
+  // for (size_t id = 0; id < 20; ++id) printf("%02x", decrypt[id]);
+  // printf("\n");
+
+  RSA_free(keypair);
+  // BIO_free_all(pub);
+  // BIO_free_all(pri);
+  free(pri_key);
+  free(pub_key);
+  free(encrypt);
+  free(decrypt);
+  free(err);
+
+  delete[](mod);
+  delete[](exp);
+  delete[](ibuf);
+}
+
+void TraceGenerator::randomizeData_rsa(std::shared_ptr<Voc8051_tb> top) {
+
+  const unsigned dataloc = 0x5000;
+
+  const unsigned exp_reg_n = 0xFC00;    // n value
+  const unsigned exp_reg_exp = 0xFB00;  // e value
+  const unsigned exp_reg_m = 0xFA00;    // expected message value
+
+  size_t pri_len;  // Length of private key
+  size_t pub_len;  // Length of public key
+  char *pri_key;   // Private key
+  char *pub_key;   // Public key
+  //  char msg[KEY_LENGTH / 8];       // Message to encrypt
+  unsigned char *encrypt = NULL;  // Encrypted message
+  unsigned char *decrypt = NULL;  // Decrypted message
+  char *err;                      // Buffer for any error messages
+
+  // Generate key pair
+  printf("Generating RSA (%d bits) keypair...", KEY_LENGTH);
+  fflush(stdout);
+
+  RSA *keypair = RSA_generate_key(KEY_LENGTH, PUB_EXP, NULL, NULL);
+
+  // std::cout << BN_num_bits(keypair->n) << std::endl;
+  // std::cout << BN_num_bits(keypair->d) << std::endl;
+
+  unsigned char *mod = new unsigned char[256]();
+  unsigned char *exp = new unsigned char[256]();
+
+  BN_bn2bin(keypair->n, mod);
+  BN_bn2bin(keypair->e, exp);
+
+  // input byte generation
+  unsigned char *ibuf = new unsigned char[256]();
+  srand(time(NULL));
+  for (size_t t = 0; t < 256; ++t) {
+    ibuf[t] = (unsigned char)rand() % 128;
+  }
+
+  std::memcpy(top->oc8051_tb__DOT__oc8051_xiommu1__DOT__modexp_top_i__DOT__exp_reg_n, mod,
+              256);
+
+  std::memcpy(top->oc8051_tb__DOT__oc8051_xiommu1__DOT__modexp_top_i__DOT__exp_reg_exp, exp,
+              256);
+
+  std::memcpy(top->oc8051_tb__DOT__oc8051_xiommu1__DOT__modexp_top_i__DOT__exp_reg_m, ibuf,
+              256);
+
+  // std::cout << "SHA1 value: " << std::endl;
+  // for (size_t i = 0; i < 20; i++) {
+  //   printf("%02x", ibuf[i]);
+  // }
+  // printf("\n");
+
+  // Encrypt the message
+  std::cout << "RSA key pair -> size() : " << std::dec << RSA_size(keypair) << std::endl;
+  encrypt = (unsigned char *)malloc(256);
+  int encrypt_len;
+  err = (char *)malloc(130);
+  if ((encrypt_len = RSA_public_encrypt(RSA_size(keypair), ibuf, encrypt, keypair,
+                                        RSA_NO_PADDING)) == -1) {
+    // ERR_load_crypto_strings();
+    ERR_error_string(ERR_get_error(), err);
+    fprintf(stderr, "Error encrypting message: %s\n", err);
+  }
+
+  std::cout << "encryption length: " << encrypt_len << std::endl;
+
+  // Decrypt it
+  decrypt = (unsigned char *)malloc(encrypt_len);
+  if (RSA_private_decrypt(encrypt_len, encrypt, decrypt, keypair, RSA_NO_PADDING) == -1) {
+    // ERR_load_crypto_strings();
+    ERR_error_string(ERR_get_error(), err);
+    fprintf(stderr, "Error decrypting message: %s\n", err);
+  }
+
+  // for (size_t id = 0; id < 20; ++id) printf("%02x", decrypt[id]);
+  // printf("\n");
+
+  RSA_free(keypair);
+  // BIO_free_all(pub);
+  // BIO_free_all(pri);
+  free(pri_key);
+  free(pub_key);
+  free(encrypt);
+  free(decrypt);
+  free(err);
+
+  delete[](mod);
+  delete[](exp);
+  delete[](ibuf);
 }
 
 void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {

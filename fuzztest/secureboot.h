@@ -132,6 +132,8 @@ class TraceGenerator {
   void tracegen_aes(std::shared_ptr<Voc8051_tb> top);         // id = 0
   void tracegen_sha(std::shared_ptr<Voc8051_tb> top);         // id = 1
   void tracegen_page_table(std::shared_ptr<Voc8051_tb> top);  // id = 2
+  void tracegen_rsa(std::shared_ptr<Voc8051_tb> top);         // id = 3
+  void tracegen_exp(std::shared_ptr<Voc8051_tb> top);         // id = 4
 
  public:
   static const int DEBUG_REG_ADDR;
@@ -150,6 +152,8 @@ class TraceGenerator {
   void randomizeData_page_table(std::shared_ptr<Voc8051_tb> top);
   void randomizeData_aes(std::shared_ptr<Voc8051_tb> top);
   void randomizeData_sha(std::shared_ptr<Voc8051_tb> top);
+  void randomizeData_rsa(std::shared_ptr<Voc8051_tb> top);
+  void randomizeData_exp(std::shared_ptr<Voc8051_tb> top);
 
   void addVars(std::vector<std::string> const& intvars);
 
