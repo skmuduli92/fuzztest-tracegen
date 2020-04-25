@@ -192,7 +192,7 @@ void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile,
 
   tamperer.tamper(top.get());
   unsigned nsteps = std::numeric_limits<unsigned>::max();
-  simulate(tg, nsteps);
+  simulate(tg, 20000);
 
   std::cout << "finished @ " << std::dec << main_time << std::endl;
 }

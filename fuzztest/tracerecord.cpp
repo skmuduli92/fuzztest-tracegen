@@ -408,6 +408,8 @@ void TraceGenerator::randomizeData_wr(std::shared_ptr<Voc8051_tb> top) {
   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__start_op = 0x01;
   // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__memwr_reg_rd_addr = datasrc;
   // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__memwr_i__DOT__memwr_reg_wr_addr = datadst;
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[0xEFFE] =
+      2 + (rand() % 62);
 }
 
 void TraceGenerator::randomizeData_page_table(std::shared_ptr<Voc8051_tb> top) {
