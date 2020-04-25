@@ -396,7 +396,7 @@ void TraceGenerator::randomizeData_wr(std::shared_ptr<Voc8051_tb> top) {
 
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_addr[i] = addr;
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_data[i] = data;
-    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_delay[i] = rand() % 2;
+    top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_delay[i] = 0;
   }
 
   // initialising source address with some data and dest address with all 0s
@@ -682,7 +682,6 @@ void TraceGenerator::tracegen_wr(std::shared_ptr<Voc8051_tb> top) {
 
   for (std::pair<std::string, uint32_t> sp : signalvals)
     recordSignal(sp.first, trid, sc_time_stamp(), sp.second);
-
 }
 
 void TraceGenerator::tracegen_page_table(std::shared_ptr<Voc8051_tb> top) {

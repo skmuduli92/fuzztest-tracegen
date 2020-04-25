@@ -70,10 +70,14 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay)
       break;
     }
 
+    // if ((tg->tracegenID == 4) && (sc_time_stamp() == 50000)) {
+    //   break;
+    // }
+
     // set clock and simulate.
     top->oc8051_tb__DOT__clk = clk;
     top->eval();
-    // monitor_ports();
+    monitor_ports();
     // monitor_debug_registers();
     tg->tracegen_main(top);
 
@@ -186,7 +190,7 @@ void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile,
   load_boot_image(imgfile);
   tg->randomizeData(top);
 
-  // tamperer.tamper(top.get());
+  tamperer.tamper(top.get());
   unsigned nsteps = std::numeric_limits<unsigned>::max();
   simulate(tg, nsteps);
 

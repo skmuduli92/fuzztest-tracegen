@@ -29,8 +29,8 @@ __xdata __at(0xF9F2) unsigned int memwr_reg_rd_addr;
 __xdata __at(0xF9F4) unsigned int memwr_reg_wr_addr;
 __xdata __at(0xF9F6) unsigned int memwr_reg_len;
 
-__xdata __at(0x0000) unsigned char datasrc[64];
-__xdata __at(0x1000) unsigned char datadst[64];
+__xdata __at(0x0000) unsigned char datasrc[32];
+__xdata __at(0x1000) unsigned char datadst[32];
 
 /*---------------------------------------------------------------------------*/
 
@@ -42,16 +42,16 @@ void main() {
   // setup address, length, counter and key.
   memwr_reg_rd_addr = (unsigned int)&datasrc;
   memwr_reg_wr_addr = (unsigned int)&datadst;
-  memwr_reg_len = 64;
+  memwr_reg_len = 32;
 
   // start copying
   // set this inside the
 
   P1 = 0x0F;
 
-  for (i = 0; i < 64; ++i) {
+  for (i = 0; i < 32; ++i) {
     datasrc[i] = i;
-    datadst[i] = 64 - i;
+    datadst[i] = 32 - i;
   }
 
   P1 = 0xAA;
@@ -64,12 +64,12 @@ void main() {
 
   P1 = 0xCC;
 
-  for (i = 0; i < 64; ++i) {
-    if (datadst[i] != (unsigned char)i)
-      P0 = i;
-    else
-      P0 = 0x1A;
-  }
+  /* for (i = 0; i < 32; ++i) { */
+  /*   if (datadst[i] != (unsigned char)i) */
+  /*     P0 = i; */
+  /*   else */
+  /*     P0 = 0x1A; */
+  /* } */
 
   quit();
 }

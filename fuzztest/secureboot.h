@@ -127,8 +127,6 @@ class TraceGenerator {
 
   uint32_t addr_store;
 
-  // based on this ID one of the functions will be called
-  unsigned tracegenID;
   void tracegen_aes(std::shared_ptr<Voc8051_tb> top);         // id = 0
   void tracegen_sha(std::shared_ptr<Voc8051_tb> top);         // id = 1
   void tracegen_page_table(std::shared_ptr<Voc8051_tb> top);  // id = 2
@@ -141,6 +139,9 @@ class TraceGenerator {
   static const int MAX_TRACES;
   static const uint32_t RESET_TIME;
   //  static uint32_t trid;
+
+  // based on this ID one of the functions will be called
+  unsigned tracegenID;
 
   TraceGenerator(unsigned id) : tracegenID(id), addr_store(0) {}
 
