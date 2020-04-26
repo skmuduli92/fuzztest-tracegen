@@ -1,8 +1,8 @@
 #!/bin/bash
 
 cd ../fw
-sdcc memwr.c
+sdcc exp_test.c
 # sdcc rsa_only.c rsa.rel
 
 cd ..
-python3 scripts/gen_text.py fw/memwr.ihx rom/memwr.dat
+python3 scripts/gen_text.py fw/exp_test.ihx rom/exp_test.dat

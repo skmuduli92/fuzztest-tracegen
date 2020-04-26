@@ -34,12 +34,11 @@ const int Voc8051_Simulator::DEBUG_REG_DATA = 0xEFFE;
 // Helper to monitor the ports.
 void Voc8051_Simulator::monitor_ports() {
   static int p0, p1, p2, p3;
-  if (p0 != top->oc8051_tb__DOT__p0_out || p1 != top->oc8051_tb__DOT__p1_out ||
-      p2 != top->oc8051_tb__DOT__p2_out || p3 != top->oc8051_tb__DOT__p3_out) {
-    std::cout << "monitor_ports @ " << std::setw(8) << std::dec << main_time << ": "
-              << std::hex << std::setw(2) << p0 << "/" << std::hex << std::setw(2) << p1
-              << "/" << std::hex << std::setw(2) << p2 << "/" << std::hex << std::setw(2)
-              << p3 << std::endl;
+  if (p0 != top->oc8051_tb__DOT__p0_out || p1 != top->oc8051_tb__DOT__p1_out || p2 != top->oc8051_tb__DOT__p2_out ||
+      p3 != top->oc8051_tb__DOT__p3_out) {
+    std::cout << "monitor_ports @ " << std::setw(8) << std::dec << main_time << ": " << std::hex << std::setw(2) << p0
+              << "/" << std::hex << std::setw(2) << p1 << "/" << std::hex << std::setw(2) << p2 << "/" << std::hex
+              << std::setw(2) << p3 << std::endl;
 
     p0 = top->oc8051_tb__DOT__p0_out;
     p1 = top->oc8051_tb__DOT__p1_out;
@@ -79,7 +78,6 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay)
     top->eval();
     monitor_ports();
     // monitor_debug_registers();
-    tg->tracegen_main(top);
 
     // print_metadata();
     // check if the write succeeded here,
@@ -87,12 +85,13 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay)
     // coverage.
     if (clk == 0) {
       // track signals on rising clock
+      tg->tracegen_main(top);
+
       uint32_t opcode = top->oc8051_tb__DOT__oc8051_top_1__DOT__op1_d;
       tracker.track(0, opcode);
       auto pc = top->oc8051_tb__DOT__oc8051_top_1__DOT__pc;
       tracker.track(1, pc);
-      if (top->oc8051_tb__DOT__oc8051_xiommu1__DOT__stb_out &&
-          top->oc8051_tb__DOT__oc8051_xiommu1__DOT__ack_in) {
+      if (top->oc8051_tb__DOT__oc8051_xiommu1__DOT__stb_out && top->oc8051_tb__DOT__oc8051_xiommu1__DOT__ack_in) {
         unsigned addr = top->oc8051_tb__DOT__oc8051_xiommu1__DOT__proc_addr;
         unsigned data = 0;
         if (top->oc8051_tb__DOT__oc8051_xiommu1__DOT__wr_out) {
@@ -127,8 +126,7 @@ void Voc8051_Simulator::reset_uc(std::shared_ptr<TraceGenerator>& tg) {
   const int dataloc = 0xE000;
 
   for (size_t idx = 0; idx < 16; ++idx) {
-    top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[dataloc + idx] =
-        (unsigned int)(rand() % 256);
+    top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[dataloc + idx] = (unsigned int)(rand() % 256);
   }
   top->oc8051_tb__DOT__rst = 0;
 
@@ -172,8 +170,7 @@ void Voc8051_Simulator::load_boot_image(const std::string& imgfile) {
   for (int i = 0; !infile.eof(); i++) {
     int b;
     infile >> std::hex >> b;
-    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[XRAM_BASE + i] =
-        (unsigned int)b;
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[XRAM_BASE + i] = (unsigned int)b;
   }
 
   infile.close();
@@ -181,8 +178,8 @@ void Voc8051_Simulator::load_boot_image(const std::string& imgfile) {
 }
 
 // run program.
-void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile,
-                            const std::string& imgfile, std::shared_ptr<TraceGenerator>& tg) {
+void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile, const std::string& imgfile,
+                            std::shared_ptr<TraceGenerator>& tg) {
 
   srand(time(NULL));
   reset_uc(tg);
@@ -192,7 +189,7 @@ void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile,
 
   tamperer.tamper(top.get());
   unsigned nsteps = std::numeric_limits<unsigned>::max();
-  simulate(tg, 20000);
+  simulate(tg, nsteps);
 
   std::cout << "finished @ " << std::dec << main_time << std::endl;
 }

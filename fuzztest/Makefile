@@ -17,7 +17,7 @@ else
     LDFLAGS=-O2
 endif
 
-all: bootloader bootfuzzer aes_test sha_test page_table_test rsa_test wr_test
+all: bootloader bootfuzzer aes_test sha_test page_table_test rsa_test wr_test meminterface_test
 
 rsa_test: rsa_test.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
@@ -28,6 +28,8 @@ sha_test: sha_test.o $(SHARED_OBJECTS)
 wr_test: wr_test.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
 
+meminterface_test: meminterface_test.o $(SHARED_OBJECTS)
+	g++ -o $@ $(LDFLAGS) $^
 
 aes_test: aes_test.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
@@ -51,6 +53,9 @@ rsa_test.o: rsa_test.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
 	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 wr_test.o: wr_test.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
+	g++ -c $(CXXFLAGS) $(INCLUDES) $<
+
+meminterface_test.o: meminterface_test.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
 	g++ -c $(CXXFLAGS) $(INCLUDES) $<
 
 sha_test.o: sha_test.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
