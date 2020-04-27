@@ -14,7 +14,7 @@
 #include "tamper.h"
 #include "trace.h"
 
-#define NUM_TRACES 20
+#define NUM_TRACES 75
 
 extern unsigned trid;
 
@@ -77,8 +77,7 @@ class Voc8051_Simulator {
 
   // public interface methods.
 
-  void addVar(const std::string& name, unsigned traceIndex, unsigned debugIndex,
-              VarInfo::Type t, uint64_t init) {
+  void addVar(const std::string& name, unsigned traceIndex, unsigned debugIndex, VarInfo::Type t, uint64_t init) {
     PVarInfo varInfo(new VarInfo(name, traceIndex, debugIndex, t));
     varNames.insert(std::make_pair(name, varInfo));
     varIndices.insert(std::make_pair(debugIndex, varInfo));
@@ -110,8 +109,7 @@ class Voc8051_Simulator {
   void load_program(const std::string& romfile);
   void load_boot_image(const std::string& imgfile);
 
-  void run(ITamperer& tamper, const std::string& romfile, const std::string& imgfile,
-           std::shared_ptr<TraceGenerator>& tg);
+  void run(ITamperer& tamper, const std::string& romfile, const std::string& imgfile, std::shared_ptr<TraceGenerator>& tg);
 
   void copy_coverage();
 
@@ -127,11 +125,12 @@ class TraceGenerator {
 
   uint32_t addr_store;
 
-  void tracegen_aes(std::shared_ptr<Voc8051_tb> top);         // id = 0
-  void tracegen_sha(std::shared_ptr<Voc8051_tb> top);         // id = 1
-  void tracegen_page_table(std::shared_ptr<Voc8051_tb> top);  // id = 2
-  void tracegen_rsa(std::shared_ptr<Voc8051_tb> top);         // id = 3
-  void tracegen_exp(std::shared_ptr<Voc8051_tb> top);         // id = 4
+  void tracegen_aes(std::shared_ptr<Voc8051_tb> top);           // id = 0
+  void tracegen_sha(std::shared_ptr<Voc8051_tb> top);           // id = 1
+  void tracegen_page_table(std::shared_ptr<Voc8051_tb> top);    // id = 2
+  void tracegen_rsa(std::shared_ptr<Voc8051_tb> top);           // id = 3
+  void tracegen_exp(std::shared_ptr<Voc8051_tb> top);           // id = 4
+  void tracegen_meminterface(std::shared_ptr<Voc8051_tb> top);  // id = 5
 
  public:
   static const int DEBUG_REG_ADDR;
@@ -157,6 +156,7 @@ class TraceGenerator {
   void randomizeData_exp(std::shared_ptr<Voc8051_tb> top);
   void randomizeData_wr(std::shared_ptr<Voc8051_tb> top);
   void tracegen_wr(std::shared_ptr<Voc8051_tb> top);
+  //  void tracegen_rsa(std::shared_ptr<Voc8051_tb> top);
 
   void addVars(std::vector<std::string> const& intvars);
 

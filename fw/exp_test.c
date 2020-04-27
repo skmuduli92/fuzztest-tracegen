@@ -54,6 +54,7 @@ void main() {
     exp_reg_n[i] = vn[i];
     exp_reg_exp[i] = vexp[i];
     comp[i] = vdata[i];
+    data[i] = vm[i];
 
     P0 = exp_reg_m[i];
     P1 = exp_reg_n[i];
@@ -71,7 +72,6 @@ void main() {
   for (i = 0; i < 256; i++) {
     P0 = data[i];
     P1 = comp[i];
-    P2 = vm[i];
     if (data[i] != *(comp + i)) {
       good = 0;
       break;
