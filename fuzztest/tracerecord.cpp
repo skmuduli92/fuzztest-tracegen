@@ -219,12 +219,12 @@ void TraceGenerator::randomizeData_rsa(std::shared_ptr<Voc8051_tb> top) {
   char *err;                      // Buffer for any error messages
 
   // Generate key pair
-  printf("Generating RSA (%d bits) keypair...", KEY_LENGTH);
-  fflush(stdout);
+  // printf("Generating RSA (%d bits) keypair...", KEY_LENGTH);
+  // fflush(stdout);
 
   RSA *keypair = RSA_generate_key(KEY_LENGTH, PUB_EXP, NULL, NULL);
 
-  std::cout << "generated keys" << std::endl;
+  // std::cout << "generated keys" << std::endl;
 
   unsigned char *n = new unsigned char[256]();
   unsigned char *e = new unsigned char[256]();
@@ -232,12 +232,19 @@ void TraceGenerator::randomizeData_rsa(std::shared_ptr<Voc8051_tb> top) {
   BN_bn2bin(keypair->n, n);
   BN_bn2bin(keypair->e, e);
 
-  std::cout << "exp : " << std::endl;
-  for (size_t t = 0; t < 256; ++t) {
-    std::cout << std::hex << (uint32_t)e[t];
-  }
+  // std::cout << "exp : " << std::endl;
+  // for (size_t t = 0; t < 256; ++t) {
+  //   std::cout << std::hex << (uint32_t)e[t];
+  //   if (t % 24 == 0) std::cout << std::endl;
+  // }
 
-  std::cout << std::endl;
+  // std::cout << "\nmod(n) : " << std::endl;
+  // for (size_t t = 0; t < 256; ++t) {
+  //   std::cout << std::hex << (uint32_t)n[t];
+  //   if (t % 24 == 0) std::cout << std::endl;
+  // }
+
+  // std::cout << std::endl;
 
   // input byte generation
   unsigned char *ibuf = new unsigned char[256]();
@@ -304,6 +311,18 @@ void TraceGenerator::randomizeData_rsa(std::shared_ptr<Voc8051_tb> top) {
   }
 
   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__modexp_top_i__DOT__start_op = 0x01;
+
+  // std::cout << "encrypt : " << std::endl;
+  // for (size_t t = 0; t < 256; ++t) {
+  //   std::cout << std::hex << (uint32_t)encrypt[t];
+  //   if (t % 24 == 0) std::cout << std::endl;
+  // }
+
+  // std::cout << "\n\ndecrypt : " << std::endl;
+  // for (size_t t = 0; t < 256; ++t) {
+  //   std::cout << std::hex << (uint32_t)decrypt[t];
+  //   if (t % 24 == 0) std::cout << std::endl;
+  // }
 
   RSA_free(keypair);
   // BIO_free_all(pub);
