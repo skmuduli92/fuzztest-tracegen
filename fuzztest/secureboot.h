@@ -14,7 +14,7 @@
 #include "tamper.h"
 #include "trace.h"
 
-#define NUM_TRACES 75
+#define NUM_TRACES 50
 
 extern unsigned trid;
 
