@@ -362,7 +362,6 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
 
   for (size_t idx = 0; idx < 4; ++idx) {
     std::cin >> tempdata;
-    tempdata = tempdata % std::numeric_limits<uint8_t>::max();
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_ctr[idx] = tempdata;
   }
 
