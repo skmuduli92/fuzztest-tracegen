@@ -30,6 +30,7 @@ __xdata __at(0xFF10) unsigned char aes_reg_ctr[16];
 __xdata __at(0xFF20) unsigned char aes_reg_key0[16];
 __xdata __at(0xFF30) unsigned char aes_reg_key1[16];
 __xdata __at(0xE000) unsigned char data[1024];
+__xdata __at(0xE400) unsigned char vdata[1024];
 
 __xdata __at(0xFF80) unsigned char pt_wren[32];
 __xdata __at(0xFFA0) unsigned char pt_rden[32];
@@ -41,8 +42,8 @@ __xdata __at(0xEFFE) unsigned int debug_reg_data;
 
 void main() {
 
-  int i;
-  int good = 1;
+  /* int i; */
+  /* int good = 1; */
 
   // test writing to XRAM. (working fine)
   /* for (i = 0; i < aes_reg_oplen; i++) { */
@@ -70,25 +71,25 @@ void main() {
     ;
 
   // read encrypted data and dump it to P0.
-  for (i = 0; i < aes_reg_oplen; i++) {
-    P0 = data[i];
-  }
+  /* for (i = 0; i < aes_reg_oplen; i++) { */
+  /*   P0 = data[i]; */
+  /* } */
 
   // let us decrypt now.
   aes_reg_start = 1;
   while (aes_reg_state != 0) {
   }
 
-  for (i = 0; i < aes_reg_oplen; i++) {
-    if (data[i] != i) {
-      good = 2;
-      break;
-    }
-  }
+  /* for (i = 0; i < aes_reg_oplen; i++) { */
+  /*   if (data[i] != vdata[i]) { */
+  /*     good = 2; */
+  /*     break; */
+  /*   } */
+  /* } */
 
-  P0 = good;
-  debug_reg_addr = GOOD_ID;
-  debug_reg_data = good;
+  /* P0 = good; */
+  /* debug_reg_addr = GOOD_ID; */
+  /* debug_reg_data = good; */
   // finish.
   quit();
 }
