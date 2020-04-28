@@ -366,7 +366,8 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
   }
 
   std::cin >> aes_reg_len;
-  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen = aes_reg_len % 1024;
+  aes_reg_len = aes_reg_len % 1024;
+  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen = aes_reg_len;
 
   const unsigned int dataloc = 0xE000;
   uint8_t plaindata;
