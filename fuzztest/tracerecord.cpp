@@ -345,18 +345,39 @@ void TraceGenerator::randomizeData_rsa(std::shared_ptr<Voc8051_tb> top) {
 void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
 
   // randomize aes data length
-  unsigned aes_reg_len;  //= rand() % 128;
+  unsigned aes_reg_len;
   unsigned tempdata;
+
+  // enable read/write for each location in page table
+  for (size_t id = 0; id < 32; ++id) {
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled[id] = 0xFF;
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled[id] = 0xFF;
+  }
+
+  // randomly generate keys
+  for (size_t idx = 0; idx < 4; ++idx) {
+    std::cin >> tempdata;
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_key0[idx] = tempdata;
+  }
+
+  for (size_t idx = 0; idx < 4; ++idx) {
+    std::cin >> tempdata;
+    tempdata = tempdata % std::numeric_limits<uint8_t>::max();
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_ctr[idx] = tempdata;
+  }
 
   std::cin >> aes_reg_len;
   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen =
       aes_reg_len % std::numeric_limits<uint32_t>::max();
 
-  // randomly generate keys
-  for (size_t idx = 0; idx < 4; ++idx) {
-    std::cin >> tempdata;
-    tempdata = tempdata % std::numeric_limits<uint8_t>::max();
-    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_key0[idx] = tempdata;
+  const unsigned int dataloc = 0xE000;
+  uint32_t plaindata;
+  for (size_t idx = 0; idx < 1024; ++idx) {
+    if (idx < aes_reg_len) {
+      std::cin >> plaindata;
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + idx] = (uint8_t)plaindata;
+    } else
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + idx] = 0x00;
   }
 }
 
@@ -683,6 +704,12 @@ void TraceGenerator::tracegen_aes(std::shared_ptr<Voc8051_tb> top) {
 
   recordSignal("aes_reg_start", trid, sc_time_stamp(),
                (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__start_op);
+
+  recordSignal("more_blocks", trid, sc_time_stamp(),
+               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__more_blocks);
+
+  recordSignal("last_byte_acked", trid, sc_time_stamp(),
+               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__last_byte_acked);
 }
 
 void TraceGenerator::tracegen_wr(std::shared_ptr<Voc8051_tb> top) {

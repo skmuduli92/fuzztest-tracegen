@@ -29,11 +29,10 @@ int main() {
   std::string romfile("../rom/aes_test.dat");
   std::string imgfile;
 
-  std::vector<std::string> signals({"aes_reg_start", "ack_aes", "aes_xram_ack",
-                                    "aes_reg_state", "aes_reg_state_next", "aes_byte_counter",
-                                    "aes_reg_oplen", "aes_data_out_mux", "good_value",
-                                    "operated_bytes_count", "operated_bytes_count_next",
-                                    "block_counter", "block_counter_next"});
+  std::vector<std::string> signals({"aes_reg_start", "ack_aes", "aes_xram_ack", "aes_reg_state", "aes_reg_state_next",
+                                    "aes_byte_counter", "aes_reg_oplen", "aes_data_out_mux", "good_value",
+                                    "operated_bytes_count", "operated_bytes_count_next", "block_counter",
+                                    "block_counter_next", "more_blocks", "last_byte_acked"});
 
   const unsigned int aes_tg = 0;
   std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(aes_tg);
