@@ -35,7 +35,8 @@ int main() {
                                     "block_counter_next", "more_blocks", "last_byte_acked"});
 
   const unsigned int aes_tg = 0;
-  std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(aes_tg);
+  FILE* fsource = fopen("/home/sujit/Tools/fuzztest-tracegen/fuzztest/aes-out/queue/id:000185,src:000000,op:flip1,pos:59,+cov", "r");
+  std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(aes_tg, fsource);
   tg->addVars(signals);
 
   OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);

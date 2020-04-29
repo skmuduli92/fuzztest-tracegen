@@ -119,7 +119,7 @@ void TraceGenerator::randomizeData(std::shared_ptr<Voc8051_tb> top) {
       break;
 
     case 5:
-      // for trapping microcontroller interfaces during aes
+      // for trapping microcontroaller interfaces during aes
       randomizeData_aes(top);
       break;
 
@@ -357,7 +357,7 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
   // randomly generate keys
   for (size_t idx = 0; idx < 4; ++idx) {
     // std::cin >> tempdata;
-    if (fread(&tempdata, sizeof(tempdata), 1, stdin) != 1) {
+    if (fread(&tempdata, sizeof(tempdata), 1, insource) != 1) {
       std::cout << "wrong key data : " << idx << "\n";
       exit(1);
     }
@@ -365,7 +365,7 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
   }
 
   for (size_t idx = 0; idx < 4; ++idx) {
-    if (fread(&tempdata, sizeof(tempdata), 1, stdin) != 1) {
+    if (fread(&tempdata, sizeof(tempdata), 1, insource) != 1) {
       std::cout << "wrong ctr data\n";
       exit(1);
     }
@@ -375,7 +375,7 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
 
   // std::cin >> aes_reg_len;
 
-  if (fread(&aes_reg_len, sizeof(aes_reg_len), 1, stdin) != 1) {
+  if (fread(&aes_reg_len, sizeof(aes_reg_len), 1, insource) != 1) {
     std::cout << "reg len\n";
     exit(1);
   }
@@ -389,7 +389,7 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
   for (size_t idx = 0; idx < 1024; ++idx) {
     if (idx < aes_reg_len) {
 
-      if (fread(&plaindata, sizeof(plaindata), 1, stdin) != 1) {
+      if (fread(&plaindata, sizeof(plaindata), 1, insource) != 1) {
         std::cout << "wrong plain data : " << idx << "\n";
         exit(1);
       }
@@ -398,6 +398,8 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
     } else
       top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[vdataloc + idx] = 0x00;
   }
+
+  std::cout << "READING COMPLETE\n";
 }
 
 void TraceGenerator::randomizeData_sha(std::shared_ptr<Voc8051_tb> top) {

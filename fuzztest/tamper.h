@@ -6,7 +6,7 @@
 
 // Interface for tampering.
 struct ITamperer {
-    virtual void tamper(Voc8051_tb* top);
+    virtual void tamper(Voc8051_tb* top,FILE*);
 };
 
 // Opcode Tamperer
@@ -20,12 +20,12 @@ struct OpcodeTamperer : public ITamperer {
   {
   }
 
-  virtual void tamper(Voc8051_tb* top);
+  virtual void tamper(Voc8051_tb* top, FILE*);
 };
 
 // FSM Write tamperer.
 struct FSMWriteTamperer : public ITamperer {
-  virtual void tamper(Voc8051_tb* top);
+  virtual void tamper(Voc8051_tb* top, FILE*);
 };
 
 #endif

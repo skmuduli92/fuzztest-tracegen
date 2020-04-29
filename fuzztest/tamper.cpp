@@ -6,24 +6,24 @@
 #include "Voc8051_tb__Syms.h"
 
 // Default tamper function.
-void ITamperer::tamper(Voc8051_tb* top) 
+void ITamperer::tamper(Voc8051_tb* top, FILE* infile = NULL)
 {
   // do nothing.
   (void) top;
 }
 
-void OpcodeTamperer::tamper(Voc8051_tb* top)
+void OpcodeTamperer::tamper(Voc8051_tb* top, FILE* infile)
 {
   for(unsigned i=0; i < BUF_SIZE; i++) {
     uint8_t data = 0;
-    if(fread(&data, sizeof(data), 1, stdin) != 1) {
+    if(fread(&data, sizeof(data), 1, infile) != 1) {
         break;
     }
     top->oc8051_tb__DOT__oc8051_cxrom1__DOT__buff[i + BASE_ADDR] = data;
   }
 }
 
-void FSMWriteTamperer::tamper(Voc8051_tb* top)
+void FSMWriteTamperer::tamper(Voc8051_tb* top, FILE* infile=NULL)
 {
   const int BUF_SIZE = 16;
   unsigned i;
@@ -45,4 +45,3 @@ void FSMWriteTamperer::tamper(Voc8051_tb* top)
   }
   printf("read %d entries from tamper.\n", i);
 }
-

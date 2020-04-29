@@ -139,10 +139,12 @@ class TraceGenerator {
   static const uint32_t RESET_TIME;
   //  static uint32_t trid;
 
+  FILE *insource;
+
   // based on this ID one of the functions will be called
   unsigned tracegenID;
 
-  TraceGenerator(unsigned id) : tracegenID(id), addr_store(0) {}
+  TraceGenerator(unsigned id, FILE* infile) : tracegenID(id), addr_store(0), insource(infile) {}
 
   void tracegen_main(std::shared_ptr<Voc8051_tb> top);
 
@@ -166,6 +168,7 @@ class TraceGenerator {
 
   void closeall() {
     for (std::ofstream& fs : int_facts) fs.close();
+    if (insource != stdin) fclose(insource);
   }
 };
 
