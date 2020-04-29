@@ -344,36 +344,52 @@ void TraceGenerator::randomizeData_rsa(std::shared_ptr<Voc8051_tb> top) {
 
 void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
 
-  // randomize aes data length
-  unsigned aes_reg_len;
-  unsigned tempdata;
-
   // enable read/write for each location in page table
   for (size_t id = 0; id < 32; ++id) {
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled[id] = 0xFF;
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled[id] = 0xFF;
   }
 
+  // randomize aes data length
+  unsigned aes_reg_len = 0;
+  unsigned tempdata = 0;
+
   // randomly generate keys
   for (size_t idx = 0; idx < 4; ++idx) {
-    std::cin >> tempdata;
+    // std::cin >> tempdata;
+    if (fread(&tempdata, sizeof(tempdata), 1, stdin) != 1) {
+      exit(1);
+    }
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_key0[idx] = tempdata;
   }
 
   for (size_t idx = 0; idx < 4; ++idx) {
-    std::cin >> tempdata;
+    if (fread(&tempdata, sizeof(tempdata), 1, stdin) != 1) {
+      exit(1);
+    }
+
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_ctr[idx] = tempdata;
   }
 
-  std::cin >> aes_reg_len;
+  // std::cin >> aes_reg_len;
+
+  if (fread(&aes_reg_len, sizeof(aes_reg_len), 1, stdin) != 1) {
+    exit(1);
+  }
+
   aes_reg_len = aes_reg_len % 1024;
   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen = aes_reg_len;
 
   const unsigned int dataloc = 0xE000;
+  // const unsigned int vdataloc = 0xE400;
   uint8_t plaindata;
   for (size_t idx = 0; idx < 1024; ++idx) {
     if (idx < aes_reg_len) {
-      std::cin >> plaindata;
+
+      if (fread(&plaindata, sizeof(plaindata), 1, stdin) != 1) {
+        exit(1);
+      }
+
       top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + idx] = (uint8_t)plaindata;
     } else
       top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + idx] = 0x00;

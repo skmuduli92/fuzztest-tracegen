@@ -42,7 +42,7 @@ __xdata __at(0xEFFE) unsigned int debug_reg_data;
 
 void main() {
 
-  /* int i; */
+  int i;
   /* int good = 1; */
 
   // test writing to XRAM. (working fine)
@@ -51,6 +51,10 @@ void main() {
   /*   P0 = data[i]; */
   /*   P1 = 0x11; */
   /* } */
+
+  // for (i = 0; i < aes_reg_oplen; ++i) {
+  //     data[i] = vdata[i];
+  // }
 
   /* P1 = 0x00; */
 
@@ -78,6 +82,41 @@ void main() {
   // let us decrypt now.
   aes_reg_start = 1;
   while (aes_reg_state != 0) {
+      __asm;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+           nop;
+       __endasm;
   }
 
   /* for (i = 0; i < aes_reg_oplen; i++) { */
