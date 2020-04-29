@@ -77,7 +77,7 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay)
     top->oc8051_tb__DOT__clk = clk;
     top->eval();
     monitor_ports();
-    monitor_debug_registers();
+    // monitor_debug_registers();
 
     // print_metadata();
     // check if the write succeeded here,

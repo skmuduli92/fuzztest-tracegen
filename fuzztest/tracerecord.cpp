@@ -402,31 +402,60 @@ void TraceGenerator::randomizeData_sha(std::shared_ptr<Voc8051_tb> top) {
 
   // TODO : fix the computation of padding for corner cases ??
   // this is to avoid those cases
+
+  if (fread(&datalen, sizeof(datalen), 1, stdin) != 1) {
+    std::cout << "ERROR : no input supplied\n";
+    exit(1);
+  }
+
+  // int bytes = fscanf(stdin, "%u", &datalen);
+  // if (bytes == 0) {
+  //   std::cout << "ERROR : no input supplied\n";
+  //   exit(1);
+  // }
+
   if (rand() % 2)
     datalen = rand() % 56;
   else
     datalen = rand() % 100;
 
-  std::cout << "data length : " << std::dec << datalen << std::endl;
-  top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[0xFE06] = 128;
+  // std::cout << "data length : " << std::dec << datalen << std::endl;
+  // top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[0xFE06] = datalen;
 
   unsigned char ibuf[128];
 
+  // initializing buffers
   for (size_t id = 0; id < 128; ++id) {
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + id] = 0;
     ibuf[id] = 0;
   }
 
+  uint8_t data;
   for (size_t id = 0; id < datalen; ++id) {
-    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + id] = id;
-    ibuf[id] = id;
+    if (fread(&data, sizeof(data), 1, stdin) != 1) {
+      std::cout << "ERROR : no input supplied\n";
+      exit(1);
+    }
+
+    // int bytes = fscanf(stdin, "%cu", &data);
+    // if (bytes == 0) {
+    //   std::cout << "ERROR : no input supplied\n";
+    //   exit(1);
+    // }
+
+    ibuf[id] = data;
+    top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + id] = data;
+    std::cout << std::hex << (uint32_t)data << ", ";
   }
+
+  std::cout << std::dec << std::endl;
 
   const int pyhash = 0xE300;
   unsigned char obuf[20];
   SHA1(ibuf, datalen, obuf);
 
   // to verify against
+  std::cout << "OUTPUT BUFFER : " << std::endl;
   for (size_t i = 0; i < 20; i++) {
     printf("%02x ", obuf[i]);
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[pyhash + i] = obuf[i];
@@ -440,12 +469,11 @@ void TraceGenerator::randomizeData_sha(std::shared_ptr<Voc8051_tb> top) {
   std::cout << std::dec << ((datalen >> 13) & 0xFF) << std::endl;
   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__sha_top_i__DOT__sha_reg_len = mlen;
   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + datalen] = 0x80;
-
   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 1] = (datalen << 3) & 0xFF;
-
   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 2] = (datalen >> 5) & 0xFF;
-
   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + mlen - 3] = (datalen >> 13) & 0xFF;
+
+  std::cout << "Simulate SHA core in SoC" << std::endl;
 }
 
 void TraceGenerator::randomizeData_wr(std::shared_ptr<Voc8051_tb> top) {
