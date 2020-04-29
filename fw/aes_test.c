@@ -42,7 +42,7 @@ __xdata __at(0xEFFE) unsigned int debug_reg_data;
 
 void main() {
 
-  int i;
+  // int i;
   /* int good = 1; */
 
   // test writing to XRAM. (working fine)

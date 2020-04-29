@@ -68,7 +68,7 @@ static void __afl_start_forkserver() {
 
   pid_t child_pid;
 
-  while (trid < NUM_TRACES) {
+  while (1) {
 
     uint32_t was_killed;
     int status;
@@ -102,7 +102,7 @@ static void __afl_start_forkserver() {
       _exit(1);
     }
 
-    trid += 1;
+    /* trid += 1; */
   }
 }
 static std::stringstream* ss;
