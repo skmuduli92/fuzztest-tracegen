@@ -381,7 +381,7 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
   top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen = aes_reg_len;
 
   const unsigned int dataloc = 0xE000;
-  // const unsigned int vdataloc = 0xE400;
+  const unsigned int vdataloc = 0xE400;
   uint8_t plaindata;
   for (size_t idx = 0; idx < 1024; ++idx) {
     if (idx < aes_reg_len) {
@@ -390,9 +390,9 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
         exit(1);
       }
 
-      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + idx] = (uint8_t)plaindata;
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[vdataloc + idx] = (uint8_t)plaindata;
     } else
-      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[dataloc + idx] = 0x00;
+      top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[vdataloc + idx] = 0x00;
   }
 }
 
