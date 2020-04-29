@@ -186,9 +186,10 @@ void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile, con
   reset_uc(tg);
   load_program(romfile);
   load_boot_image(imgfile);
-  tg->randomizeData(top);
 
   tamperer.tamper(top.get(), tg->insource);
+
+  tg->randomizeData(top);
   unsigned nsteps = std::numeric_limits<unsigned>::max();
   if (tg->tracegenID == 3) nsteps = 79497 + 25000;
 

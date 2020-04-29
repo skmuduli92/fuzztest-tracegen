@@ -403,13 +403,14 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
 }
 
 void TraceGenerator::randomizeData_sha(std::shared_ptr<Voc8051_tb> top) {
-  const int dataloc = 0xE100;
+  const int dataloc = 0xE400;
+
   unsigned datalen;
 
   // TODO : fix the computation of padding for corner cases ??
   // this is to avoid those cases
 
-  if (fread(&datalen, sizeof(datalen), 1, stdin) != 1) {
+  if (fread(&datalen, sizeof(datalen), 1, insource) != 1) {
     std::cout << "ERROR : no input supplied\n";
     exit(1);
   }
@@ -438,7 +439,7 @@ void TraceGenerator::randomizeData_sha(std::shared_ptr<Voc8051_tb> top) {
 
   uint8_t data;
   for (size_t id = 0; id < datalen; ++id) {
-    if (fread(&data, sizeof(data), 1, stdin) != 1) {
+    if (fread(&data, sizeof(data), 1, insource) != 1) {
       std::cout << "ERROR : no input supplied\n";
       exit(1);
     }

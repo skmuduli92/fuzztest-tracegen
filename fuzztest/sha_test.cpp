@@ -35,7 +35,8 @@ int main() {
                                     "sha_more_blocks", "sha_core_init", "sha_core_next", "sha_core_ready_r", "good_value"});
 
   const unsigned int sha_tg = 1;
-  std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(sha_tg);
+  // FILE* fsource = fopen("/home/sujit/Tools/fuzztest-tracegen/fuzztest/afl-in/sha_test/in1.bin", "rb");
+  std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(sha_tg, stdin);
   tg->addVars(signals);
 
   OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
@@ -46,6 +47,7 @@ int main() {
 
   // push coverage
   sim.copy_coverage();
+  fflush(stdin);
 
   return 0;
 }

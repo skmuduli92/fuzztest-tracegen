@@ -29,6 +29,8 @@ __xdata __at(0xE000) unsigned char d1[64];
 __xdata __at(0xE100) unsigned char d2[128];
 __xdata __at(0xE200) unsigned char hash[20];
 __xdata __at(0xE300) unsigned char pyhash[20];
+__xdata __at(0xE400) unsigned char data[128];
+
 __xdata __at(0xEFFC) unsigned int debug_reg_addr;
 __xdata __at(0xEFFE) unsigned int debug_reg_data;
 
@@ -41,6 +43,11 @@ void main() {
   int good = 1;
   int N = 128;
 
+  for (i = 0 ; i < 128; ++i) {
+      d2[i] = data[i];
+      P0 = d2[i];
+  }
+
   // #include "pyhash.c"
   // pyhash[0] = 0xc6; pyhash[1] = 0x13; pyhash[2] = 0x8d; pyhash[3] = 0x51;
   // pyhash[4] = 0x4f; pyhash[5] = 0xfa; pyhash[6] = 0x21; pyhash[7] = 0x35;
@@ -49,7 +56,7 @@ void main() {
   // pyhash[16] = 0x69; pyhash[17] = 0x91; pyhash[18] = 0x7e; pyhash[19] = 0xc7;
 
   // reset the entire block.
-  // for(i=0; i<N; i++) { d2[i] = 0; }
+  // for(i=0; i<sha_reg_len; i++) { d2[i] = 0; }
   // initialize bytes 0-63
   // for(i=0; i < 64; i++) { d2[i] = i; }
   // add binary string of the form 10* after this (only need the 1).
@@ -66,41 +73,74 @@ void main() {
   sha_reg_start = 1;
   // now wait for encryption to complete.
   while (sha_reg_state != 0) {
+
       __asm;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-           nop;
-       __endasm;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      nop;
+      __endasm;
   }
 
   // read encrypted data and dump it to P0.
@@ -112,8 +152,8 @@ void main() {
       break;
     }
   }
-
-  P0 = good;
+  //
+  // P0 = good;
   debug_reg_addr = 0x1;
   debug_reg_data = (unsigned int)good;
 
