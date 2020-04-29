@@ -358,6 +358,7 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
   for (size_t idx = 0; idx < 4; ++idx) {
     // std::cin >> tempdata;
     if (fread(&tempdata, sizeof(tempdata), 1, stdin) != 1) {
+      std::cout << "wrong key data : " << idx << "\n";
       exit(1);
     }
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_key0[idx] = tempdata;
@@ -365,6 +366,7 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
 
   for (size_t idx = 0; idx < 4; ++idx) {
     if (fread(&tempdata, sizeof(tempdata), 1, stdin) != 1) {
+      std::cout << "wrong ctr data\n";
       exit(1);
     }
 
@@ -374,6 +376,7 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
   // std::cin >> aes_reg_len;
 
   if (fread(&aes_reg_len, sizeof(aes_reg_len), 1, stdin) != 1) {
+    std::cout << "reg len\n";
     exit(1);
   }
 
@@ -387,6 +390,7 @@ void TraceGenerator::randomizeData_aes(std::shared_ptr<Voc8051_tb> top) {
     if (idx < aes_reg_len) {
 
       if (fread(&plaindata, sizeof(plaindata), 1, stdin) != 1) {
+        std::cout << "wrong plain data : " << idx << "\n";
         exit(1);
       }
 
