@@ -69,6 +69,7 @@ void main() {
   /* } */
 
   // now start encryption.
+  P1 = 0xAA;
   aes_reg_start = 1;
   // now wait for encryption to complete.
   while (aes_reg_state != 0)

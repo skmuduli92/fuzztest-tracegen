@@ -53,6 +53,11 @@ void TraceGenerator::recordSignal(std::string const &sname, uint32_t traceId, ui
       int_facts[intvar2id[sname]] << traceId << "\t" << time - 79498 << "\t" << value << std::endl;
   }
 
+  // else if (tracegenID == 5) {
+  //   if (time >= 83600 && (intvar2id.find(sname) != intvar2id.end()))
+  //     int_facts[intvar2id[sname]] << traceId << "\t" << time - 83600 << "\t" << value << std::endl;
+  // }
+
   else if (time >= RESET_TIME) {
     if (intvar2id.find(sname) != intvar2id.end())
       int_facts[intvar2id[sname]] << traceId << "\t" << time - 20 << "\t" << value << std::endl;
@@ -147,8 +152,8 @@ void TraceGenerator::randomizeData_exp(std::shared_ptr<Voc8051_tb> top) {
   char *err;                      // Buffer for any error messages
 
   // Generate key pair
-  printf("Generating RSA (%d bits) keypair...", KEY_LENGTH);
-  fflush(stdout);
+  // printf("Generating RSA (%d bits) keypair...", KEY_LENGTH);
+  // fflush(stdout);
 
   RSA *keypair = RSA_generate_key(KEY_LENGTH, PUB_EXP, NULL, NULL);
 
@@ -254,7 +259,14 @@ void TraceGenerator::randomizeData_rsa(std::shared_ptr<Voc8051_tb> top) {
   unsigned char *ibuf = new unsigned char[256]();
   srand(time(NULL));
   for (size_t t = 0; t < 256; ++t) {
-    ibuf[t] = (unsigned char)rand() % 128;
+    uint8_t data;
+    int dataread = fread(&data, sizeof(data), 1, insource);
+    if (dataread == 0) {
+      std::cout << "Error : reading data in rsa testing\n";
+      exit(1);
+    }
+
+    ibuf[t] = data % 128;
   }
   //
   // std::cout << "\ngenerated ibuf\n";
@@ -300,7 +312,7 @@ void TraceGenerator::randomizeData_rsa(std::shared_ptr<Voc8051_tb> top) {
     top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__wr_enabled[id] = 0xFF;
   }
 
-  //   __xdata __at(0xF000) unsigned char vn[256];
+  // __xdata __at(0xF000) unsigned char vn[256];
   // __xdata __at(0xF100) unsigned char vexp[256];
   // __xdata __at(0xF200) unsigned char vm[256];
   // __xdata __at(0xF300) unsigned char vdata[256];
@@ -504,8 +516,20 @@ void TraceGenerator::randomizeData_wr(std::shared_ptr<Voc8051_tb> top) {
 
   for (size_t i = 0; i < BUF_SIZE; i++) {
 
-    uint8_t data = rand() % std::numeric_limits<uint8_t>::max();
-    uint16_t addr = start_addr + (rand() % (end_addr - start_addr));
+    // uint8_t data = rand() % std::numeric_limits<uint8_t>::max();
+    uint8_t data = 0;
+    uint16_t offset = 0x00;
+
+    int dataread = fread(&data, sizeof(data), 1, insource);
+    int offsetread = fread(&offset, sizeof(offset), 1, insource);
+
+    if (!(dataread && offsetread)) {
+        std::cerr << "Error : reading from source failed\n";
+        exit(1);
+    }
+
+    uint16_t addr = start_addr + (offset % (end_addr - start_addr));
+
 
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_addr[i] = addr;
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_data[i] = data;

@@ -13,6 +13,14 @@
 #include "tamper.h"
 #include "trace.h"
 
+#include <dirent.h>
+#include <stdio.h>
+#include <string.h>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+
+
 // required for afl
 static int fid = 0;
 static std::stringstream oldss;
@@ -62,15 +70,41 @@ int main() {
                                     "xram_cnt"});
 
   const unsigned int wr_tg = 4;
-  std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(wr_tg);
+  std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(wr_tg, stdin);
   tg->addVars(signals);
 
+  OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
   // afl init
   afl_init(&fid, &oldss);
-  sim.run(NoTamper, romfile, imgfile, tg);
+
+  sim.run(tamper, romfile, imgfile, tg);
 
   // push coverage
   sim.copy_coverage();
+
+  // DIR* pDIR;
+  //
+  // std::string dirpath = "/home/sujit/Tools/fuzztest-tracegen/fuzztest/pt-out/queue/";
+  // struct dirent* entry;
+  // if (pDIR = opendir(dirpath.c_str())) {
+  //
+  //   while (trid < 200 && (entry = readdir(pDIR))) {
+  //     if ((entry->d_name[0] != '.') && strcmp(entry->d_name, "..") != 0) {
+  //       std::cout << entry->d_name << "\n";
+  //       // sim.run(tamper, romfile, imgfile, tg);
+  //
+  //       std::string filepath = dirpath + std::string(entry->d_name);
+  //       tg->insource = fopen(filepath.c_str(), "rb");
+  //       sim.run(NoTamper, romfile, imgfile, tg);
+  //       fclose(tg->insource);
+  //       sim.nextTrace();
+  //       std::cout << "SIMULATING nextTrace : " << trid++ << std::endl;
+  //     }
+  //   }
+  //   closedir(pDIR);
+  // } else {
+  //   std::cout << "NOT able to open directroy" << std::endl;
+  // }
 
   return 0;
 }

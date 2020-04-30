@@ -59,7 +59,7 @@ void main() {
 
   P1 = 0xAA;
 
-  // memwr_reg_start = 1;
+  memwr_reg_start = 1;
   // now wait for copying to complete.
   while (memwr_reg_state != 0) {
     P1 = 0XBB;
@@ -67,12 +67,12 @@ void main() {
 
   P1 = 0xCC;
 
-  for (i = 0; i < debug_reg_data; ++i) {
-    if (datadst[i] != (unsigned char)i)
-      P0 = i;
-    else
-      P0 = 0x1A;
-  }
+  /* for (i = 0; i < debug_reg_data; ++i) { */
+  /*   if (datadst[i] != (unsigned char)i) */
+  /*     P0 = i; */
+  /*   else */
+  /*     P0 = 0x1A; */
+  /* } */
 
   quit();
 }

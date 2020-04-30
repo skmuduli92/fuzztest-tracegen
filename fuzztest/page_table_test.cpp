@@ -46,11 +46,12 @@ int main() {
   std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(page_table_tg, stdin);
   tg->addVars(signals);
 
+  // OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
+  // // afl init
   // afl_init(&fid, &oldss);
-
-  // // first run.
-  // sim.run(NoTamper, romfile, imgfile, tg);
-
+  //
+  // sim.run(tamper, romfile, imgfile, tg);
+  //
   // // push coverage
   // sim.copy_coverage();
 
