@@ -46,14 +46,14 @@ int main() {
   std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(aes_tg, stdin);
   tg->addVars(signals);
 
-    OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
+    // OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
     // afl init
     // afl_init(&fid, &oldss);
 
 
 
 // push coverage
-sim.copy_coverage();
+// sim.copy_coverage();
 
   DIR* pDIR;
 
