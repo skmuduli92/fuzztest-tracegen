@@ -102,7 +102,7 @@ class Voc8051_Simulator {
     Verilated::reset_verilator();
     reset_time_stamp();
     trace++;
-    assert(trace < traces.size());
+    // assert(trace < traces.size());
   }
 
   void reset_uc(std::shared_ptr<TraceGenerator>& tg);
@@ -139,7 +139,7 @@ class TraceGenerator {
   static const uint32_t RESET_TIME;
   //  static uint32_t trid;
 
-  FILE *insource;
+  FILE* insource;
 
   // based on this ID one of the functions will be called
   unsigned tracegenID;
@@ -168,7 +168,11 @@ class TraceGenerator {
 
   void closeall() {
     for (std::ofstream& fs : int_facts) fs.close();
-    if (insource != stdin) fclose(insource);
+  }
+
+  void dummyfunc() {
+      std::cout << "traceid : " << trid << std::endl;
+      trid++;
   }
 };
 

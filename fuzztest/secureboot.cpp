@@ -76,13 +76,13 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay)
     // set clock and simulate.
     top->oc8051_tb__DOT__clk = clk;
     top->eval();
-    monitor_ports();
+    // monitor_ports();
     // monitor_debug_registers();
 
     // print_metadata();
     // check if the write succeeded here,
 
-    // tg->tracegen_main(top);
+    tg->tracegen_main(top);
 
     // coverage.
     if (clk == 0) {
@@ -181,6 +181,9 @@ void Voc8051_Simulator::load_boot_image(const std::string& imgfile) {
 // run program.
 void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile, const std::string& imgfile,
                             std::shared_ptr<TraceGenerator>& tg) {
+
+
+    // std::cout << "Calling simulatro.run() function : " << trid++ << std::endl;
 
   srand(time(NULL));
   reset_uc(tg);

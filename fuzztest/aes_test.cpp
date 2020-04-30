@@ -13,6 +13,13 @@
 #include "tamper.h"
 #include "trace.h"
 
+#include <dirent.h>
+#include <stdio.h>
+#include <string.h>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+
 // required for afl
 static int fid = 0;
 static std::stringstream oldss;
@@ -35,20 +42,44 @@ int main() {
                                     "block_counter_next", "more_blocks", "last_byte_acked"});
 
   const unsigned int aes_tg = 0;
-  FILE* fsource = fopen("/home/sujit/Tools/fuzztest-tracegen/fuzztest/aes-out/queue/id:000185,src:000000,op:flip1,pos:59,+cov", "r");
-  std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(aes_tg, fsource);
+
+  std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(aes_tg, stdin);
   tg->addVars(signals);
 
-  OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
-  // afl init
-  afl_init(&fid, &oldss);
-  // sim.run(NoTamper, romfile, imgfile, tg);
-  sim.run(tamper, romfile, imgfile, tg);
+    OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
+    // afl init
+    // afl_init(&fid, &oldss);
 
 
 
-  // push coverage
-  sim.copy_coverage();
+// push coverage
+sim.copy_coverage();
+
+  DIR* pDIR;
+
+  std::string dirpath = "/home/sujit/Tools/fuzztest-tracegen/fuzztest/aes-out/queue/";
+  struct dirent* entry;
+  if (pDIR = opendir(dirpath.c_str())) {
+    while (entry = readdir(pDIR)) {
+        if (trid > 100)
+            break;
+      if ((entry->d_name[0] != '.') && strcmp(entry->d_name, "..") != 0) {
+
+        std::cout << entry->d_name << "\n";
+      // sim.run(tamper, romfile, imgfile, tg);
+
+        std::string filepath = dirpath + std::string(entry->d_name);
+        tg->insource = fopen(filepath.c_str(), "rb");
+        sim.run(NoTamper, romfile, imgfile, tg);
+        fclose(tg->insource);
+        sim.nextTrace();
+        std::cout << "SIMULATING nextTrace : " << trid++ << std::endl;
+        }
+    }
+    closedir(pDIR);
+  } else {
+    std::cout << "NOT able to open directroy" << std::endl;
+  }
 
   return 0;
 }
