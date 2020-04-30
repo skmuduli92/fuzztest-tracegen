@@ -542,18 +542,35 @@ void TraceGenerator::randomizeData_page_table(std::shared_ptr<Voc8051_tb> top) {
   const unsigned read_succeed = (0xEFE6);
   const unsigned write_succeed = (0xEFEA);
 
-  unsigned segid = rand() % 3;
+  unsigned segid = 0;
+  unsigned offset = 0;
+  unsigned action = 0;
+
+  int segread = fread(&segid, sizeof(segid), 1, insource);
+  int offsetread = fread(&offset, sizeof(offset), 1, insource);
+  int actionread = fread(&action, sizeof(action), 1, insource);
+
+  std::cout << "READING DATA COMPLETE\n";
+
+  if (!(segread && offsetread && actionread)) {
+    std::cout << "Error : reading input from source\n";
+    exit(1);
+  }
+
+  segid = segid % 3;
+  offset = offset % 128;
+  action = action % 4;
+
   unsigned segment = addr_range[segid].first;
-  unsigned offset = (rand() % 128);
   unsigned abs_addr = addr_range[segid].second + offset;
   addr_store = abs_addr;
 
   std::cout << "absolute address : " << (uint32_t)abs_addr << std::endl;
 
-  unsigned action = rand() % 4;
   std::cout << "action : " << action << std::endl;
   std::cout << "segment : " << segment << std::endl;
   std::cout << "abs addrss : " << abs_addr << std::endl;
+
   switch (action) {
     case 0:
       top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_page_table_i__DOT__rd_enabled[segment] = 0x00;

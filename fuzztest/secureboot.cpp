@@ -182,8 +182,7 @@ void Voc8051_Simulator::load_boot_image(const std::string& imgfile) {
 void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile, const std::string& imgfile,
                             std::shared_ptr<TraceGenerator>& tg) {
 
-
-    // std::cout << "Calling simulatro.run() function : " << trid++ << std::endl;
+  // std::cout << "Calling simulatro.run() function : " << trid++ << std::endl;
 
   srand(time(NULL));
   reset_uc(tg);
