@@ -59,6 +59,58 @@ void Voc8051_Simulator::monitor_debug_registers() {
 
 // simulates delay number of cycles. Set delay < 0 to simulate
 // indefinetely.
+
+void Voc8051_Simulator::recordsignals(long count) {
+
+  size_t traceid = varNames["aes_reg_start"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__start_op);
+
+  traceid = varNames["ack_aes"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__ack_aes);
+
+  traceid = varNames["aes_xram_ack"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_xram_ack);
+
+  traceid = varNames["aes_reg_state"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_state);
+
+  traceid = varNames["aes_reg_state_next"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_state_next);
+
+  traceid = varNames["aes_byte_counter"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__byte_counter);
+
+  traceid = varNames["aes_reg_oplen"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen);
+
+  traceid = varNames["aes_data_out_mux"]->traceIndex;
+  setVar(trace, traceid, count,
+         (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_ctr_i__DOT__data_out_mux);
+
+  traceid = varNames["good_value"]->traceIndex;
+  setVar(trace, traceid, count,
+         (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA]);
+
+  traceid = varNames["operated_bytes_count"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__operated_bytes_count);
+
+  traceid = varNames["operated_bytes_count_next"]->traceIndex;
+  setVar(trace, traceid, count,
+         (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__operated_bytes_count_next);
+
+  traceid = varNames["block_counter"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__block_counter);
+
+  traceid = varNames["block_counter_next"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__block_counter_next);
+
+  traceid = varNames["more_blocks"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__more_blocks);
+
+  traceid = varNames["last_byte_acked"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__last_byte_acked);
+}
+
 int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay) {
   long cnt = 0;
   int clk = 0;
@@ -69,7 +121,7 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay)
       break;
     }
 
-    // if ((tg->tracegenID == 4) && (sc_time_stamp() == 50000)) {
+    // if ((tg->tracegenID == 4) && (count == 50000)) {
     //   break;
     // }
 
@@ -81,13 +133,15 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay)
 
     // print_metadata();
     // check if the write succeeded here,
-
     // tg->tracegen_main(top);
+
+    if (reset) {
+      recordsignals(cnt + 1);
+    }
 
     // coverage.
     if (clk == 0) {
       // track signals on rising clock
-
       uint32_t opcode = top->oc8051_tb__DOT__oc8051_top_1__DOT__op1_d;
       tracker.track(0, opcode);
       auto pc = top->oc8051_tb__DOT__oc8051_top_1__DOT__pc;
@@ -184,8 +238,10 @@ void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile, con
 
   // std::cout << "Calling simulatro.run() function : " << trid++ << std::endl;
 
+  std::cout << "calling run method for simulatio\n";
   srand(time(NULL));
   reset_uc(tg);
+  reset = true;
   load_program(romfile);
   load_boot_image(imgfile);
 
@@ -195,6 +251,7 @@ void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile, con
   unsigned nsteps = std::numeric_limits<unsigned>::max();
   if (tg->tracegenID == 3) nsteps = 79497 + 25000;
 
+  std::cout << "Reset done... simulating model..." << std::endl;
   simulate(tg, nsteps);
   std::cout << "finished @ " << std::dec << main_time << std::endl;
 }
@@ -221,6 +278,17 @@ bool Voc8051_Simulator::evaluate(HyperPLTL::PHyperProp f) {
     result = f->eval(i, traces);
   }
   return result;
+}
+
+void Voc8051_Simulator::print_trace_intvar(size_t idx) {
+
+  // trace : class member variable, points to current trace
+  assert(traces[trace]->length() != 0 && traces[trace]->termValueAt(idx, 0).index() == 0);
+
+  for (size_t t = 0; t < traces[trace]->length(); ++t) {
+    std::cout << std::get<uint32_t>(traces[trace]->termValueAt(idx, t)) << ",";
+  }
+  std::cout << std::endl;
 }
 
 // Default tamperer

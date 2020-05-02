@@ -48,20 +48,24 @@ std::string TraceGenerator::genFileName(std::string const &varname) {
 
 void TraceGenerator::recordSignal(std::string const &sname, uint32_t traceId, uint64_t time, int64_t value) {
 
-  if (tracegenID == 3) {
-    if (time >= 79498 && (intvar2id.find(sname) != intvar2id.end()))
-      int_facts[intvar2id[sname]] << traceId << "\t" << time - 79498 << "\t" << value << std::endl;
-  }
+  // online trace record
+
+  // implementation for writing to the file (offline processing)
+
+  // if (tracegenID == 3) {
+  //   if (time >= 79498 && (intvar2id.find(sname) != intvar2id.end()))
+  //     int_facts[intvar2id[sname]] << traceId << "\t" << time - 79498 << "\t" << value << std::endl;
+  // }
 
   // else if (tracegenID == 5) {
   //   if (time >= 83600 && (intvar2id.find(sname) != intvar2id.end()))
   //     int_facts[intvar2id[sname]] << traceId << "\t" << time - 83600 << "\t" << value << std::endl;
   // }
 
-  else if (time >= RESET_TIME) {
-    if (intvar2id.find(sname) != intvar2id.end())
-      int_facts[intvar2id[sname]] << traceId << "\t" << time - 20 << "\t" << value << std::endl;
-  }
+  // else if (time >= RESET_TIME) {
+  //   if (intvar2id.find(sname) != intvar2id.end())
+  //     int_facts[intvar2id[sname]] << traceId << "\t" << time - 20 << "\t" << value << std::endl;
+  // }
 }
 
 void TraceGenerator::tracegen_main(std::shared_ptr<Voc8051_tb> top) {
@@ -524,12 +528,11 @@ void TraceGenerator::randomizeData_wr(std::shared_ptr<Voc8051_tb> top) {
     int offsetread = fread(&offset, sizeof(offset), 1, insource);
 
     if (!(dataread && offsetread)) {
-        std::cerr << "Error : reading from source failed\n";
-        exit(1);
+      std::cerr << "Error : reading from source failed\n";
+      exit(1);
     }
 
     uint16_t addr = start_addr + (offset % (end_addr - start_addr));
-
 
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_addr[i] = addr;
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_data[i] = data;
@@ -756,51 +759,51 @@ void TraceGenerator::tracegen_sha(std::shared_ptr<Voc8051_tb> top) {
 void TraceGenerator::tracegen_aes(std::shared_ptr<Voc8051_tb> top) {
   // substracting 20 for reset time
 
-  recordSignal("ack_aes", trid, sc_time_stamp(), (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__ack_aes);
+  // recordSignal("ack_aes", trid, sc_time_stamp(), (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__ack_aes);
 
-  recordSignal("aes_xram_ack", trid, sc_time_stamp(), (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_xram_ack);
+  // recordSignal("aes_xram_ack", trid, sc_time_stamp(), (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_xram_ack);
 
-  recordSignal("aes_reg_state", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_state);
+  // recordSignal("aes_reg_state", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_state);
 
-  recordSignal("aes_reg_state_next", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_state_next);
+  // recordSignal("aes_reg_state_next", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_state_next);
 
-  recordSignal("aes_byte_counter", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__byte_counter);
+  // recordSignal("aes_byte_counter", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__byte_counter);
 
-  recordSignal("aes_reg_oplen: ", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen);
+  // recordSignal("aes_reg_oplen: ", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen);
 
-  recordSignal("aes_data_out_mux", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_ctr_i__DOT__data_out_mux);
+  // recordSignal("aes_data_out_mux", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_ctr_i__DOT__data_out_mux);
 
-  recordSignal("good_value", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA]);
+  // recordSignal("good_value", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA]);
 
-  recordSignal("aes_reg_oplen", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen);
+  // recordSignal("aes_reg_oplen", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen);
 
-  recordSignal("operated_bytes_count", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__operated_bytes_count);
+  // recordSignal("operated_bytes_count", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__operated_bytes_count);
 
-  recordSignal("operated_bytes_count_next", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__operated_bytes_count_next);
+  // recordSignal("operated_bytes_count_next", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__operated_bytes_count_next);
 
-  recordSignal("block_counter", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__block_counter);
+  // recordSignal("block_counter", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__block_counter);
 
-  recordSignal("block_counter_next", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__block_counter_next);
+  // recordSignal("block_counter_next", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__block_counter_next);
 
-  recordSignal("aes_reg_start", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__start_op);
+  // recordSignal("aes_reg_start", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__start_op);
 
-  recordSignal("more_blocks", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__more_blocks);
+  // recordSignal("more_blocks", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__more_blocks);
 
-  recordSignal("last_byte_acked", trid, sc_time_stamp(),
-               (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__last_byte_acked);
+  // recordSignal("last_byte_acked", trid, sc_time_stamp(),
+  //              (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__last_byte_acked);
 }
 
 void TraceGenerator::tracegen_wr(std::shared_ptr<Voc8051_tb> top) {

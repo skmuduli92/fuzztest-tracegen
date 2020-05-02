@@ -63,6 +63,9 @@ class Voc8051_Simulator {
   unsigned trace;
 
  public:
+  // reset
+  bool reset;
+
   // constructor.
   Voc8051_Simulator(unsigned numTraces, unsigned numProps, unsigned numVars)
       : top(std::make_shared<Voc8051_tb>()), tracker(65536), trace(0) {
@@ -73,8 +76,13 @@ class Voc8051_Simulator {
     for (unsigned i = 0; i != numTraces; i++) {
       traces.push_back(PTrace(new Trace(numProps, numVars)));
     }
+
+    reset = false;
   }
 
+  void printVarnames() {
+    for (auto it : varNames) std::cout << it.first << std::endl;
+  }
   // public interface methods.
 
   void addVar(const std::string& name, unsigned traceIndex, unsigned debugIndex, VarInfo::Type t, uint64_t init) {
@@ -86,7 +94,7 @@ class Voc8051_Simulator {
     }
   }
 
-  void setVar(unsigned t, unsigned dbgIndex, uint32_t time, uint64_t value) {
+  void setVar(unsigned t, unsigned dbgIndex, uint32_t time, uint32_t value) {
     auto pos = varIndices.find(dbgIndex);
     assert(pos != varIndices.end());
     PVarInfo inf = pos->second;
@@ -115,6 +123,11 @@ class Voc8051_Simulator {
 
   /** Function that evaluates whether the property is true or not. */
   bool evaluate(HyperPLTL::PHyperProp f);
+
+  // storing signal value as trace after each eval call
+  void recordsignals(long);
+
+  void print_trace_intvar(size_t idx);
 };
 
 class TraceGenerator {
@@ -171,8 +184,8 @@ class TraceGenerator {
   }
 
   void dummyfunc() {
-      std::cout << "traceid : " << trid << std::endl;
-      trid++;
+    std::cout << "traceid : " << trid << std::endl;
+    trid++;
   }
 };
 
