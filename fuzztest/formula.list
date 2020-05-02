@@ -1,0 +1,1 @@
+( G+ ( IMPLIES ( EQ aes_reg_state_next )( EQ aes_reg_start ) ) )

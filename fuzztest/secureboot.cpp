@@ -63,6 +63,10 @@ void Voc8051_Simulator::monitor_debug_registers() {
 void Voc8051_Simulator::recordsignals(long count) {
 
   size_t traceid = varNames["aes_reg_start"]->traceIndex;
+  if (count == 1) {
+    std::cout << "trace id : " << trace << std::endl;
+  }
+
   setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__start_op);
 
   traceid = varNames["ack_aes"]->traceIndex;
@@ -135,7 +139,7 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay)
     // check if the write succeeded here,
     // tg->tracegen_main(top);
 
-    if (reset) {
+    if (reset_state) {
       recordsignals(cnt + 1);
     }
 
@@ -241,7 +245,7 @@ void Voc8051_Simulator::run(ITamperer& tamperer, const std::string& romfile, con
   std::cout << "calling run method for simulatio\n";
   srand(time(NULL));
   reset_uc(tg);
-  reset = true;
+  reset_state = true;
   load_program(romfile);
   load_boot_image(imgfile);
 

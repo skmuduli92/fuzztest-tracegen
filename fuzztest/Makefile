@@ -23,9 +23,6 @@ all: bootloader bootfuzzer aes_test sha_test page_table_test rsa_test wr_test me
 checkformula : checkformula.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
 
-checkformula.o : checkformula.cpp secureboot.h coverage.h
-	g++ -c $(CXXFLAGS) $(INCLUDES) $<
-
 rsa_test: rsa_test.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
 
@@ -70,6 +67,10 @@ sha_test.o: sha_test.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
 
 aes_test.o: aes_test.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
 	g++ -c $(CXXFLAGS) $(INCLUDES) $<
+
+checkformula.o : checkformula.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
+	g++ -c $(CXXFLAGS) $(INCLUDES) $<
+
 
 bootfuzzer.o: bootfuzzer.cpp secureboot.h coverage.h Voc8051_tb__ALL.a
 	g++ -c $(CXXFLAGS) $(INCLUDES) $<

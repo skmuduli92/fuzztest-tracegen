@@ -64,7 +64,9 @@ class Voc8051_Simulator {
 
  public:
   // reset
-  bool reset;
+  bool reset_state;
+
+  unsigned getcurrTrace() const { return trace; };
 
   // constructor.
   Voc8051_Simulator(unsigned numTraces, unsigned numProps, unsigned numVars)
@@ -77,7 +79,7 @@ class Voc8051_Simulator {
       traces.push_back(PTrace(new Trace(numProps, numVars)));
     }
 
-    reset = false;
+    reset_state = false;
   }
 
   void printVarnames() {
@@ -89,6 +91,7 @@ class Voc8051_Simulator {
     PVarInfo varInfo(new VarInfo(name, traceIndex, debugIndex, t));
     varNames.insert(std::make_pair(name, varInfo));
     varIndices.insert(std::make_pair(debugIndex, varInfo));
+
     for (unsigned i = 0; i != traces.size(); i++) {
       setVar(i, debugIndex, 0, init);
     }
@@ -110,7 +113,9 @@ class Voc8051_Simulator {
     Verilated::reset_verilator();
     reset_time_stamp();
     trace++;
-    // assert(trace < traces.size());
+    reset_state = false;
+    std::cout << "next trace id : " << trace << ", trace size : " << traces.size() << std::endl;
+    assert(trace < traces.size());
   }
 
   void reset_uc(std::shared_ptr<TraceGenerator>& tg);
