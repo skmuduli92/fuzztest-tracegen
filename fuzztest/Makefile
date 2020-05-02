@@ -19,6 +19,13 @@ endif
 
 all: bootloader bootfuzzer aes_test sha_test page_table_test rsa_test wr_test meminterface_test
 
+
+checkformula : checkformula.o $(SHARED_OBJECTS)
+	g++ -o $@ $(LDFLAGS) $^
+
+checkformula.o : checkformula.cpp secureboot.h coverage.h
+	g++ -c $(CXXFLAGS) $(INCLUDES) $<
+
 rsa_test: rsa_test.o $(SHARED_OBJECTS)
 	g++ -o $@ $(LDFLAGS) $^
 
