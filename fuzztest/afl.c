@@ -27,6 +27,8 @@
 #define FORKSRV_FD 198
 static int* fid;
 
+pid_t child_pid;
+
 /* Globals needed by the injected instrumentation. The __afl_area_initial region
    is used for instrumentation output before __afl_map_shm() has a chance to run.
    It will end up as .comm, so it shouldn't be too wasteful. */
@@ -66,12 +68,13 @@ static void __afl_start_forkserver() {
     return;
   }
 
-  pid_t child_pid;
+  std::ofstream outs("parent.output");
 
   while (trid < 10) {
 
     uint32_t was_killed;
     int status;
+    int fromchild;
 
     // Wait for parent by reading from the pipe. Abort if read fails.
     if (read(FORKSRV_FD, &was_killed, 4) != 4) _exit(1);
@@ -84,7 +87,6 @@ static void __afl_start_forkserver() {
 
     // In child process: close fds, resume execution.
     if (!child_pid) {
-      isparent = false;
       close(FORKSRV_FD);
       close(FORKSRV_FD + 1);
       return;
@@ -94,6 +96,18 @@ static void __afl_start_forkserver() {
     if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) {
       _exit(1);
     }
+
+    if (read(fd[0], &fromchild, sizeof(fromchild)) != sizeof(fromchild)) {
+
+      outs << "exiting afl process" << std::endl;
+      outs.close();
+      _exit(1);
+    } else {
+      outs << "reading at fork : " << trid << " : " << fromchild << std::endl;
+    }
+
+    unsigned response = 1;
+    (void)write(fd[1], &response, sizeof(response));
 
     if (waitpid(child_pid, &status, 0) < 0) {
       _exit(1);
@@ -105,9 +119,9 @@ static void __afl_start_forkserver() {
     }
 
     trid++;
-    isparent = true;
-    traceidlist.push_back(trid);
   }
+
+  outs.close();
 }
 static std::stringstream* ss;
 void afl_init(int* var, std::stringstream* s) {

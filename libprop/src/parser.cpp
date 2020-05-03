@@ -39,8 +39,7 @@ struct HPLTLBuilder {
     // commenting cout the code below for specific application in
     // fuzztest online formula verification
 
-    // unsigned varid = varmap->getVarIndex(eqlNode.varname);
-    unsigned varid = varmap->addIntVar(eqlNode.varname);
+    unsigned varid = varmap->getVarIndex(eqlNode.varname);
 
     HyperPLTL::PTerm newvar;
     switch (varmap->getVarType(eqlNode.varname)) {

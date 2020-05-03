@@ -16,9 +16,11 @@
 
 #define NUM_TRACES 300
 
-extern bool isparent;
+extern pid_t child_pid;
+extern int fd[];
+
 extern unsigned trid;
-extern std::vector<unsigned> traceidlist;
+extern std::vector<unsigned long> violated;
 
 class TraceGenerator;
 

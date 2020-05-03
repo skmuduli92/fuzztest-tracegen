@@ -16,6 +16,7 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -33,7 +34,9 @@ static ITamperer NoTamper;
 bool isparent = true;
 unsigned trid = 0;
 
-std::vector<unsigned> violated;
+int fd[2] = {0, 0};
+
+std::vector<unsigned long> violated({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11});
 std::vector<unsigned> traceidlist;
 
 int main(int argc, char *argv[]) {
@@ -89,6 +92,9 @@ int main(int argc, char *argv[]) {
   std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(aes_tg, insource);
   // tg->addVars(signals);
 
+  (void)pipe(fd);
+  srand(time(NULL));
+
   afl_init(&fid, &oldss);
 
   sim.run(NoTamper, romfile, imgfile, tg);
@@ -103,27 +109,19 @@ int main(int argc, char *argv[]) {
   // check formula proplist
   TraceList traces = sim.tracelist();
 
-  // validate formula
-  for (size_t propid = 0; propid < proplist.size(); ++propid) {
-    bool result = evaluateTraces(proplist[propid], traces);
-    std::cout << "formula : ";
-    proplist[propid]->display(std::cout);
-    if (result)
-      std::cout << " [SATISFIED]\n";
-    else {
-      violated.push_back(propid);
-      std::cout << " [FAILED]\n";
-    }
+  unsigned response = getpid();
+  if (child_pid == 0) {
+    write(fd[1], &response, sizeof(response));
   }
 
   sim.copy_coverage();
 
-  if (isparent) {
-    std::ofstream res("result.txt");
-    res << "violated property indices : " << std::endl;
-    for (int i : violated) res << i << std::endl;
+  if (insource != stdin) fclose(insource);
+
+  // wait for ack from parent to exit
+  if (child_pid == 0) {
+    read(fd[0], &response, sizeof(response));
   }
 
-  if (insource != stdin) fclose(insource);
   return 0;
 }
