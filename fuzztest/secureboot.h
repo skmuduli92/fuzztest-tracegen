@@ -16,7 +16,9 @@
 
 #define NUM_TRACES 300
 
+extern bool isparent;
 extern unsigned trid;
+extern std::vector<unsigned> traceidlist;
 
 class TraceGenerator;
 
@@ -66,7 +68,8 @@ class Voc8051_Simulator {
   // reset
   bool reset_state;
 
-  unsigned getcurrTrace() const { return trace; };
+  unsigned getcurrTrace() const { return trace; }
+  TraceList tracelist() const { return traces; }
 
   // constructor.
   Voc8051_Simulator(unsigned numTraces, unsigned numProps, unsigned numVars)

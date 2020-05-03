@@ -68,7 +68,7 @@ static void __afl_start_forkserver() {
 
   pid_t child_pid;
 
-  while (1) {
+  while (trid < 10) {
 
     uint32_t was_killed;
     int status;
@@ -84,6 +84,7 @@ static void __afl_start_forkserver() {
 
     // In child process: close fds, resume execution.
     if (!child_pid) {
+      isparent = false;
       close(FORKSRV_FD);
       close(FORKSRV_FD + 1);
       return;
@@ -93,6 +94,7 @@ static void __afl_start_forkserver() {
     if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) {
       _exit(1);
     }
+
     if (waitpid(child_pid, &status, 0) < 0) {
       _exit(1);
     }
@@ -102,7 +104,9 @@ static void __afl_start_forkserver() {
       _exit(1);
     }
 
-    /* trid += 1; */
+    trid++;
+    isparent = true;
+    traceidlist.push_back(trid);
   }
 }
 static std::stringstream* ss;

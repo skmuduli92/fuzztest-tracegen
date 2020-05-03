@@ -60,61 +60,6 @@ void Voc8051_Simulator::monitor_debug_registers() {
 // simulates delay number of cycles. Set delay < 0 to simulate
 // indefinetely.
 
-void Voc8051_Simulator::recordsignals(long count) {
-
-  size_t traceid = varNames["aes_reg_start"]->traceIndex;
-  if (count == 1) {
-    std::cout << "trace id : " << trace << std::endl;
-  }
-
-  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__start_op);
-
-  traceid = varNames["ack_aes"]->traceIndex;
-  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__ack_aes);
-
-  traceid = varNames["aes_xram_ack"]->traceIndex;
-  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_xram_ack);
-
-  traceid = varNames["aes_reg_state"]->traceIndex;
-  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_state);
-
-  traceid = varNames["aes_reg_state_next"]->traceIndex;
-  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_state_next);
-
-  traceid = varNames["aes_byte_counter"]->traceIndex;
-  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__byte_counter);
-
-  traceid = varNames["aes_reg_oplen"]->traceIndex;
-  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen);
-
-  traceid = varNames["aes_data_out_mux"]->traceIndex;
-  setVar(trace, traceid, count,
-         (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_ctr_i__DOT__data_out_mux);
-
-  traceid = varNames["good_value"]->traceIndex;
-  setVar(trace, traceid, count,
-         (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA]);
-
-  traceid = varNames["operated_bytes_count"]->traceIndex;
-  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__operated_bytes_count);
-
-  traceid = varNames["operated_bytes_count_next"]->traceIndex;
-  setVar(trace, traceid, count,
-         (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__operated_bytes_count_next);
-
-  traceid = varNames["block_counter"]->traceIndex;
-  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__block_counter);
-
-  traceid = varNames["block_counter_next"]->traceIndex;
-  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__block_counter_next);
-
-  traceid = varNames["more_blocks"]->traceIndex;
-  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__more_blocks);
-
-  traceid = varNames["last_byte_acked"]->traceIndex;
-  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__last_byte_acked);
-}
-
 int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay) {
   long cnt = 0;
   int clk = 0;
@@ -135,7 +80,6 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay)
     // monitor_ports();
     // monitor_debug_registers();
 
-    // print_metadata();
     // check if the write succeeded here,
     // tg->tracegen_main(top);
 
@@ -297,3 +241,56 @@ void Voc8051_Simulator::print_trace_intvar(size_t idx) {
 
 // Default tamperer
 ITamperer NoTamper;
+
+// recording signal for each experiment
+
+void Voc8051_Simulator::recordsignals(long count) {
+
+  size_t traceid = varNames["aes_reg_start"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__start_op);
+
+  traceid = varNames["ack_aes"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__ack_aes);
+
+  traceid = varNames["aes_xram_ack"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_xram_ack);
+
+  traceid = varNames["aes_reg_state"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_state);
+
+  traceid = varNames["aes_reg_state_next"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_state_next);
+
+  traceid = varNames["aes_byte_counter"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__byte_counter);
+
+  traceid = varNames["aes_reg_oplen"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_oplen);
+
+  traceid = varNames["aes_data_out_mux"]->traceIndex;
+  setVar(trace, traceid, count,
+         (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__aes_reg_ctr_i__DOT__data_out_mux);
+
+  traceid = varNames["good_value"]->traceIndex;
+  setVar(trace, traceid, count,
+         (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__oc8051_xram_i__DOT__buff[DEBUG_REG_DATA]);
+
+  traceid = varNames["operated_bytes_count"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__operated_bytes_count);
+
+  traceid = varNames["operated_bytes_count_next"]->traceIndex;
+  setVar(trace, traceid, count,
+         (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__operated_bytes_count_next);
+
+  traceid = varNames["block_counter"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__block_counter);
+
+  traceid = varNames["block_counter_next"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__block_counter_next);
+
+  traceid = varNames["more_blocks"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__more_blocks);
+
+  traceid = varNames["last_byte_acked"]->traceIndex;
+  setVar(trace, traceid, count, (uint32_t)top->oc8051_tb__DOT__oc8051_xiommu1__DOT__aes_top_i__DOT__last_byte_acked);
+}

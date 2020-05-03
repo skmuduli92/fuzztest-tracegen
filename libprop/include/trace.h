@@ -121,6 +121,8 @@ class Trace {
 
   /** Return the value of variable i at time cycle. */
   ValueType termValueAt(unsigned i, uint32_t cycle) {
+    std::cout << "termvalue at cycle : " << cycle << ", variable : " << i
+              << ", size : " << variables.size() << std::endl;
     assert(i < variables.size());
     return variables[i][cycle];
   }

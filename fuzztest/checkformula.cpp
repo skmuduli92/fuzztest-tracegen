@@ -20,6 +20,8 @@
 #include <fstream>
 #include <iostream>
 
+#include "formula_util.h"
+
 using namespace HyperPLTL;
 
 // required for afl
@@ -28,7 +30,11 @@ static std::stringstream oldss;
 
 static ITamperer NoTamper;
 
+bool isparent = true;
 unsigned trid = 0;
+
+std::vector<unsigned> violated;
+std::vector<unsigned> traceidlist;
 
 int main(int argc, char *argv[]) {
 
@@ -51,10 +57,11 @@ int main(int argc, char *argv[]) {
   PVarMap varmap = std::make_shared<VarMap>();
 
   Voc8051_Simulator sim(2, 0, signals.size());
+  std::cout << "numvars (signals size) : " << signals.size() << std::endl;
 
   for (auto varname : signals) {
     unsigned varid = varmap->addIntVar(varname);
-    // std::cout << "varname : " << varname << ", varid : " << varid << std::endl;
+    std::cout << "varname : " << varname << ", varid : " << varid << std::endl;
     sim.addVar(varname, varid, varid, Voc8051_Simulator::VarInfo::TERM, 0);
   }
 
@@ -83,9 +90,9 @@ int main(int argc, char *argv[]) {
   // tg->addVars(signals);
 
   afl_init(&fid, &oldss);
+
   sim.run(NoTamper, romfile, imgfile, tg);
   // afl init
-
   sim.nextTrace();
 
   // second trace.
@@ -93,7 +100,29 @@ int main(int argc, char *argv[]) {
   OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
   sim.run(tamper, romfile, imgfile, tg);
 
+  // check formula proplist
+  TraceList traces = sim.tracelist();
+
+  // validate formula
+  for (size_t propid = 0; propid < proplist.size(); ++propid) {
+    bool result = evaluateTraces(proplist[propid], traces);
+    std::cout << "formula : ";
+    proplist[propid]->display(std::cout);
+    if (result)
+      std::cout << " [SATISFIED]\n";
+    else {
+      violated.push_back(propid);
+      std::cout << " [FAILED]\n";
+    }
+  }
+
   sim.copy_coverage();
+
+  if (isparent) {
+    std::ofstream res("result.txt");
+    res << "violated property indices : " << std::endl;
+    for (int i : violated) res << i << std::endl;
+  }
 
   if (insource != stdin) fclose(insource);
   return 0;
