@@ -97,16 +97,30 @@ static void __afl_start_forkserver() {
       _exit(1);
     }
 
-    if (read(fd[0], &fromchild, sizeof(fromchild)) != sizeof(fromchild)) {
+    size_t vsize;
+    unsigned response;
 
+    read(fd[0], &response, sizeof(response));
+    outs << " === PID [ " << response << " ] ===" << std::endl;
+
+    if (read(fd[0], &vsize, sizeof(vsize)) == sizeof(vsize)) {
+      outs << "reading vector of size : " << vsize << std::endl;
+      unsigned* vec = new unsigned[vsize];
+      (void)read(fd[0], vec, vsize * sizeof(unsigned));
+
+      for (size_t id = 0; id < vsize; ++id) {
+        outs << vec[id] << std::endl;
+      }
+
+      delete[](vec);
+
+    } else {
       outs << "exiting afl process" << std::endl;
       outs.close();
       _exit(1);
-    } else {
-      outs << "reading at fork : " << trid << " : " << fromchild << std::endl;
     }
 
-    unsigned response = 1;
+    response = 1;
     (void)write(fd[1], &response, sizeof(response));
 
     if (waitpid(child_pid, &status, 0) < 0) {

@@ -112,6 +112,10 @@ int main(int argc, char *argv[]) {
   unsigned response = getpid();
   if (child_pid == 0) {
     write(fd[1], &response, sizeof(response));
+    size_t vsize = response % 10;
+    std::vector<unsigned> vec(vsize, vsize);
+    write(fd[1], &vsize, sizeof(vsize));
+    write(fd[1], vec.data(), vsize * sizeof(unsigned));
   }
 
   sim.copy_coverage();
