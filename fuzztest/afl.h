@@ -16,9 +16,11 @@
 void afl_init(int*, std::stringstream*);
 
 #define PROG_SHM_KEY 567890
+#define SHM_AFL_N_TEST_PROG 567891
 
 extern uint8_t* __afl_area_ptr;
 extern uint8_t* __prog_shm_ptr;
+extern char* __shm_test_name;
 
 static inline void afl_increment(uint16_t id) { __afl_area_ptr[id]++; }
 static inline void afl_set(uint16_t id, uint8_t value) { __afl_area_ptr[id] = value; }

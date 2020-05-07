@@ -101,12 +101,12 @@ int main(int argc, char *argv[]) {
   sim.run(tamper, romfile, imgfile, tg);
 
   // check formula proplist
-  PTrace trace = sim.tracelist()[0];
+  PTrace trace = sim.getTrace(1);
 
   unsigned response = getpid();
   if (child_pid == 0) {
-    memcpy(__prog_shm_ptr, &response, sizeof(response));
-    TraceSerialize::store(__prog_shm_ptr + sizeof(response), trace);
+    memcpy(__prog_shm_ptr, __shm_test_name, 256);
+    TraceSerialize::store(__prog_shm_ptr + 256, trace);
   }
 
   sim.copy_coverage();

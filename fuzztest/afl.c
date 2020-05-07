@@ -24,6 +24,7 @@
 #define MAP_SIZE_POW2 16
 #define MAP_SIZE (1 << MAP_SIZE_POW2)
 #define SHM_ENV_VAR "__AFL_SHM_ID"
+
 #define FORKSRV_FD 198
 static int* fid;
 
@@ -36,10 +37,14 @@ uint8_t __afl_area_initial[MAP_SIZE];
 uint8_t* __afl_area_ptr = __afl_area_initial;
 
 uint8_t* __prog_shm_ptr = NULL;
+char* __shm_test_name = NULL;
 
 __thread uint32_t __afl_prev_loc;
 
 static void __afl_map_shm() {
+
+  std::ofstream errs("errors.txt");
+
   char* id_str = getenv(SHM_ENV_VAR);
 
   // If we're running under AFL, attach to the appropriate region, replacing the
@@ -50,21 +55,25 @@ static void __afl_map_shm() {
     __afl_area_ptr = (uint8_t*)shmat(shm_id, NULL, 0);
 
     // Whooooops.
-    if (__afl_area_ptr == (void*)-1) {
-      _exit(1);
-    }
+    if (__afl_area_ptr == (void*)-1) _exit(1);
 
     // Write something into the bitmap so that even with low AFL_INST_RATIO,
     // our parent doesn't give up on us.
     __afl_area_ptr[0] = 1;
   }
 
-  uint32_t prog_shm_id = shmget(IPC_PRIVATE, 2UL * 1024 * 1024, IPC_CREAT | 0666);
+  uint32_t prog_shm_id = shmget(IPC_PRIVATE, 8UL * 1024 * 1024, IPC_CREAT | 0666);
   __prog_shm_ptr = (uint8_t*)shmat(prog_shm_id, NULL, 0);
   if (__prog_shm_ptr == (uint8_t*)-1) exit(1);
 
   // reset all bits to zero
   memset(__prog_shm_ptr, 0, 2UL * 1024 * 1024);
+
+  uint32_t shm_testprog_id = shmget(SHM_AFL_N_TEST_PROG, 256, IPC_CREAT | 0666);
+  __shm_test_name = (char*)shmat(shm_testprog_id, NULL, 0);
+  if (__shm_test_name == (char*)-1) exit(1);
+
+  errs.close();
 }
 
 /* Fork server logic. */
@@ -77,7 +86,11 @@ static void __afl_start_forkserver() {
     return;
   }
 
+#ifdef LOG_TRACEGEN
   std::ofstream outs("parent.output");
+#endif
+
+  std::map<std::string, PTrace> testvectorMap;
 
   while (1) {
 
@@ -101,14 +114,25 @@ static void __afl_start_forkserver() {
       return;
     }
 
-    unsigned response;
-    PTrace trace = TraceSerialize::load(__prog_shm_ptr + sizeof(response));
     // printing some info about the trace object
-    outs << "ITERATION : " << trid << std::endl;
-    memcpy(&response, __prog_shm_ptr, sizeof(response));
+    char filename[256] = {'\0'};
+    memcpy(filename, __prog_shm_ptr, 256);
 
-    outs << "CHILD PID : " << response << std::endl
-         << "Trace recieved ::> #props : " << trace->numProps() << " #vars : " << trace->numVars() << std::endl;
+    if (filename[0] != '\0') {
+      // check if the test is already seen
+      auto it = testvectorMap.find(filename);
+      if (it == testvectorMap.end()) {
+        // new test case
+        PTrace trace = TraceSerialize::load(__prog_shm_ptr + 256);
+        testvectorMap[filename] = trace;
+
+#ifdef LOG_TRACEGEN
+        outs << "New Test File : " << filename << std::endl;
+        outs << "TRACE DUMP >>" << std::endl;
+        outs << trace->toString()->str();
+#endif
+      }
+    }
 
     // In parent process: write PID to pipe, then wait for child.
     if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) {
@@ -126,8 +150,9 @@ static void __afl_start_forkserver() {
 
     trid++;
   }
-
+#ifdef LOG_TRACEGEN
   outs.close();
+#endif
 }
 static std::stringstream* ss;
 void afl_init(int* var, std::stringstream* s) {

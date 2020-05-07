@@ -9,6 +9,11 @@ else
     DEFINES:=
 endif
 
+
+ifeq ($(LOG_TRACEGEN), 1)
+    DEFINES+=-DLOG_TRACEGEN
+endif
+
 ifeq ($(DEBUG), 1)
     CXXFLAGS:=-g -O0 -std=c++17 $(DEFINES)
     LDFLAGS=-O0 -g

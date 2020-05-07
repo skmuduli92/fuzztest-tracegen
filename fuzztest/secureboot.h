@@ -71,7 +71,7 @@ class Voc8051_Simulator {
   bool reset_state;
 
   unsigned getcurrTrace() const { return trace; }
-  TraceList tracelist() const { return traces; }
+  PTrace getTrace(size_t id) const { return traces[id]; }
 
   // constructor.
   Voc8051_Simulator(unsigned numTraces, unsigned numProps, unsigned numVars)
