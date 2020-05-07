@@ -35,6 +35,8 @@ pid_t child_pid;
 uint8_t __afl_area_initial[MAP_SIZE];
 uint8_t* __afl_area_ptr = __afl_area_initial;
 
+uint8_t* __prog_shm_ptr = NULL;
+
 __thread uint32_t __afl_prev_loc;
 
 static void __afl_map_shm() {
@@ -56,6 +58,13 @@ static void __afl_map_shm() {
     // our parent doesn't give up on us.
     __afl_area_ptr[0] = 1;
   }
+
+  uint32_t prog_shm_id = shmget(IPC_PRIVATE, 2UL * 1024 * 1024, IPC_CREAT | 0666);
+  __prog_shm_ptr = (uint8_t*)shmat(prog_shm_id, NULL, 0);
+  if (__prog_shm_ptr == (uint8_t*)-1) exit(1);
+
+  // reset all bits to zero
+  memset(__prog_shm_ptr, 0, 2UL * 1024 * 1024);
 }
 
 /* Fork server logic. */
@@ -70,7 +79,7 @@ static void __afl_start_forkserver() {
 
   std::ofstream outs("parent.output");
 
-  while (trid < 10) {
+  while (1) {
 
     uint32_t was_killed;
     int status;
@@ -92,36 +101,19 @@ static void __afl_start_forkserver() {
       return;
     }
 
+    unsigned response;
+    PTrace trace = TraceSerialize::load(__prog_shm_ptr + sizeof(response));
+    // printing some info about the trace object
+    outs << "ITERATION : " << trid << std::endl;
+    memcpy(&response, __prog_shm_ptr, sizeof(response));
+
+    outs << "CHILD PID : " << response << std::endl
+         << "Trace recieved ::> #props : " << trace->numProps() << " #vars : " << trace->numVars() << std::endl;
+
     // In parent process: write PID to pipe, then wait for child.
     if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) {
       _exit(1);
     }
-
-    size_t vsize;
-    unsigned response;
-
-    read(fd[0], &response, sizeof(response));
-    outs << " === PID [ " << response << " ] ===" << std::endl;
-
-    if (read(fd[0], &vsize, sizeof(vsize)) == sizeof(vsize)) {
-      outs << "reading vector of size : " << vsize << std::endl;
-      unsigned* vec = new unsigned[vsize];
-      (void)read(fd[0], vec, vsize * sizeof(unsigned));
-
-      for (size_t id = 0; id < vsize; ++id) {
-        outs << vec[id] << std::endl;
-      }
-
-      delete[](vec);
-
-    } else {
-      outs << "exiting afl process" << std::endl;
-      outs.close();
-      _exit(1);
-    }
-
-    response = 1;
-    (void)write(fd[1], &response, sizeof(response));
 
     if (waitpid(child_pid, &status, 0) < 0) {
       _exit(1);

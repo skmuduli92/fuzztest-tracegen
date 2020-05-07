@@ -23,6 +23,8 @@
 
 #include "formula_util.h"
 
+#include "trace.h"
+
 using namespace HyperPLTL;
 
 // required for afl
@@ -33,11 +35,6 @@ static ITamperer NoTamper;
 
 bool isparent = true;
 unsigned trid = 0;
-
-int fd[2] = {0, 0};
-
-std::vector<unsigned long> violated({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11});
-std::vector<unsigned> traceidlist;
 
 int main(int argc, char *argv[]) {
 
@@ -92,9 +89,6 @@ int main(int argc, char *argv[]) {
   std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(aes_tg, insource);
   // tg->addVars(signals);
 
-  (void)pipe(fd);
-  srand(time(NULL));
-
   afl_init(&fid, &oldss);
 
   sim.run(NoTamper, romfile, imgfile, tg);
@@ -107,25 +101,17 @@ int main(int argc, char *argv[]) {
   sim.run(tamper, romfile, imgfile, tg);
 
   // check formula proplist
-  TraceList traces = sim.tracelist();
+  PTrace trace = sim.tracelist()[0];
 
   unsigned response = getpid();
   if (child_pid == 0) {
-    write(fd[1], &response, sizeof(response));
-    size_t vsize = response % 10;
-    std::vector<unsigned> vec(vsize, vsize);
-    write(fd[1], &vsize, sizeof(vsize));
-    write(fd[1], vec.data(), vsize * sizeof(unsigned));
+    memcpy(__prog_shm_ptr, &response, sizeof(response));
+    TraceSerialize::store(__prog_shm_ptr + sizeof(response), trace);
   }
 
   sim.copy_coverage();
 
   if (insource != stdin) fclose(insource);
-
-  // wait for ack from parent to exit
-  if (child_pid == 0) {
-    read(fd[0], &response, sizeof(response));
-  }
 
   return 0;
 }

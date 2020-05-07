@@ -15,14 +15,14 @@
 /// call at the beginning of main to start fork server
 void afl_init(int*, std::stringstream*);
 
-extern uint8_t* __afl_area_ptr;
-static inline void afl_increment(uint16_t id)
-{ __afl_area_ptr[id]++; }
-static inline void afl_set(uint16_t id, uint8_t value)
-{ __afl_area_ptr[id] = value; }
-static inline uint8_t afl_get(uint16_t id)
-{ return __afl_area_ptr[id]; }
-static inline void afl_copy(const void* src, size_t len)
-{ memcpy(__afl_area_ptr, src, len); }
+#define PROG_SHM_KEY 567890
 
-#endif // AFL_H
+extern uint8_t* __afl_area_ptr;
+extern uint8_t* __prog_shm_ptr;
+
+static inline void afl_increment(uint16_t id) { __afl_area_ptr[id]++; }
+static inline void afl_set(uint16_t id, uint8_t value) { __afl_area_ptr[id] = value; }
+static inline uint8_t afl_get(uint16_t id) { return __afl_area_ptr[id]; }
+static inline void afl_copy(const void* src, size_t len) { memcpy(__afl_area_ptr, src, len); }
+
+#endif  // AFL_H
