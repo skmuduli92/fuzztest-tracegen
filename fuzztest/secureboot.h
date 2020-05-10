@@ -17,6 +17,7 @@
 #define NUM_TRACES 300
 
 extern unsigned trid;
+extern unsigned MAX_TRACES;
 
 class TraceGenerator;
 
@@ -171,8 +172,8 @@ class TraceGenerator {
   }
 
   void dummyfunc() {
-      std::cout << "traceid : " << trid << std::endl;
-      trid++;
+    std::cout << "traceid : " << trid << std::endl;
+    trid++;
   }
 };
 

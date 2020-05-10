@@ -24,7 +24,7 @@ const uint32_t TraceGenerator::RESET_TIME = 20;
 void TraceGenerator::addVars(std::vector<std::string> const &intvars) {
   for (std::string const &var : intvars) {
     intvar2id[var] = int_facts.size();
-    int_facts.push_back(std::ofstream(genFileName(var)));
+    int_facts.push_back(std::ofstream("./trace_output/" + genFileName(var)));
   }
 }
 
@@ -524,12 +524,11 @@ void TraceGenerator::randomizeData_wr(std::shared_ptr<Voc8051_tb> top) {
     int offsetread = fread(&offset, sizeof(offset), 1, insource);
 
     if (!(dataread && offsetread)) {
-        std::cerr << "Error : reading from source failed\n";
-        exit(1);
+      std::cerr << "Error : reading from source failed\n";
+      exit(1);
     }
 
     uint16_t addr = start_addr + (offset % (end_addr - start_addr));
-
 
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_addr[i] = addr;
     top->oc8051_tb__DOT__fsm_writer_i__DOT__buf_data[i] = data;

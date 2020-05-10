@@ -23,6 +23,7 @@
 
 // Clock cycle counter.
 vluint64_t main_time = 0;
+unsigned MAX_TRACES;
 
 // Returns current clock cycle number.
 double sc_time_stamp() { return main_time; }
@@ -82,7 +83,7 @@ int Voc8051_Simulator::simulate(std::shared_ptr<TraceGenerator>& tg, long delay)
     // print_metadata();
     // check if the write succeeded here,
 
-    // tg->tracegen_main(top);
+    tg->tracegen_main(top);
 
     // coverage.
     if (clk == 0) {

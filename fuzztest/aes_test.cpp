@@ -20,6 +20,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <sys/stat.h>
+
 // required for afl
 static int fid = 0;
 static std::stringstream oldss;
@@ -31,6 +33,8 @@ unsigned trid = 0;
 int main() {
   // create top module
   Voc8051_Simulator sim(2, 1, 0);
+
+  MAX_TRACES = 75;
 
   // filenames
   std::string romfile("../rom/aes_test.dat");
@@ -44,22 +48,35 @@ int main() {
   const unsigned int aes_tg = 0;
 
   std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(aes_tg, stdin);
+
+  // create output directory for trace
+
+  struct stat st = {0};
+
+  if (stat("trace_output", &st) == -1) {
+    int status = mkdir("trace_output", 0777);
+    if (status == -1) {
+      std::cerr << "error createing trace_output directory\n";
+      exit(1);
+    }
+    std::cout << "creating trace_output directory...\n";
+  } else {
+    std::cout << "trace output directory already exists\n";
+  }
+
   tg->addVars(signals);
 
-  // OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
-  // // afl init
-  // afl_init(&fid, &oldss);
-  //
-  // sim.run(tamper, romfile, imgfile, tg);
-  //
-  // // push coverage
-  // sim.copy_coverage();
-
+#ifdef SIMULATE_TRACES
   DIR* pDIR;
 
-  std::string dirpath = "/home/sujit/Tools/fuzztest-tracegen/fuzztest/aes-out/queue/";
+  //  std::string dirpath = "/home/sujit/Tools/fuzztest-tracegen/fuzztest/aes-out/queue/";
   struct dirent* entry;
-  if (pDIR = opendir(dirpath.c_str())) {
+  if (argc < 2) {
+    std::cerr << "Test case path not provided\n";
+    exit(1);
+  }
+
+  if (pDIR = opendir(argv[1])) {
     while (entry = readdir(pDIR)) {
       if (trid == 100) break;
       if ((entry->d_name[0] != '.') && strcmp(entry->d_name, "..") != 0) {
@@ -79,6 +96,18 @@ int main() {
   } else {
     std::cout << "NOT able to open directroy" << std::endl;
   }
+
+#else
+  OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
+  // afl init
+  afl_init(&fid, &oldss);
+
+  sim.run(tamper, romfile, imgfile, tg);
+
+  // push coverage
+  sim.copy_coverage();
+
+#endif
 
   return 0;
 }
