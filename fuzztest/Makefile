@@ -2,11 +2,17 @@ DEBUG?=0
 INCLUDES=-I../verilator/include/ -I../fuzzer -I../libprop/include -I../tracegen
 SHARED_OBJECTS=secureboot.o coverage.o tamper.o Voc8051_tb__ALL.a afl.o verilated.o tracerecord.o ../libprop/build/lib/liblibprop.a -lcrypto
 DEBUG_COVERAGE?=0
+SIMULATE_TRACES?=0
 
 ifeq ($(DEBUG_COVERAGE), 1)
     DEFINES:=-DDEBUG_COVERAGE
 else
     DEFINES:=
+endif
+
+
+ifeq ($(SIMULATE_TRACES), 1)
+    DEFINES +=-DSIMULATE_TRACES
 endif
 
 ifeq ($(DEBUG), 1)

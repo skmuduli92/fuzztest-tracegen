@@ -68,7 +68,7 @@ static void __afl_start_forkserver() {
 
   pid_t child_pid;
 
-  while (trid <= MAX_TRACES) {
+  while (1) {
 
     uint32_t was_killed;
     int status;

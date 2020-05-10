@@ -30,11 +30,18 @@ static ITamperer NoTamper;
 
 unsigned trid = 0;
 
-int main() {
+int main(int argc, char* argv[]) {
   // create top module
   Voc8051_Simulator sim(2, 1, 0);
 
-  MAX_TRACES = 75;
+
+#ifdef SIMULATE_TRACES
+  if(argc < 2) {
+      std::cerr << "ERROR : Provide the path for the test inputs\n";
+      exit(1);
+  }
+
+#endif
 
   // filenames
   std::string romfile("../rom/aes_test.dat");
@@ -67,23 +74,20 @@ int main() {
   tg->addVars(signals);
 
 #ifdef SIMULATE_TRACES
+
+  std::cout << "SIMULATING TRACES...\n";
+
   DIR* pDIR;
-
-  //  std::string dirpath = "/home/sujit/Tools/fuzztest-tracegen/fuzztest/aes-out/queue/";
+  std::string dirpath = std::string(argv[1]);
   struct dirent* entry;
-  if (argc < 2) {
-    std::cerr << "Test case path not provided\n";
-    exit(1);
-  }
 
-  if (pDIR = opendir(argv[1])) {
+  if (pDIR = opendir(dirpath.c_str())) {
+
     while (entry = readdir(pDIR)) {
       if (trid == 100) break;
       if ((entry->d_name[0] != '.') && strcmp(entry->d_name, "..") != 0) {
 
         std::cout << entry->d_name << "\n";
-        // sim.run(tamper, romfile, imgfile, tg);
-
         std::string filepath = dirpath + std::string(entry->d_name);
         tg->insource = fopen(filepath.c_str(), "rb");
         sim.run(NoTamper, romfile, imgfile, tg);
