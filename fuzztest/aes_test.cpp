@@ -84,16 +84,20 @@ int main(int argc, char* argv[]) {
   if (pDIR = opendir(dirpath.c_str())) {
 
     while (entry = readdir(pDIR)) {
-      if (trid == 100) break;
-      if ((entry->d_name[0] != '.') && strcmp(entry->d_name, "..") != 0) {
 
+      if (trid == 100) {
+          std::cout << "Finished trace generation (processed only 100 test cases)\n";
+          break;
+      }
+
+      if ((entry->d_name[0] != '.') && strcmp(entry->d_name, "..") != 0) {
         std::cout << entry->d_name << "\n";
         std::string filepath = dirpath + std::string(entry->d_name);
         tg->insource = fopen(filepath.c_str(), "rb");
         sim.run(NoTamper, romfile, imgfile, tg);
         fclose(tg->insource);
         sim.nextTrace();
-        std::cout << "SIMULATING nextTrace : " << trid++ << std::endl;
+        std::cout << "Simulating next trace : " << trid++ << std::endl;
       }
     }
     closedir(pDIR);

@@ -16,6 +16,8 @@ directory.
 
    - ###### <u>step - 1</u>: Build an experiment say `aes_test`
 
+     - compile `aes_test` firmware by running `sh genaesfw.sh `
+
      - `rm -f *.o && make aes_test`
 
      - Run afl-fuzzer for `aes_test` binary with the given seed input, 
@@ -33,5 +35,5 @@ directory.
      - Then simulate the interesting inputs generated in **step - 1**, `./aes_test ./aes-out/queue/`
 
        This will create a new directory `trace_output` and dump the traces which is going to be used for property mining.
-
+   
    
