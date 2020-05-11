@@ -1,12 +1,30 @@
 # fuzztest
 
-Note: make sure you have built the following before running make in thsi
-directory.
+Note: make sure you have built the following before running make in this directory.
 
 1. Verilator
+
+   ```bash
+   cd verilator
+   export VERILATOR_ROOT=$PWD
+   autoconf
+   ./configure
+   make -j8
+   ```
+
+   
+
 2. libprop
 
+   ```bash
+   cd libprop
+   mkdir build && cd build
+   cmake .. && make -j4
+   ```
 
+   
+
+#### Generating Traces for HyperMiner experiment
 
 1. **Kernel configuration to run AFL**
 
