@@ -48,7 +48,7 @@ Note: make sure you have built the following before running make in this directo
 
    - ###### <u>step - 2:</u> Simulating interesting inputs
 
-     - `rm -f  *.o && SIMULATE_TRACES make aes_test` 
+     - `rm -f  *.o && SIMULATE_TRACES=1 make aes_test` 
 
      - Then simulate the interesting inputs generated in **step - 1**, `./aes_test ./aes-out/queue/`
 
