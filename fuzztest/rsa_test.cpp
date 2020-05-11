@@ -28,7 +28,7 @@ static ITamperer NoTamper;
 
 unsigned trid = 0;
 
-int main() {
+int main(int argc, char* argv[]) {
   // create top module
   Voc8051_Simulator sim(2, 1, 5);
 
@@ -46,33 +46,31 @@ int main() {
   std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(rsa_tg, stdin);
   tg->addVars(signals);
 
-  // OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
-  // // afl init
-  // afl_init(&fid, &oldss);
-  //
-  // sim.run(tamper, romfile, imgfile, tg);
-  //
-  // // push coverage
-  // sim.copy_coverage();
+#ifdef SIMULATE_TRACES
 
+  std::cout << "SIMULATING TRACES...\n";
 
   DIR* pDIR;
-
-  std::string dirpath = "/home/sujit/Tools/fuzztest-tracegen/fuzztest/rsa-out/queue/";
+  std::string dirpath = std::string(argv[1]);
   struct dirent* entry;
+
   if (pDIR = opendir(dirpath.c_str())) {
 
-    while (trid < 87 && (entry = readdir(pDIR))) {
+    while (entry = readdir(pDIR)) {
+
+      if (trid == 100) {
+        std::cout << "Finished trace generation (processed only 100 test cases)\n";
+        break;
+      }
+
       if ((entry->d_name[0] != '.') && strcmp(entry->d_name, "..") != 0) {
         std::cout << entry->d_name << "\n";
-        // sim.run(tamper, romfile, imgfile, tg);
-
         std::string filepath = dirpath + std::string(entry->d_name);
         tg->insource = fopen(filepath.c_str(), "rb");
         sim.run(NoTamper, romfile, imgfile, tg);
         fclose(tg->insource);
         sim.nextTrace();
-        std::cout << "SIMULATING nextTrace : " << trid++ << std::endl;
+        std::cout << "Simulating next trace : " << trid++ << std::endl;
       }
     }
     closedir(pDIR);
@@ -80,5 +78,16 @@ int main() {
     std::cout << "NOT able to open directroy" << std::endl;
   }
 
+#else
+  OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
+  // afl init
+  afl_init(&fid, &oldss);
+
+  sim.run(tamper, romfile, imgfile, tg);
+
+  // push coverage
+  sim.copy_coverage();
+
+#endif
   return 0;
 }
