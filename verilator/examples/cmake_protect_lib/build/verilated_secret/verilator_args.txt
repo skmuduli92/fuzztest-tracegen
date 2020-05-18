@@ -1,1 +1,0 @@
-/home/sujit/Tools/DeltaSigmaSoC/verilator/bin/verilator_bin;--compiler;gcc;--prefix;Vsecret_impl;--Mdir;/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_protect_lib/build/verilated_secret;--make;cmake;--cc;--protect-lib;verilated_secret;--protect-key;VL-KEY-3vAKazk7ojaOuyA9T4f5tqViC0tSJv0BZ4iX2ovt;../make_protect_lib/secret_impl.v

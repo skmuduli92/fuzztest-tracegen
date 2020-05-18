@@ -1,1 +1,0 @@
-/home/sujit/Tools/DeltaSigmaSoC/verilator/bin/verilator_bin;--compiler;gcc;--prefix;Vtop;--Mdir;/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_tracing_c/build/CMakeFiles/example.dir/Vtop.dir;--make;cmake;--coverage;--trace;--cc;-y;../make_tracing_c;-f;../make_tracing_c/input.vc;-O2;-x-assign;0;../make_tracing_c/top.v

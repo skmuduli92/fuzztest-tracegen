@@ -1,4 +1,0 @@
-/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_protect_lib/build/CMakeFiles/edit_cache.dir
-/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_protect_lib/build/CMakeFiles/example.dir
-/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_protect_lib/build/CMakeFiles/rebuild_cache.dir
-/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_protect_lib/build/CMakeFiles/verilated_secret.dir

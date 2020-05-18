@@ -1,1 +1,0 @@
-/home/sujit/Tools/DeltaSigmaSoC/verilator/bin/verilator_bin;--compiler;gcc;--prefix;Vtop;--Mdir;/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_protect_lib/build/CMakeFiles/example.dir/Vtop.dir;--make;cmake;--cc;-I/home/sujit/Tools/DeltaSigmaSoC/verilator/examples/cmake_protect_lib/build/verilated_secret;../make_protect_lib/top.v
