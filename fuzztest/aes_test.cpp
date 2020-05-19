@@ -46,39 +46,18 @@ int main() {
   std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(aes_tg, stdin);
   tg->addVars(signals);
 
-  // OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
-  // // afl init
-  // afl_init(&fid, &oldss);
-  //
-  // sim.run(tamper, romfile, imgfile, tg);
-  //
-  // // push coverage
-  // sim.copy_coverage();
+  OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
+  // afl init
+  afl_init(&fid, &oldss);
+  sim.run(tamper, romfile, imgfile, tg);
 
-  DIR* pDIR;
-
-  std::string dirpath = "/home/sujit/Tools/fuzztest-tracegen/fuzztest/aes-out/queue/";
-  struct dirent* entry;
-  if (pDIR = opendir(dirpath.c_str())) {
-    while (entry = readdir(pDIR)) {
-      if (trid == 100) break;
-      if ((entry->d_name[0] != '.') && strcmp(entry->d_name, "..") != 0) {
-
-        std::cout << entry->d_name << "\n";
-        // sim.run(tamper, romfile, imgfile, tg);
-
-        std::string filepath = dirpath + std::string(entry->d_name);
-        tg->insource = fopen(filepath.c_str(), "rb");
-        sim.run(NoTamper, romfile, imgfile, tg);
-        fclose(tg->insource);
-        sim.nextTrace();
-        std::cout << "SIMULATING nextTrace : " << trid++ << std::endl;
-      }
-    }
-    closedir(pDIR);
-  } else {
-    std::cout << "NOT able to open directroy" << std::endl;
+  if (child_pid == 0) {
+    // child process
+    TraceSerialize::store(__prog_shm_ptr, sim.getTrace(sim.getcurrTrace()));
   }
+
+  // push coverage
+  sim.copy_coverage();
 
   return 0;
 }

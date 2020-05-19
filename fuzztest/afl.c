@@ -92,7 +92,7 @@ static void __afl_start_forkserver() {
 
   std::map<std::string, PTrace> testvectorMap;
 
-  while (1) {
+  while (trid < 3) {
 
     uint32_t was_killed;
     int status;

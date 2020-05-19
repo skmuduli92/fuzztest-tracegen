@@ -112,5 +112,5 @@ target_link_libraries(aes_test PUBLIC simlib libprop crypto pthread)
 
 
 # sha_test
-add_executable(sha_test sha_test.cpp)
-target_link_libraries(sha_test PUBLIC simlib libprop crypto pthread)
+# add_executable(sha_test sha_test.cpp)
+# target_link_libraries(sha_test PUBLIC simlib libprop crypto pthread)
