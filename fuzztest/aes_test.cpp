@@ -29,8 +29,6 @@ static ITamperer NoTamper;
 unsigned trid = 0;
 
 int main() {
-  // create top module
-  Voc8051_Simulator sim(2, 1, 0);
 
   // filenames
   std::string romfile("../rom/aes_test.dat");
@@ -45,6 +43,13 @@ int main() {
 
   std::shared_ptr<TraceGenerator> tg = std::make_shared<TraceGenerator>(aes_tg, stdin);
   tg->addVars(signals);
+
+  // create top module
+  Voc8051_Simulator sim(2, 0, signals.size());
+
+  for (size_t id = 0; id < signals.size(); ++id) {
+    sim.addVar(signals[id], id, id, Voc8051_Simulator::VarInfo::TERM, 0);
+  }
 
   OpcodeTamperer tamper(379 /* base addr */, 24 /* size */);
   // afl init
