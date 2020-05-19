@@ -1,6 +1,9 @@
 [submodule "libprop"]
-	path = libprop
+	path = fuzztest/libprop
 	url = git@github.com:skmuduli92/libprop.git
 [submodule "AFL"]
 	path = AFL
 	url = git@github.com:skmuduli92/AFL.git
+[submodule "verilator"]
+	path = verilator
+	url = https://github.com/skmuduli92/verilator.git
