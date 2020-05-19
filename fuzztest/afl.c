@@ -86,13 +86,10 @@ static void __afl_start_forkserver() {
     return;
   }
 
-#ifdef LOG_TRACEGEN
   std::ofstream outs("parent.output");
-#endif
-
   std::map<std::string, PTrace> testvectorMap;
 
-  while (trid < 3) {
+  while (trid < 2) {
 
     uint32_t was_killed;
     int status;
@@ -116,23 +113,16 @@ static void __afl_start_forkserver() {
 
     // printing some info about the trace object
     char filename[256] = {'\0'};
-    memcpy(filename, __prog_shm_ptr, 256);
 
-    if (filename[0] != '\0') {
-      // check if the test is already seen
-      auto it = testvectorMap.find(filename);
-      if (it == testvectorMap.end()) {
-        // new test case
-        PTrace trace = TraceSerialize::load(__prog_shm_ptr + 256);
-        testvectorMap[filename] = trace;
+    // new test case
+    PTrace trace = TraceSerialize::load(__prog_shm_ptr + 256);
+    testvectorMap[filename] = trace;
 
-#ifdef LOG_TRACEGEN
-        outs << "New Test File : " << filename << std::endl;
-        outs << "TRACE DUMP >>" << std::endl;
-        outs << trace->toString()->str();
-#endif
-      }
-    }
+    // write function to dump trace in compressed format
+    // write a functionin TraceSerialize class
+    /* outs << "New Test File : " << filename << std::endl; */
+    /* outs << "TRACE DUMP >>" << std::endl; */
+    /* trace->dumpTrace(outs); */
 
     // In parent process: write PID to pipe, then wait for child.
     if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) {

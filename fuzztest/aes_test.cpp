@@ -58,7 +58,7 @@ int main() {
 
   if (child_pid == 0) {
     // child process
-    TraceSerialize::store(__prog_shm_ptr, sim.getTrace(sim.getcurrTrace()));
+    TraceSerialize::store(__prog_shm_ptr + 256, sim.getTrace(sim.getcurrTrace()));
   }
 
   // push coverage
