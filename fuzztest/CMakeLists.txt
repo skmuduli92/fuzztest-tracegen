@@ -12,7 +12,7 @@ set(VERILATOR_ROOT "../verilator")
 
 find_package(verilator HINTS ${VERILATOR_ROOT})
 if (NOT verilator_FOUND)
-  message(FATAL_ERROR "Verilator was not found. Either install it, or set the VERILATOR_ROOT environment variable")
+  message(FATAL_ERROR "Verilator was not found in the project")
 endif()
 
 set(OPENSSL_USE_STATIC_LIBS TRUE)
@@ -88,12 +88,13 @@ file(GLOB RTL_SRC
   ${RTL_DIR}/mem_wr.v
   )
 
-
-
 add_library(verilatorsim STATIC)
 
 verilate(verilatorsim
-  VERILATOR_ARGS -Wno-UNOPTFLAT -Wno-CASEINCOMPLETE -Wno-CASEX -Wno-WIDTH -Wno-PINMISSING   -Wno-STMTDLY -Wno-IMPLICIT -Wno-LITENDIAN -Wno-INITIALDLY -Wno-MODDUP --top-module oc8051_tb --x-assign fast --x-initial fast --noassert
+  VERILATOR_ARGS -Wno-UNOPTFLAT -Wno-CASEINCOMPLETE -Wno-CASEX -Wno-WIDTH -Wno-PINMISSING
+  -Wno-STMTDLY -Wno-IMPLICIT -Wno-LITENDIAN -Wno-INITIALDLY -Wno-MODDUP
+  --top-module oc8051_tb --x-assign fast --x-initial fast --noassert
+
   DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/verilatorsim
   INCLUDE_DIRS ${RTL_DIR}
   SOURCES ${RTL_SRC}
@@ -113,4 +114,3 @@ target_link_libraries(aes_test PUBLIC simlib libprop crypto pthread)
 # sha_test
 add_executable(sha_test sha_test.cpp)
 target_link_libraries(sha_test PUBLIC simlib libprop crypto pthread)
-

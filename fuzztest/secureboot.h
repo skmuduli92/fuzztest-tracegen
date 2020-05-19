@@ -135,7 +135,7 @@ class Voc8051_Simulator {
   bool evaluate(HyperPLTL::PHyperProp f);
 
   // storing signal value as trace after each eval call
-  void recordsignals(long);
+  void recordAESSignals(long);
 
   void print_trace_intvar(size_t idx);
 };
@@ -147,13 +147,6 @@ class TraceGenerator {
   std::vector<std::string> filenames;
 
   uint32_t addr_store;
-
-  void tracegen_aes(std::shared_ptr<Voc8051_tb> top);           // id = 0
-  void tracegen_sha(std::shared_ptr<Voc8051_tb> top);           // id = 1
-  void tracegen_page_table(std::shared_ptr<Voc8051_tb> top);    // id = 2
-  void tracegen_rsa(std::shared_ptr<Voc8051_tb> top);           // id = 3
-  void tracegen_exp(std::shared_ptr<Voc8051_tb> top);           // id = 4
-  void tracegen_meminterface(std::shared_ptr<Voc8051_tb> top);  // id = 5
 
  public:
   static const int DEBUG_REG_ADDR;
@@ -169,9 +162,6 @@ class TraceGenerator {
 
   TraceGenerator(unsigned id, FILE* infile) : tracegenID(id), addr_store(0), insource(infile) {}
 
-  void tracegen_main(std::shared_ptr<Voc8051_tb> top);
-
-  void recordSignal(std::string const& sname, uint32_t traceId, uint64_t time, int64_t value);
 
   void randomizeData(std::shared_ptr<Voc8051_tb> top);
   void randomizeData_page_table(std::shared_ptr<Voc8051_tb> top);
@@ -180,8 +170,6 @@ class TraceGenerator {
   void randomizeData_rsa(std::shared_ptr<Voc8051_tb> top);
   void randomizeData_exp(std::shared_ptr<Voc8051_tb> top);
   void randomizeData_wr(std::shared_ptr<Voc8051_tb> top);
-  void tracegen_wr(std::shared_ptr<Voc8051_tb> top);
-  //  void tracegen_rsa(std::shared_ptr<Voc8051_tb> top);
 
   void addVars(std::vector<std::string> const& intvars);
 
