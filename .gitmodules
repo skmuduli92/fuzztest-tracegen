@@ -7,3 +7,6 @@
 [submodule "verilator"]
 	path = verilator
 	url = https://github.com/skmuduli92/verilator.git
+[submodule "fuzztest/libprop"]
+	path = fuzztest/libprop
+	url = git@github.com:skmuduli92/libprop.git
