@@ -120,10 +120,10 @@ static void __afl_start_forkserver() {
 
     // write function to dump trace in compressed format
     // write a functionin TraceSerialize class
-    /* outs << "New Test File : " << filename << std::endl; */
-    /* outs << "TRACE DUMP >>" << std::endl; */
-    /* trace->dumpTrace(outs); */
+    outs << "New Test File : " << filename << std::endl;
+    outs << "TRACE DUMP >>" << std::endl;
 
+    TraceSerialize::stringify(outs, trace);
     // In parent process: write PID to pipe, then wait for child.
     if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) {
       _exit(1);
